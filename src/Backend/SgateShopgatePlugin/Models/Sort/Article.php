@@ -19,8 +19,7 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
-class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_Article
-    implements Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_ArticleInterface
+class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_Article implements Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_ArticleInterface
 {
     /** @var \Shopware\Bundle\StoreFrontBundle\Service\CustomSortingServiceInterface */
     private $customSortingService;

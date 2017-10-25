@@ -24,8 +24,6 @@
 
 namespace Shopware\Bundle\SearchBundle;
 
-
 interface StoreFrontCriteriaFactoryInterface
 {
-
 }

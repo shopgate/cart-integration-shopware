@@ -26,7 +26,7 @@ class ShopwareModulesOrderSendMailSendTest extends \PHPUnit_Framework_TestCase
     /**
      * @param bool      $sendingEnabled
      * @param bool|null $expectedReturn
-     * 
+     *
      * @dataProvider provideHandleFixtures
      */
     public function testHandle($sendingEnabled, $expectedReturn)

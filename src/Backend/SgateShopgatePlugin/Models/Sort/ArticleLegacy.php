@@ -22,8 +22,7 @@
 /**
  * All constants in class StoreFrontCriteriaFactory were removed in Shopware 5.3
  */
-class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_ArticleLegacy
-    implements Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_ArticleInterface
+class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_ArticleLegacy implements Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_ArticleInterface
 {
     /** @var int */
     private $defaultListingSorting;
