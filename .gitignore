@@ -1,0 +1,9 @@
+/.buildpath
+/.project
+/*.zip
+/.php-cs.cache
+/nbproject
+/.settings
+/.idea
+/src/Backend/SgateShopgatePlugin/vendor/
+/release/package

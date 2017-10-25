@@ -1,0 +1,25 @@
+{
+  "name": "shopgate/cart-integration-shopware",
+  "description": "Integrates the Shopware shopping cart solution with Shopgate",
+  "homepage": "https://github.com/shopgate/cart-integration-shopware",
+  "license": "Apache-2.0",
+  "config": {
+    "platform": {
+      "php": "5.3.3"
+    },
+    "vendor-dir": "src/Backend/SgateShopgatePlugin/vendor"
+  },
+  "authors": [
+    {
+      "name": "Shopgate",
+      "email": "interfaces@shopgate.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.3",
+    "shopgate/cart-integration-sdk" : "~2.9.68"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.8.*"
+  }
+}
