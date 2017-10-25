@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## 2.9.70 - 2017-10-25
 ### Changed
 - migrated Shopgate integration for Shopware to GitHub
 - article sorting by category in the export for Shopware 5.3.0 and higher versions
@@ -665,4 +667,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.69...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.70...HEAD
