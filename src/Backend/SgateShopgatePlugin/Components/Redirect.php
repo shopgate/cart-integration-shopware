@@ -143,7 +143,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
                   FROM s_articles_details variant
                      INNER JOIN s_articles product ON product.id = variant.articleID
                          AND variant.active = 1
-                  WHERE product.id = ? LIMIT 1WHERE product.id = ?
+                  WHERE product.id = ?
                   ORDER BY variant.kind DESC
                   LIMIT 1',
             array($params['sArticle'])
