@@ -5,8 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-### Fixed
-- added check to prevent attributes that do not have group ids from being added to products
 
 ## 2.9.70 - 2017-10-25
 ### Changed
@@ -16,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - a bug that caused the plugin to fail when custom implementations of Shopware interfaces were used instead of the
   default ones
+- added check to prevent attributes that do not have group ids from being added to products
 
 ## 2.9.69
 ### Fixed
