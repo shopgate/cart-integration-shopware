@@ -2,7 +2,7 @@
 
 ZIP_FILE_NAME=shopgate-shopware-integration.zip
 
-rm -rf src/shopgate/vendor release/package $ZIP_FILE_NAME
+rm -rf src/Backend/SgateShopgatePlugin/vendor release/package $ZIP_FILE_NAME
 mkdir release/package
 composer install -vvv --no-dev
 rsync -av --exclude-from './release/exclude-filelist.txt' ./src/ release/package
