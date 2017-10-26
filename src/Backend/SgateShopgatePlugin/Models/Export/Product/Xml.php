@@ -632,6 +632,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
             /* @var $option \Shopware\Models\Article\Configurator\Option */
             foreach ($this->detail->getConfiguratorOptions() as $option) {
                 $group         = $option->getGroup();
+                if (empty($map[$group->getId()])) {
+                    continue;
+                }
                 $itemAttribute = new Shopgate_Model_Catalog_Attribute();
                 $itemAttribute->setGroupUid($map[$group->getId()]);
                 $itemAttribute->setLabel(
