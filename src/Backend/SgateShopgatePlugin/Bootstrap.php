@@ -1009,6 +1009,23 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             case "savePosition":
                 $orderId = $args["subject"]->Request()->getParam("orderId");
                 break;
+            case "batchProcess":
+                $orders = $args["subject"]->Request()->getParam('orders', array(0 => $args["subject"]->Request()->getParams()));
+
+                if (!empty($orders)) {
+                    foreach ($orders as $key => $data) {	
+                        if (empty($data) || empty($data['id'])) {
+			    continue;
+                        }
+                        
+			$orderId = $data['id'];
+                        if ($orderId) {
+                            self::cancelOrder($orderId);
+                            self::confirmOrderShipping($orderId);
+                        }
+                    }
+                }
+		break;
             default:
                 return;
         }
