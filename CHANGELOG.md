@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 - changed redirect so it is done for the parent product rather than the first variant 
 
+### Fixed
+- a bug that would cause import failures for orders that contained Shopgate coupons
+
 ## 2.9.70 - 2017-10-25
 ### Changed
 - migrated Shopgate integration for Shopware to GitHub
