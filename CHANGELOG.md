@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Changed
+- changed redirect so it is done for the parent product rather than the first variant 
+
 ### Fixed
 - a bug that would cause import failures for orders that contained Shopgate coupons
 

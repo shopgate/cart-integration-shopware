@@ -139,13 +139,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
     protected function _getRedirectProductUid($params)
     {
         $query = Shopware()->Db()->query(
-            'SELECT variant.ordernumber
-                  FROM s_articles_details variant
-                     INNER JOIN s_articles product ON product.id = variant.articleID
-                         AND variant.active = 1
-                  WHERE product.id = ?
-                  ORDER BY variant.kind DESC
-                  LIMIT 1',
+            'SELECT ordernumber 
+                  FROM s_articles_details 
+                  WHERE id = ?',
             array($params['sArticle'])
         );
 
