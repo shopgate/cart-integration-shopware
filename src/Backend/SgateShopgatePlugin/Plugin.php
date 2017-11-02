@@ -3577,7 +3577,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         // add missing "virtual" items like shopgate coupons (must be added afterwards because the getBasket method does not load such basket articles)
         foreach ($skippedItemList as $oItem) {
             $newOrderItem = array(
-                'id'                      => 0,
+                'id'                      => -1,
                 'sessionID'               => $sessionId,
                 'userID'                  => $this->customerId,
                 'articlename'             => $oItem->getName(),
@@ -3815,6 +3815,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $info = $this->jsonDecode($coupon->getInternalInfo(), true);
 
             $aItem = array();
+            $aItem['id'] = -1;
+
             // in case of individual it has to be code_id, otherwise voucher_id
             $aItem['articleID'] = !is_null($info['code_id'])
                 ? $info['code_id']
