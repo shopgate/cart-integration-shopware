@@ -1025,7 +1025,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                         }
                     }
                 }
-		break;
+                return;
             default:
                 return;
         }
