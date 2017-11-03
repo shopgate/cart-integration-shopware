@@ -1013,12 +1013,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                 $orders = $args["subject"]->Request()->getParam('orders', array(0 => $args["subject"]->Request()->getParams()));
 
                 if (!empty($orders)) {
-                    foreach ($orders as $key => $data) {	
+                    foreach ($orders as $key => $data) {
                         if (empty($data) || empty($data['id'])) {
-			    continue;
+                            continue;
                         }
                         
-			$orderId = $data['id'];
+                        $orderId = $data['id'];
                         if ($orderId) {
                             self::cancelOrder($orderId);
                             self::confirmOrderShipping($orderId);
