@@ -5,8 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- when using batch processing to change order statuses to shipped or cancelled those changes will now also be
+  synchronized to Shopgate for orders placed via Shopgate (props to LexXxurio)
+
 ### Changed
-- changed redirect so it is done for the parent product rather than the first variant 
+- changed redirect so it is done for the parent product rather than the first variant
 
 ### Fixed
 - a bug that would cause import failures for orders that contained Shopgate coupons
