@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.71] - 2017-11-08
 ### Added
 - when using batch processing to change order statuses to shipped or cancelled those changes will now also be
   synchronized to Shopgate for orders placed via Shopgate (props to LexXxurio)
@@ -677,4 +679,5 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.70...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.71...HEAD
+[2.9.71]: https://github.com/shopgate/interface-shopware/compare/2.9.70...2.9.71
