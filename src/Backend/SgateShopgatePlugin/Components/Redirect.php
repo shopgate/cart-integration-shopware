@@ -54,7 +54,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
             $jsHeader  = "";
 
             if ($this->request->getControllerName() == 'detail') {
-                $uid      = $this->_getRedirectProductUid($this->params);
+                $uid      = $this->params['sArticle'];
                 $jsHeader = !empty($uid)
                     ? $oRedirect->buildScriptItem($uid)
                     : $oRedirect->buildScriptDefault();
@@ -130,25 +130,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
     }
 
     /**
-     * Return the Article Ordernumber of the given Article
-     *
-     * @param array $params
-     *
-     * @return string|bool
-     */
-    protected function _getRedirectProductUid($params)
-    {
-        $query = Shopware()->Db()->query(
-            'SELECT ordernumber 
-                  FROM s_articles_details 
-                  WHERE id = ?',
-            array($params['sArticle'])
-        );
-
-        return $params['sArticle'] . '-' . $query->fetchColumn();
-    }
-
-    /**
      * @return bool
      */
     protected function isRedirectAllowed()
@@ -161,9 +142,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
             return false;
         }
 
-        if ($this->params['module'] == 'backend'
+        if ($this->params['module'] != 'frontend'
             || $this->params['controller'] == 'supplier'
-            || $this->params['module'] == 'api'
             || $this->request->getControllerName() == 'AmazonPaymentsAdvanced'
         ) {
             return false;

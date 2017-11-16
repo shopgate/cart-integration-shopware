@@ -110,7 +110,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
 
     public function setUid()
     {
-        $uid = ($this->article->getConfiguratorSet() && !$this->getIsChild())
+        $uid = (!$this->getIsChild())
             ? $this->article->getId()
             : $this->article->getId() . "-" . $this->detail->getNumber();
 
