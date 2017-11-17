@@ -45,40 +45,29 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
      */
     public function redirect()
     {
-        // redirect is not allowed in blog sections
         if ($this->isRedirectAllowed()) {
             $oRedirect = $this->getRedirector(
                 $this->getConfig()->getRedirectType() ==
                 Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config::REDIRECT_TYPE_HTTP
             );
-            $jsHeader  = "";
 
-            if ($this->request->getControllerName() == 'detail') {
-                $uid      = $this->params['sArticle'];
-                $jsHeader = !empty($uid)
-                    ? $oRedirect->buildScriptItem($uid)
-                    : $oRedirect->buildScriptDefault();
+            $uid = !empty($this->params['sArticle']) ? $this->params['sArticle'] : $this->params['articleId'];
+
+            if (!empty($uid)) {
+                $jsHeader = $oRedirect->buildScriptItem($uid);
+            } elseif (isset($this->params['sSupplier'])) {
+                $sName    = Shopware()->Db()->fetchOne(
+                    "SELECT name FROM `s_articles_supplier` WHERE id={$this->params['sSupplier']}"
+                );
+                $jsHeader = $oRedirect->buildScriptBrand($sName);
+            } elseif (isset($this->params['sCategory'])) {
+                $jsHeader = $oRedirect->buildScriptCategory($this->params['sCategory']);
+            } elseif (isset($this->params['sSearch'])) {
+                $jsHeader = $oRedirect->buildScriptSearch($this->params['sSearch']);
+            } elseif ($this->request->getControllerName() == 'index') {
+                $jsHeader = $oRedirect->buildScriptShop();
             } else {
-                if ($this->request->getControllerName() == 'index') {
-                    $jsHeader = $oRedirect->buildScriptShop();
-                } else {
-                    if ($this->request->getControllerName() == 'listing' && isset($this->params['sSupplier'])) {
-                        $sName    = Shopware()->Db()->fetchOne(
-                            "SELECT name FROM `s_articles_supplier` WHERE id={$this->params['sSupplier']}"
-                        );
-                        $jsHeader = $oRedirect->buildScriptBrand($sName);
-                    } else {
-                        if ($this->request->getControllerName() == 'listing' && isset($this->params['sCategory'])) {
-                            $jsHeader = $oRedirect->buildScriptCategory($this->params['sCategory']);
-                        } else {
-                            if ($this->request->getControllerName() == 'search' && isset($this->params['sSearch'])) {
-                                $jsHeader = $oRedirect->buildScriptSearch($this->params['sSearch']);
-                            } else {
-                                $jsHeader = $oRedirect->buildScriptDefault();
-                            }
-                        }
-                    }
-                }
+                $jsHeader = $oRedirect->buildScriptDefault();
             }
 
             $jsHeader = addcslashes($jsHeader, "\\");
@@ -142,8 +131,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
             return false;
         }
 
-        if ($this->params['module'] != 'frontend'
+        if ($this->params['module'] == 'backend'
+            || $this->params['module'] == 'api'
             || $this->params['controller'] == 'supplier'
+            || $this->params['controller'] == 'captcha'
             || $this->request->getControllerName() == 'AmazonPaymentsAdvanced'
         ) {
             return false;
@@ -153,12 +144,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
         $customerNumber = trim($this->getConfig()->getCustomerNumber());
         $shopNumber     = trim($this->getConfig()->getShopNumber());
         $apiKey         = trim($this->getConfig()->getApikey());
-        $shopAlias      = trim($this->getConfig()->getAlias());
-        $shopCname      = trim($this->getConfig()->getCname());
-        if (empty($customerNumber) || empty($shopNumber) || empty($apiKey)
-            || (empty($shopAlias)
-                && empty($shopCname))
-        ) {
+        $alias          = trim($this->getConfig()->getAlias());
+        $cname          = trim($this->getConfig()->getCname());
+        if (empty($customerNumber) || empty($shopNumber) || empty($apiKey) || (empty($alias) && empty($cname))) {
             return false;
         }
 
