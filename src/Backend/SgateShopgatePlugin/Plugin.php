@@ -3972,13 +3972,21 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $sDate   = $oShopgateOrder->getPaymentTime("Y-m-d H:i:s");
         }
 
-        if ($this->isBillsafeOrder($oShopgateOrder)) {
+        if ($this->isPaymorrowOrder($oShopgateOrder)) {
+            $paymentInformation = $oShopgateOrder->getPaymentInfos();
+            $paymentStatusId    = Shopware()->Db()->fetchOne(
+                "SELECT id FROM s_core_states WHERE description like ?",
+                array('%' . $paymentInformation['status'] . '%')
+            );
+            $iStatus             = !empty($paymentStatusId)
+                ? $paymentStatusId
+                : $iStatus;
+        } elseif ($this->isBillsafeOrder($oShopgateOrder)) {
             $billsafeStatusId = Shopware()->Plugins()->Frontend()->SwagPaymentBillsafe()->Config()->paymentStatusId;
             $iStatus          = !empty($billsafeStatusId)
                 ? $billsafeStatusId
                 : self::ORDER_PAYMENT_STATUS_OPEN;
-        }
-        if ($this->isPayolutionOrder($oShopgateOrder)) {
+        } elseif ($this->isPayolutionOrder($oShopgateOrder)) {
             $subpay             = $oShopgateOrder->getPaymentMethod() == ShopgateOrder::PAYOL_INS
                 ? 'PAYOLUTION_INS'
                 : 'PAYOLUTION_INVOICE';
@@ -3989,7 +3997,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 : self::ORDER_PAYMENT_STATUS_OPEN;
         }
 
-        // 		$orderStatus = Shopware()->Models()->find("\Shopware\Models\Order\Status", $iStatus);
         $sql = "UPDATE `s_order` SET cleared=" . $iStatus . (!empty($sDate)
                 ? (", cleareddate='" . $sDate . "'")
                 : (""))
