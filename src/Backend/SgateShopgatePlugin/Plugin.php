@@ -4869,7 +4869,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 );
                 $costs       = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts($countryInfo);
 
-                $shippingMethods[$key]['shipping_costs'] = $costs['brutto'];
+                $shippingMethods[$key]['shipping_costs'] = $costs['brutto'] - $costs['surcharge'];
             }
         }
         Shopware()->Session()->sCountry = $countryId;
