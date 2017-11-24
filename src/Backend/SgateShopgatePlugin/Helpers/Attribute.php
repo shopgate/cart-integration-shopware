@@ -37,6 +37,10 @@ class Attribute
     {
         $configuredAttributes = array();
 
+        if (version_compare(Shopware()->Config()->version, '5.2', '<')) {
+            return $this->getLegacyConfiguredAttributes();
+        }
+
         /** @var CrudService $crudService */
         $crudService = Shopware()->Container()->get('shopware_attribute.crud_service');
         $attributes  = $crudService->getList(self::ARTICLE_ATTRIBUTE_TABLE);
@@ -54,6 +58,25 @@ class Attribute
             } else {
                 $configuredAttributes[] = array($attribute->getLabel(), $attribute->getLabel());
             }
+        }
+
+        return $configuredAttributes;
+    }
+
+    /**
+     * Export the configured attributes for Shopware below 5.2
+     *
+     * @return array
+     */
+    protected function getLegacyConfiguredAttributes()
+    {
+        $configuredAttributes = array();
+        $elements             = Shopware()->Models()
+                                          ->createQuery("SELECT e FROM \Shopware\Models\Article\Element e")
+                                          ->getResult();
+
+        foreach ($elements as $element) {
+            $configuredAttributes[$element->getName()] = $element->getLabel();
         }
 
         return $configuredAttributes;
