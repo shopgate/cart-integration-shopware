@@ -20,22 +20,23 @@
  */
 
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
+require_once __DIR__ . '/Helpers/Attribute.php';
 require_once __DIR__ . '/Helpers/FormElementSelect.php';
 require_once __DIR__ . '/Helpers/FormElementCheckbox.php';
 require_once __DIR__ . '/Helpers/FormElementText.php';
 require_once __DIR__ . '/Helpers/FormElementTextfield.php';
 require_once dirname(__FILE__) . '/Plugin.php';
 
+use Shopgate\Helpers\Attribute as AttributeHelper;
 use Shopgate\Helpers\FormElement;
-use Shopgate\Helpers\FormElementSelect;
-use Shopgate\Helpers\FormElementOptionsContainerSelect;
-use Shopgate\Helpers\FormElementText;
-use Shopgate\Helpers\FormElementOptionsContainerText;
-use Shopgate\Helpers\FormElementTextfield;
-use Shopgate\Helpers\FormElementOptionsContainerTextfield;
 use Shopgate\Helpers\FormElementCheckbox;
 use Shopgate\Helpers\FormElementOptionsContainerCheckbox;
-
+use Shopgate\Helpers\FormElementOptionsContainerSelect;
+use Shopgate\Helpers\FormElementOptionsContainerText;
+use Shopgate\Helpers\FormElementOptionsContainerTextfield;
+use Shopgate\Helpers\FormElementSelect;
+use Shopgate\Helpers\FormElementText;
+use Shopgate\Helpers\FormElementTextfield;
 use Shopware\Models\Category\Category;
 use Shopware\Models\Config\Form;
 use Shopware\Models\Dispatch\Dispatch;
@@ -1221,13 +1222,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     private function getAttributesStore()
     {
         if (version_compare(Shopware()->Config()->version, '5.2', '>=')) {
-            $dql        = "SELECT e FROM \Shopware\Models\Article\Element e";
-            $dqlResults = Shopware()->Models()->createQuery($dql)->getResult();
-
-            $attributesStore = array();
-            foreach ($dqlResults as $dqlResult) {
-                $attributesStore[] = array($dqlResult->getLabel(), $dqlResult->getLabel());
-            }
+            $attributeHelper = new AttributeHelper();
+            $attributesStore = $attributeHelper->getConfiguredAttributes(false);
         } else {
             $remoteUrl       = Shopware()->Front()->Router()->assemble(
                 array(
