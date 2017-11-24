@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - fixed missing attributes for item export in plugin configuration
+- fixed wrong payment status when importing Paymorrow orders
+- fixed wrong shipping costs in check_cart
 
 ## [2.9.72] - 2017-11-20
 ### Fixed
