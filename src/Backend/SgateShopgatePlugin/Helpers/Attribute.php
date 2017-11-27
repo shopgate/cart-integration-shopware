@@ -26,7 +26,7 @@ use Shopware\Bundle\AttributeBundle\Service\CrudService;
 
 class Attribute
 {
-    CONST ARTICLE_ATTRIBUTE_TABLE = 's_articles_attributes';
+    const ARTICLE_ATTRIBUTE_TABLE = 's_articles_attributes';
 
     /**
      * @param bool $useFlatLabel
