@@ -19,6 +19,7 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
+use Shopgate\Helpers\Attribute as AttributeHelper;
 use Shopware\Bundle\SearchBundle\Condition\CategoryCondition;
 use Shopware\Bundle\SearchBundle\Condition\CustomerGroupCondition;
 use Shopware\Bundle\SearchBundle\Criteria;
@@ -51,6 +52,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
 
     /** @var sSystem */
     protected $system;
+
+    /** @var AttributeHelper */
+    protected $attributeHelper;
 
     /**
      * cache that can be used during export processes
@@ -91,6 +95,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             : $rootCategoryId;
         $this->locale           = $this->shop->getLocale();
         $this->system           = Shopware()->System();
+        $this->attributeHelper  = new AttributeHelper();
         $this->initLanguageCategoryList();
         $this->initLanguageCompleteCategoryList();
 
@@ -313,13 +318,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     public function getArticleElements()
     {
         if (empty($this->elements)) {
-            $elements = Shopware()->Models()
-                ->createQuery("SELECT e FROM \Shopware\Models\Article\Element e")
-                ->getResult();
-
-            foreach ($elements as $element) {
-                $this->elements[$element->getName()] = $element->getLabel();
-            }
+            $this->elements = $this->attributeHelper->getConfiguredAttributes();
         }
 
         return $this->elements;
