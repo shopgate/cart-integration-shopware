@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- support for smarty variables within the available text during item export
+
 ### Fixed
 - fixed missing attributes for item export in plugin configuration
 - fixed wrong payment status when importing Paymorrow orders
