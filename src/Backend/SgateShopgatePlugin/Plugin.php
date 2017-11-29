@@ -1458,7 +1458,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         \Shopware\Models\Article\Article $aArticle,
         \Shopware\Models\Article\Detail $details
     ) {
-        $sAvailableText          = $this->exportModel->getAvailableText($aArticle, $details);
+        $sAvailableText          = $this->exportModel->getAvailableText($details);
         $aItem["available_text"] = $sAvailableText;
 
         return $aItem;

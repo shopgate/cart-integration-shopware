@@ -353,7 +353,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
         $useStock   = $this->article->getLastStock()
             ? true
             : false;
-        $stockModel->setAvailabilityText($this->getAvailableText($this->article, $this->detail));
+        $stockModel->setAvailabilityText($this->getAvailableText($this->detail));
         $stockModel->setStockQuantity($stockQty);
         $stockModel->setMaximumOrderQuantity($maxQuantity);
         $stockModel->setMinimumOrderQuantity($minQuantity);

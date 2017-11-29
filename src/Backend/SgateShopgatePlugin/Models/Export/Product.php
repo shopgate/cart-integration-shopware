@@ -26,6 +26,8 @@
  */
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends Shopgate_Model_Catalog_Product
 {
+    const AVAILABLE_TEXT_TEMPLATE = 'frontend/plugins/index/delivery_informations.tpl';
+
     /**
      * @var \Shopware\Models\Article\Detail $detail
      */
@@ -156,53 +158,21 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
     }
 
     /**
-     * @param \Shopware\Models\Article\Article $article
-     * @param \Shopware\Models\Article\Detail  $details
+     * @param \Shopware\Models\Article\Detail  $detail
      *
      * @return string
      */
-    public function getAvailableText($article, $details)
+    public function getAvailableText($detail)
     {
-        $sAvailableText = "";
+        $template = $this->config->assertMinimumVersion('4.2')
+            ? Shopware()->Container()->get('Template')
+            : Enlight_Application::Instance()->Bootstrap()->getResource('Template');
 
-        // Get all data (based on the real frontend functionality)
-        $articleActive = $details->getActive();
-        if ($article->getLastStock() && $details->getInStock() < 1) {
-            // same as in Shopware frontend (active status is changed to false whenever the detail is out of stock)
-            $articleActive = 0;
-        }
-        $articleReleaseDate = $details->getReleaseDate();
-        if ($articleReleaseDate
-            && $articleReleaseDate instanceof \DateTime
-        ) {
-            $articleReleaseDate = $articleReleaseDate->format('d.m.Y');
-        }
-        $articleEsd     = Shopware()->Modules()->Articles()->sCheckIfEsd($article->getId(), $details->getId());
-        $articleInStock = $details->getInStock();
-        $shippingTime   = $details->getShippingTime();
+        $view           = new Enlight_View_Default($template);
+        $view->sArticle = Shopware()->Modules()->Articles()->sGetProductByOrdernumber($detail->getNumber());
+        $availableText  = Shopware()->Template()->fetch(self::AVAILABLE_TEXT_TEMPLATE);
 
-        if (!$articleActive) {
-            $sAvailableText = $this->exportComponent->getTemplateText("DetailDataInfoNotAvailable");
-        } elseif ($articleReleaseDate && date('Ymd', strtotime($articleReleaseDate)) > date('Ymd')) {
-            $sAvailableText = $this->exportComponent->getTemplateText("DetailDataInfoShipping");
-            $sAvailableText .= date('d.m.Y', strtotime($articleReleaseDate));
-        } elseif ($articleEsd) {
-            $sAvailableText = $this->exportComponent->getTemplateText("DetailDataInfoInstantDownload");
-        } elseif ($articleInStock > 0) {
-            $sAvailableText = $this->exportComponent->getTemplateText("DetailDataInfoInstock");
-        } elseif ($shippingTime) {
-            $sAvailableText = $this->exportComponent->getTemplateText("DetailDataShippingtime");
-            $sAvailableText .= " {$shippingTime} " . $this->exportComponent->getTemplateText(
-                    "DetailDataShippingDays"
-                );
-        } else {
-            $sAvailableText = $this->exportComponent->getTemplateText("DetailDataNotAvailable");
-        }
-
-        $sAvailableText = str_replace(array("\n", "\r", "<br>", "</br>"), array('', '', '', ''), $sAvailableText);
-        $sAvailableText = str_replace('{$sArticle.shippingtime}', $shippingTime, $sAvailableText);
-
-        return $sAvailableText;
+        return trim(strip_tags($availableText));
     }
 
     /**
