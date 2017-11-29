@@ -172,7 +172,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         $view->sArticle = Shopware()->Modules()->Articles()->sGetProductByOrdernumber($detail->getNumber());
         $availableText  = Shopware()->Template()->fetch(self::AVAILABLE_TEXT_TEMPLATE);
 
-        return strip_tags($availableText);
+        return trim(strip_tags($availableText));
     }
 
     /**
