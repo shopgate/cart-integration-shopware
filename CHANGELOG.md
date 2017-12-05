@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - payment surcharges are not exported as shipping costs anymore in case of free shipping
 
+## [2.9.73] - 2017-11-29
+### Added
+- support for smarty variables within the available text during item export
+
 ### Fixed
 - fixed missing attributes for item export in plugin configuration
 - fixed wrong payment status when importing Paymorrow orders
