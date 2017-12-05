@@ -19,6 +19,7 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
+use Shopgate\Helpers\Cart as CartHelper;
 use Shopware\Models\Order\Order;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -122,6 +123,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
     /** @var Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer */
     protected $customerImport = null;
 
+    /** @var CartHelper */
+    protected $cartHelper;
+
     /*
      * merged array form post and params of enlight request
      */
@@ -215,6 +219,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 $articleSortModel,
                 $this->config->getRootCategory()
             );
+
+        $this->cartHelper = new CartHelper();
 
         return true;
     }
@@ -4484,35 +4490,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
             throw new ShopgateLibraryException(ShopgateLibraryException::COUPON_TOO_MANY_COUPONS);
         }
 
-        // return shipping methods only if a delivery country is set and if the mapping is activated in the plugin
-        $sgShippingMethods   = array();
-        $userDeliveryAddress = $cart->getDeliveryAddress();
-        if (!empty($userDeliveryAddress)
-            && ($userCountry = $userDeliveryAddress->getCountry())
-            // assignment on purpose to make sure the same country is used in every place
-            && strlen($userCountry) > 0
-        ) {
-            $userCountryId                  = Shopware()->Db()->fetchOne(
-                "SELECT `id` FROM `s_core_countries` WHERE `countryiso` = ?",
-                $userCountry
-            );
-            Shopware()->Session()->sCountry = $userCountryId;
-
-            // check for existing non guest accounts
-            $addressQuery           = "SELECT * FROM `s_user_shippingaddress` WHERE userID = ?";
-            $currentShippingAddress = Shopware()->Db()->fetchRow($addressQuery, array($cart->getExternalCustomerId()));
-
-            if (!empty($currentShippingAddress)) {
-                $this->customerImport->updateShippingAddress($currentShippingAddress, $cart->getDeliveryAddress());
-            }
-
-            $shippingMethods   = $this->getShippingMethods($cart, $userCountryId);
-            $sgShippingMethods = $this->convertShippingFormat($shippingMethods);
-        }
-        if (!empty($sgShippingMethods)) {
-            $result["shipping_methods"] = $sgShippingMethods;
-        }
-
         $paymentMethods = Shopware()->Modules()->Admin()->sGetPaymentMeans();
         $sUserData      = Shopware()->Modules()->Admin()->sGetUserData();
 
@@ -4551,6 +4528,39 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $method->setTaxPercent($tax);
 
             $result['payment_methods'][] = $method;
+        }
+
+        // return shipping methods only if a delivery country is set and if the mapping is activated in the plugin
+        $sgShippingMethods   = array();
+        $userDeliveryAddress = $cart->getDeliveryAddress();
+        if (!empty($userDeliveryAddress)
+            && ($userCountry = $userDeliveryAddress->getCountry())
+            // assignment on purpose to make sure the same country is used in every place
+            && strlen($userCountry) > 0
+        ) {
+            $userCountryId                  = Shopware()->Db()->fetchOne(
+                "SELECT `id` FROM `s_core_countries` WHERE `countryiso` = ?",
+                $userCountry
+            );
+            Shopware()->Session()->sCountry = $userCountryId;
+
+            // check for existing non guest accounts
+            $addressQuery           = "SELECT * FROM `s_user_shippingaddress` WHERE userID = ?";
+            $currentShippingAddress = Shopware()->Db()->fetchRow($addressQuery, array($cart->getExternalCustomerId()));
+
+            if (!empty($currentShippingAddress)) {
+                $this->customerImport->updateShippingAddress($currentShippingAddress, $cart->getDeliveryAddress());
+            }
+
+            $shippingMethods   = $this->getShippingMethods($cart, $userCountryId);
+            $shippingMethods   = $this->cartHelper->adjustShippingCosts(
+                $shippingMethods,
+                $result['payment_methods']
+            );
+            $sgShippingMethods = $this->convertShippingFormat($shippingMethods);
+        }
+        if (!empty($sgShippingMethods)) {
+            $result["shipping_methods"] = $sgShippingMethods;
         }
 
         $basketArray = $basket->sGetBasket();
