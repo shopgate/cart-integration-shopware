@@ -5,11 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-
-## [2.9.73] - 2017-11-29
-### Added
-- support for smarty variables within the available text during item export
-
 ### Fixed
 - payment surcharges are not exported as shipping costs anymore in case of free shipping
 
