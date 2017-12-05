@@ -24,6 +24,11 @@ namespace Shopgate\Helpers;
 class Cart
 {
     /**
+     * The Shopware core returns the payment surcharge as the shipping costs,
+     * in case the shipping method was configured with a freeshipping threshold.
+     *
+     * We need to exclude the surcharge, because it will also be exported in the payment section of check_cart.
+     *
      * @param array $shippingMethods
      * @param array $paymentMethods
      *
