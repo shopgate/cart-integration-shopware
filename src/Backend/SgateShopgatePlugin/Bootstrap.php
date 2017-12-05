@@ -21,6 +21,7 @@
 
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 require_once __DIR__ . '/Helpers/Attribute.php';
+require_once __DIR__ . '/Helpers/Cart.php';
 require_once __DIR__ . '/Helpers/FormElementSelect.php';
 require_once __DIR__ . '/Helpers/FormElementCheckbox.php';
 require_once __DIR__ . '/Helpers/FormElementText.php';
