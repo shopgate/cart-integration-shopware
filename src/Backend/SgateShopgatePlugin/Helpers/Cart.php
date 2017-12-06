@@ -31,10 +31,11 @@ class Cart
      *
      * @param array $shippingMethods
      * @param array $paymentMethods
+     * @param int   $countryId
      *
      * @return array
      */
-    public function adjustShippingCosts($shippingMethods, $paymentMethods)
+    public function adjustShippingCosts($shippingMethods, $paymentMethods, $countryId)
     {
         if (empty($paymentMethods)) {
             return $shippingMethods;
@@ -43,7 +44,7 @@ class Cart
         /** @var \ShopgateShippingMethod $shippingMethod */
         foreach ($shippingMethods as $index => $shippingMethod) {
             /** @var \ShopgatePaymentMethod $currentPaymentMethod */
-            $currentPaymentMethod = $this->getPaymentMethod($paymentMethods, $shippingMethod['paymentID']);
+            $currentPaymentMethod = $this->getPaymentMethod($paymentMethods, $countryId);
             if (!is_null($currentPaymentMethod)
                 && !empty($currentPaymentMethod->getAmountWithTax())
                 && empty($shippingMethod['surcharge_calculation'])
@@ -58,19 +59,22 @@ class Cart
 
     /**
      * @param array $paymentMethods
-     * @param int   $id
+     * @param int   $countryId
      *
      * @return null|\ShopgatePaymentMethod
      */
-    private function getPaymentMethod($paymentMethods, $id)
+    private function getPaymentMethod($paymentMethods, $countryId)
     {
+        $basketData = Shopware()->Modules()->Admin()->sGetDispatchBasket($countryId);
+        $paymentId  = $basketData['paymentID'];
+
         /** @var \ShopgatePaymentMethod $paymentMethod */
         foreach ($paymentMethods as $paymentMethod) {
             $paymentData = Shopware()->Db()->fetchOne(
                 'SELECT id FROM s_core_paymentmeans WHERE name = ?',
                 array($paymentMethod->getId())
             );
-            if ($paymentData['id'] == $id) {
+            if ($paymentData['id'] == $paymentId) {
                 return $paymentMethod;
             }
         }
