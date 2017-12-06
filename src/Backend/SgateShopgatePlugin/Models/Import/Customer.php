@@ -26,7 +26,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
 {
     const MALE   = "mr";
     const FEMALE = "ms";
-    const DEFAULT_BIRTHDATE    = '0000-00-00';
+    const DEFAULT_BIRTHDATE    = '';
     const DEFAULT_PHONE_NUMBER = '0-000-000-0000';
 
     /** @var Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config */
@@ -506,9 +506,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
                 : $addressArr['birthday'];
 
             $birthdate                = explode('-', $birthdate);
-            $addressArr['birthday']   = $birthdate[2];
-            $addressArr['birthmonth'] = $birthdate[1];
-            $addressArr['birthyear']  = $birthdate[0];
+            $addressArr['birthday']   = isset($birthdate[2]) ? $birthdate[2] : '';
+            $addressArr['birthmonth'] = isset($birthdate[1]) ? $birthdate[1] : '';
+            $addressArr['birthyear']  = isset($birthdate[0]) ? $birthdate[0] : '';
         }
 
         return $addressArr;

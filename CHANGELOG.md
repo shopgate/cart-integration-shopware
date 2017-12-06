@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - payment surcharges are not exported as shipping costs anymore in case of free shipping
+- default birthday value for Shopware 5.2.0 and higher versions
 
 ## [2.9.73] - 2017-11-29
 ### Added
