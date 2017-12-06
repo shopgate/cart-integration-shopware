@@ -4555,7 +4555,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $shippingMethods   = $this->getShippingMethods($cart, $userCountryId);
             $shippingMethods   = $this->cartHelper->adjustShippingCosts(
                 $shippingMethods,
-                $result['payment_methods']
+                $result['payment_methods'],
+                $userCountryId
             );
             $sgShippingMethods = $this->convertShippingFormat($shippingMethods);
         }
