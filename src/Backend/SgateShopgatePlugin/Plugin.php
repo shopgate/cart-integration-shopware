@@ -521,6 +521,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         // Invoice Address
         $oInvoiceAddress = new ShopgateAddress();
         $oInvoiceAddress->setAddressType(ShopgateAddress::INVOICE);
+        $oInvoiceAddress->setId($oBilling->getId());
         $oInvoiceAddress->setGender(
             $oBilling->getSalutation() == self::MALE
                 ? ShopgateCustomer::MALE
@@ -560,6 +561,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         // Shipping Address
         $oShippingAddress = new ShopgateAddress();
         $oShippingAddress->setAddressType(ShopgateAddress::DELIVERY);
+        $oShippingAddress->setId($oShipping->getId());
         $oShippingAddress->setGender(
             $oShipping->getSalutation() == self::MALE
                 ? ShopgateCustomer::MALE
