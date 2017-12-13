@@ -2750,9 +2750,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
 					nationalBankName = ?,
 					nationalBankCode = ?,
 					nationalBankAccountNumber = ?,
-					paymentReference = ?,
-					signature = ?,
-					fullSend = ?
+					paymentReference = ?
 				",
                     array(
                         $order->getNumber(),
@@ -2766,8 +2764,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
                         $infos['national_bank_code'],
                         $infos['national_bank_acc_num'],
                         $infos['request_id'],
-                        '',
-                        (int)1,
                     )
                 );
                 $this->log(
