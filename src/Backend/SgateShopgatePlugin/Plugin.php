@@ -4488,6 +4488,28 @@ class ShopgatePluginShopware extends ShopgatePlugin
             throw new ShopgateLibraryException(ShopgateLibraryException::COUPON_TOO_MANY_COUPONS);
         }
 
+        $userDeliveryAddress = $cart->getDeliveryAddress();
+
+        if (!empty($userDeliveryAddress)
+            && ($userCountry = $userDeliveryAddress->getCountry())
+            // assignment on purpose to make sure the same country is used in every place
+            && strlen($userCountry) > 0
+        ) {
+            $userCountryId                  = Shopware()->Db()->fetchOne(
+                "SELECT `id` FROM `s_core_countries` WHERE `countryiso` = ?",
+                $userCountry
+            );
+            Shopware()->Session()->sCountry = $userCountryId;
+
+            // check for existing non guest accounts
+            $addressQuery           = "SELECT * FROM `s_user_shippingaddress` WHERE userID = ?";
+            $currentShippingAddress = Shopware()->Db()->fetchRow($addressQuery, array($cart->getExternalCustomerId()));
+
+            if (!empty($currentShippingAddress)) {
+                $this->customerImport->updateShippingAddress($currentShippingAddress, $cart->getDeliveryAddress());
+            }
+        }
+
         $paymentMethods = Shopware()->Modules()->Admin()->sGetPaymentMeans();
         $sUserData      = Shopware()->Modules()->Admin()->sGetUserData();
 
@@ -4530,26 +4552,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         // return shipping methods only if a delivery country is set and if the mapping is activated in the plugin
         $sgShippingMethods   = array();
-        $userDeliveryAddress = $cart->getDeliveryAddress();
-        if (!empty($userDeliveryAddress)
-            && ($userCountry = $userDeliveryAddress->getCountry())
-            // assignment on purpose to make sure the same country is used in every place
-            && strlen($userCountry) > 0
-        ) {
-            $userCountryId                  = Shopware()->Db()->fetchOne(
-                "SELECT `id` FROM `s_core_countries` WHERE `countryiso` = ?",
-                $userCountry
-            );
-            Shopware()->Session()->sCountry = $userCountryId;
-
-            // check for existing non guest accounts
-            $addressQuery           = "SELECT * FROM `s_user_shippingaddress` WHERE userID = ?";
-            $currentShippingAddress = Shopware()->Db()->fetchRow($addressQuery, array($cart->getExternalCustomerId()));
-
-            if (!empty($currentShippingAddress)) {
-                $this->customerImport->updateShippingAddress($currentShippingAddress, $cart->getDeliveryAddress());
-            }
-
+        if (!empty($userDeliveryAddress) && strlen($userCountry) > 0) {
             $shippingMethods   = $this->getShippingMethods($cart, $userCountryId);
             $shippingMethods   = $this->cartHelper->adjustShippingCosts(
                 $shippingMethods,
