@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - default birthday value for Shopware 5.2.0 and higher versions
 - export of adresses in get_customer
 - export of shipping methods in check_cart
+- export of payment methods in check_cart
 - payment mapping for paymorrow
 
 ## [2.9.73] - 2017-11-29
