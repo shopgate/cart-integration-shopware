@@ -3957,7 +3957,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
                     : self::DEFAULT_PAYMENT_METHOD;
         }
 
-        return 'prepayment';
+        return self::DEFAULT_PAYMENT_METHOD;
     }
 
     /**
