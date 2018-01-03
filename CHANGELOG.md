@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - export of shipping methods in check_cart
 - export of payment methods in check_cart
 - payment mapping for paymorrow
+- review item uid assignment
 
 ## [2.9.73] - 2017-11-29
 ### Added
