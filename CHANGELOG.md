@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.74] - 2018-01-05
 ### Fixed
 - payment surcharges are not exported as shipping costs anymore in case of free shipping
 - default birthday value for Shopware 5.2.0 and higher versions
@@ -700,7 +702,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.73...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.74...HEAD
+[2.9.73]: https://github.com/shopgate/interface-shopware/compare/2.9.73...2.9.74
 [2.9.73]: https://github.com/shopgate/interface-shopware/compare/2.9.72...2.9.73
 [2.9.72]: https://github.com/shopgate/interface-shopware/compare/2.9.71...2.9.72
 [2.9.71]: https://github.com/shopgate/interface-shopware/compare/2.9.70...2.9.71
