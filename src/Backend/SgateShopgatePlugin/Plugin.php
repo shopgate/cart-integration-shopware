@@ -5541,5 +5541,4 @@ class ShopgatePluginShopware extends ShopgatePlugin
     {
         // TODO: Implement syncFavouriteList() method.
     }
-
 }
