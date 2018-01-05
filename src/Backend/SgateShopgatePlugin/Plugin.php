@@ -3888,7 +3888,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
      *
      * @return string
      */
-    protected function getCorrectPaymentNameFromPattern($default, $pattern) {
+    protected function getCorrectPaymentNameFromPattern($default, $pattern)
+	{
         $dql = "SELECT p.name FROM \Shopware\Models\Payment\Payment p WHERE p.name LIKE :namepat";
         $nameResult = Shopware()->Models()->createQuery($dql)
             ->setMaxResults(1)
