@@ -3882,24 +3882,24 @@ class ShopgatePluginShopware extends ShopgatePlugin
         return $payment;
     }
 
-	/**
-	 * @param string $default
-	 * @param string $pattern
-	 * @return string
-	 */
-	protected function getCorrectPaymentNameFromPattern($default, $pattern) {
-		$dql = "SELECT p.name FROM \Shopware\Models\Payment\Payment p WHERE p.name LIKE :namepat";
-		$nameResult = Shopware()->Models()->createQuery($dql)
-			->setMaxResults(1)
-			->setParameter("namepat", $pattern)
-			->getOneOrNullResult();
+    /**
+     * @param string $default
+     * @param string $pattern
+     *
+     * @return string
+     */
+    protected function getCorrectPaymentNameFromPattern($default, $pattern) {
+        $dql = "SELECT p.name FROM \Shopware\Models\Payment\Payment p WHERE p.name LIKE :namepat";
+        $nameResult = Shopware()->Models()->createQuery($dql)
+            ->setMaxResults(1)
+            ->setParameter("namepat", $pattern)
+            ->getOneOrNullResult();
 
-		if (!empty($nameResult['name'])) {
-			return $nameResult['name'];
-		}
-		return $default;
-
-	}
+        if (!empty($nameResult['name'])) {
+            return $nameResult['name'];
+        }
+        return $default;
+    }
 
     /**
      * @param ShopgateOrder $order
