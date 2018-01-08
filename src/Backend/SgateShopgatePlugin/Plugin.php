@@ -3883,6 +3883,26 @@ class ShopgatePluginShopware extends ShopgatePlugin
     }
 
     /**
+     * @param string $default
+     * @param string $pattern
+     *
+     * @return string
+     */
+    protected function getCorrectPaymentNameFromPattern($default, $pattern)
+    {
+        $dql = "SELECT p.name FROM \Shopware\Models\Payment\Payment p WHERE p.name LIKE :namepat";
+        $nameResult = Shopware()->Models()->createQuery($dql)
+            ->setMaxResults(1)
+            ->setParameter("namepat", $pattern)
+            ->getOneOrNullResult();
+
+        if (!empty($nameResult['name'])) {
+            return $nameResult['name'];
+        }
+        return $default;
+    }
+
+    /**
      * @param ShopgateOrder $order
      *
      * @return string
@@ -3939,7 +3959,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             case ShopgateOrder::AMAZON_PAYMENT:
                 return ($this->config->isModuleEnabled('BestitAmazonPaymentsAdvanced')
                     || $this->config->isModuleEnabled('BestitAmazonPay'))
-                    ? "amazon_payments_advanced"
+                    ? $this->getCorrectPaymentNameFromPattern('amazon_payments_advanced', 'amazon_pay%')
                     : self::DEFAULT_PAYMENT_METHOD;
             case ShopgateOrder::SUE:
                 return ($this->config->isModuleEnabled('SofortPayment')
