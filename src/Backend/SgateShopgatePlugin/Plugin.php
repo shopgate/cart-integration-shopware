@@ -4870,8 +4870,10 @@ class ShopgatePluginShopware extends ShopgatePlugin
     protected function getShippingMethods(ShopgateCart $cart, $countryId)
     {
         $payment = $this->getShopPaymentMethod(
-            $this->getShopPaymentMethodName($cart->getPaymentMethod()),
-            self::CHECK_CART_PAYMENT_METHOD
+            $this->getShopPaymentMethodName(
+                $cart->getPaymentMethod(),
+                self::CHECK_CART_PAYMENT_METHOD
+            )
         );
 
         // let shopware handle the loading of the shipping methods
