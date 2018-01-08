@@ -21,6 +21,7 @@
 
 require_once dirname(__FILE__) . '/../src/Backend/SgateShopgatePlugin/vendor/autoload.php';
 require_once dirname(__FILE__) . '/../src/Backend/SgateShopgatePlugin/Components/Config.php';
+require_once dirname(__FILE__) . '/../src/Backend/SgateShopgatePlugin/Plugin.php';
 require_once dirname(__FILE__)
     . '/../src/Backend/SgateShopgatePlugin/Components/EventHandler/ShopwareModulesOrderSendMailSend.php';
 require_once dirname(__FILE__) . '/../src/Backend/SgateShopgatePlugin/Models/Export/Product.php';

@@ -5,10 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-### Fixed
-- amazon payment mapping
 
-## [2.9.74] - 2018-01-05
+## [2.9.74] - 2018-01-09
 ### Fixed
 - payment surcharges are not exported as shipping costs anymore in case of free shipping
 - default birthday value for Shopware 5.2.0 and higher versions
@@ -17,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - export of payment methods in check_cart
 - payment mapping for paymorrow
 - review item uid assignment
+- amazon payment mapping
 
 ## [2.9.73] - 2017-11-29
 ### Added

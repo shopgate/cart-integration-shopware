@@ -30,6 +30,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
     const FEMALE = "ms";
     const PAYMORROW_ORDERS_TABLE = 'pi_paymorrow_orders';
     const DEFAULT_PAYMENT_METHOD = 'mobile_payment';
+    const CHECK_CART_PAYMENT_METHOD = 'prepayment';
     const ORDER_STATUS_CANCELED             = -1;
     const ORDER_STATUS_OPEN                 = 0;
     const ORDER_STATUS_IN_WORK              = 1;
@@ -2754,7 +2755,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
 				",
                     array(
                         $order->getNumber(),
-                        $this->getShopPaymentMethodName($shopgateOrder),
+                        $this->getShopPaymentMethodName($shopgateOrder->getPaymentMethod()),
                         $infos['pm_order_transaction_id'],
                         $infos['request_id'],
                         $infos['pm_status'],
@@ -2885,7 +2886,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function insertSepaOrderData(Order $order, ShopgateOrder $shopgateOrder)
     {
-        $paymentName = $this->getShopPaymentMethodName($shopgateOrder);
+        $paymentName = $this->getShopPaymentMethodName($shopgateOrder->getPaymentMethod());
 
         if ($paymentName == 'sepa') {
             $paymentInfos = $shopgateOrder->getPaymentInfos();
@@ -3130,7 +3131,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         }
 
         $payment                                    =
-            $this->getShopPaymentMethod($this->getShopPaymentMethodName($oShopgateOrder));
+            $this->getShopPaymentMethod($this->getShopPaymentMethodName($oShopgateOrder->getPaymentMethod()));
         $payment                                    = Shopware()->Models()->toArray($payment);
         $oOrder->sUserData["additional"]["payment"] = $payment;
 
@@ -3283,7 +3284,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         $this->_fillAttributes($this->customerId);
 
-        $payment = $this->getShopPaymentMethod($this->getShopPaymentMethodName($oShopgateOrder));
+        $payment = $this->getShopPaymentMethod($this->getShopPaymentMethodName($oShopgateOrder->getPaymentMethod()));
 
         $aUser                  = array();
         $aUser["id"]            = $this->customerId;
@@ -3903,13 +3904,15 @@ class ShopgatePluginShopware extends ShopgatePlugin
     }
 
     /**
-     * @param ShopgateOrder $order
+     * @param string $paymentMethod
+     * @param string $fallbackPaymentMethodName
      *
      * @return string
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    protected function getShopPaymentMethodName(ShopgateCartBase $order)
+    public function getShopPaymentMethodName($paymentMethod, $fallbackPaymentMethodName = self::DEFAULT_PAYMENT_METHOD)
     {
-        switch ($order->getPaymentMethod()) {
+        switch ($paymentMethod) {
             case ShopgateOrder::SHOPGATE:
                 return "shopgate";
             case ShopgateOrder::DEBIT:
@@ -3934,7 +3937,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             case ShopgateOrder::PAYPAL:
                 return $this->config->isModuleEnabled('SwagPaymentPaypal')
                     ? "paypal"
-                    : self::DEFAULT_PAYMENT_METHOD;
+                    : $fallbackPaymentMethodName;
             case ShopgateOrder::PPAL_PLUS:
                 return (
                     $this->config->isModuleEnabled('SwagPaymentPaypal')
@@ -3943,41 +3946,41 @@ class ShopgatePluginShopware extends ShopgatePlugin
                     )
                 )
                     ? "paypal"
-                    : self::DEFAULT_PAYMENT_METHOD;
+                    : $fallbackPaymentMethodName;
             case ShopgateOrder::BILLSAFE:
                 return $this->config->isModuleEnabled('SwagPaymentBillsafe')
                     ? "billsafe_invoice"
-                    : self::DEFAULT_PAYMENT_METHOD;
+                    : $fallbackPaymentMethodName;
             case ShopgateOrder::PAYMRW_DBT:
                 return $this->config->isModuleEnabled('PiPaymorrowPayment')
                     ? "PaymorrowDebit"
-                    : self::DEFAULT_PAYMENT_METHOD;
+                    : $fallbackPaymentMethodName;
             case ShopgateOrder::PAYMRW_INV:
                 return $this->config->isModuleEnabled('PiPaymorrowPayment')
                     ? "PaymorrowInvoice"
-                    : self::DEFAULT_PAYMENT_METHOD;
+                    : $fallbackPaymentMethodName;
             case ShopgateOrder::AMAZON_PAYMENT:
                 return ($this->config->isModuleEnabled('BestitAmazonPaymentsAdvanced')
                     || $this->config->isModuleEnabled('BestitAmazonPay'))
                     ? $this->getCorrectPaymentNameFromPattern('amazon_payments_advanced', 'amazon_pay%')
-                    : self::DEFAULT_PAYMENT_METHOD;
+                    : $fallbackPaymentMethodName;
             case ShopgateOrder::SUE:
                 return ($this->config->isModuleEnabled('SofortPayment')
                     || $this->config->isModuleEnabled('PaymentSofort'))
                 || $this->config->isModuleEnabled('SofagPayment')
                     ? "sofortbanking"
-                    : self::DEFAULT_PAYMENT_METHOD;
+                    : $fallbackPaymentMethodName;
             case ShopgateOrder::PAYOL_INS:
                 return $this->config->isModuleEnabled('SwpPaymentPayolution')
                     ? 'SwpPaymentPayolution_installment'
-                    : self::DEFAULT_PAYMENT_METHOD;
+                    : $fallbackPaymentMethodName;
             case ShopgateOrder::PAYOL_INV:
                 return $this->config->isModuleEnabled('SwpPaymentPayolution')
                     ? 'SwpPaymentPayolution_invoice'
-                    : self::DEFAULT_PAYMENT_METHOD;
+                    : $fallbackPaymentMethodName;
         }
 
-        return 'prepayment';
+        return $fallbackPaymentMethodName;
     }
 
     /**
@@ -4866,7 +4869,10 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function getShippingMethods(ShopgateCart $cart, $countryId)
     {
-        $payment = $this->getShopPaymentMethod($this->getShopPaymentMethodName($cart));
+        $payment = $this->getShopPaymentMethod(
+            $this->getShopPaymentMethodName($cart->getPaymentMethod()),
+            self::CHECK_CART_PAYMENT_METHOD
+        );
 
         // let shopware handle the loading of the shipping methods
         $shippingMethods = Shopware()->Modules()->Admin()->sGetPremiumDispatches($countryId, $payment->getId());
