@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - payment surcharges are not exported as shipping costs anymore in case of free shipping
 - default birthday value for Shopware 5.2.0 and higher versions
 - export of adresses in get_customer
+- export of shipping methods in check_cart
 - export of payment methods in check_cart
 - payment mapping for paymorrow
 
