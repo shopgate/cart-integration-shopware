@@ -44,14 +44,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Review_Xml exte
      */
     public function setItemUid()
     {
-        if ($this->item->getArticle()->getConfiguratorSet()) {
-            $itemNumber = $this->item->getArticle()->getId();
-        } else {
-            $itemNumber = $this->item->getArticle()->getId() . "-" .
-                $this->item->getArticle()->getMaindetail()->getNumber();
-        }
-
-        parent::setItemUid($itemNumber);
+        parent::setItemUid($this->item->getArticle()->getId());
     }
 
     /**
