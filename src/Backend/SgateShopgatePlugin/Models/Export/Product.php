@@ -171,8 +171,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         $view           = new Enlight_View_Default($template);
         $view->sArticle = Shopware()->Modules()->Articles()->sGetProductByOrdernumber($detail->getNumber());
         $availableText  = Shopware()->Template()->fetch(self::AVAILABLE_TEXT_TEMPLATE);
+        $availableText  = strip_tags($availableText);
+        $availableText  = html_entity_decode($availableText);
+        $availableText  = trim($availableText);
 
-        return trim(strip_tags($availableText));
+        return $availableText;
     }
 
     /**
