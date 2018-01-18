@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 ### Fixed
+- base price in the product export
 - encoding issue in the product export
 
 ## [2.9.74] - 2018-01-09
