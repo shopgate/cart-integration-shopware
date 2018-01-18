@@ -762,7 +762,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             && $detail->getUnit() != null
             && $detail->getUnit()->getId()
         ) {
-            $referenceUnit = round($detail->getReferenceUnit());
+            // remove trailing zeros to the right of the decimal point
+            $referenceUnit = (string)(float)$detail->getReferenceUnit();
             $unit          = $detail->getUnit()->getName();
 
             $amount = ($price / $detail->getPurchaseUnit()) * $detail->getReferenceUnit();
