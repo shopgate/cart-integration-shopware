@@ -4721,7 +4721,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
             } elseif ($insertId === false) {
                 $cartItem->setError(ShopgateLibraryException::CART_ITEM_PRODUCT_NOT_FOUND);
             } else {
-
                 $updateData = array(
                     'price'    => $this->formatPriceNumber($price),
                     'netprice' => $this->formatPriceNumber($priceNet),
