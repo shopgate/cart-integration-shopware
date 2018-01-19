@@ -216,6 +216,20 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
             $priceModel->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_NET);
         }
 
+        if ($priceGroup = $this->article->getPriceGroup()) {
+
+            foreach ($priceGroup->getDiscounts() as $discount) {
+                $tierPrice      = new Shopgate_Model_Catalog_TierPrice();
+                /** @var \Shopware\Models\Price\Discount $discount */
+                $tierPrice->setCustomerGroupUid($discount->getCustomerGroupId());
+                $tierPrice->setReductionType(Shopgate_Model_Catalog_TierPrice::DEFAULT_TIER_PRICE_TYPE_PERCENT);
+                $tierPrice->setReduction($discount->getDiscount());
+                $tierPrice->setFromQuantity($discount->getStart());
+
+                $priceModel->addTierPriceGroup($tierPrice);
+            }
+        }
+
         $tierPrices = Shopware()->Db()->fetchAll(
             "Select * from s_articles_prices WHERE articledetailsID = ?",
             $this->detail->getId()
