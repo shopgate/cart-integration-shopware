@@ -217,7 +217,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
         }
 
         if ($priceGroup = $this->article->getPriceGroup()) {
-
             foreach ($priceGroup->getDiscounts() as $discount) {
                 $tierPrice = new Shopgate_Model_Catalog_TierPrice();
                 /** @var \Shopware\Models\Price\Discount $discount */
@@ -225,7 +224,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
                 $tierPrice->setReductionType(Shopgate_Model_Catalog_TierPrice::DEFAULT_TIER_PRICE_TYPE_PERCENT);
                 $tierPrice->setReduction($discount->getDiscount());
                 $tierPrice->setFromQuantity($discount->getStart());
-
                 $priceModel->addTierPriceGroup($tierPrice);
             }
         }
