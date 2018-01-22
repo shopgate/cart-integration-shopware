@@ -4693,15 +4693,19 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $cartItem->setInputs($item->getInputs());
             $cartItem->setAttributes($item->getAttributes());
 
+            $priceNet      = $item->getUnitAmount();
+            $price         = $item->getUnitAmountWithTax();
+            $taxRate       = $item->getTaxPercent();
+            $quantity      = $item->getQuantity();
             $info          = $this->jsonDecode($item->getInternalOrderInfo(), true);
             $purchaseSteps = false;
             if (isset($info['purchasesteps']) && $info['purchasesteps'] > 1) {
                 $purchaseSteps = $info['purchasesteps'];
             }
-
-            $quantity = $item->getQuantity();
             if (!empty($purchaseSteps)) {
                 $quantity = $quantity * $purchaseSteps;
+                $price    = $price / $purchaseSteps;
+                $priceNet = $priceNet / $purchaseSteps;
             }
 
             $detailOrderNumber = $item->getItemNumberPublic();
@@ -4717,6 +4721,13 @@ class ShopgatePluginShopware extends ShopgatePlugin
             } elseif ($insertId === false) {
                 $cartItem->setError(ShopgateLibraryException::CART_ITEM_PRODUCT_NOT_FOUND);
             } else {
+                $updateData = array(
+                    'price'    => $this->formatPriceNumber($price),
+                    'netprice' => $this->formatPriceNumber($priceNet),
+                    'tax_rate' => $this->formatPriceNumber($taxRate),
+                );
+                Shopware()->Db()->update('s_order_basket', $updateData, "id={$insertId}");
+
                 $basketItem = $this->getBasketItem($insertId);
 
                 /* @var $mainDetail \Shopware\Models\Article\Detail */

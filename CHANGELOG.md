@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - base price in the product export
 - encoding issue in the product export
 - add price group in product export
+- handling of shopgate special offers
 
 ## [2.9.74] - 2018-01-09
 ### Fixed
