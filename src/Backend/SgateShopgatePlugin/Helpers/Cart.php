@@ -45,10 +45,11 @@ class Cart
         foreach ($shippingMethods as $index => $shippingMethod) {
             /** @var \ShopgatePaymentMethod $currentPaymentMethod */
             $currentPaymentMethod = $this->getPaymentMethod($paymentMethods, $countryId);
+            $amountWithTax = $currentPaymentMethod->getAmountWithTax();
             if (!is_null($currentPaymentMethod)
-                && !empty($currentPaymentMethod->getAmountWithTax())
+                && !empty($amountWithTax)
                 && empty($shippingMethod['surcharge_calculation'])
-                && $shippingMethod['shipping_costs'] == $currentPaymentMethod->getAmountWithTax()
+                && $shippingMethod['shipping_costs'] == $amountWithTax
             ) {
                 $shippingMethods[$index]['shipping_costs'] = 0.00;
             }
