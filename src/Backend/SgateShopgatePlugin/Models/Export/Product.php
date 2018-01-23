@@ -204,8 +204,22 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         $result = array();
         if ($isParent) {
             // Parent articles need only one (the main) image, since it is not considered as a full item and is only there for display purposes
-            // -> get the article image including the cached images (use cach in case the original has been deleted)
-            $images = Shopware()->Modules()->Articles()->sGetArticlePictures($article->getId(), true, 0);
+            // -> get the article image including the cached images (use cache in case the original has been deleted)
+            $images = array();
+            if ($this->getConfig()->assertMinimumVersion('4.2')) {
+                $images = Shopware()->Modules()->Articles()->sGetArticlePictures(
+                    $article->getId(),
+                    true,
+                    0,
+                    null,
+                    false,
+                    false,
+                    true
+                );
+            }
+            if (!isset($images['src']) || empty($images['src'])) {
+                $images = Shopware()->Modules()->Articles()->sGetArticlePictures($article->getId(), true, 0);
+            }
 
             // Choose the best available picture in the list (original could also be removed)
             if (!empty($images['src'])) {

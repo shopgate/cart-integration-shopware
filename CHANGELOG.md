@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 ### Fixed
+- identification of the main image for parent products in export
 - base price in the product export
 - encoding issue in the product export
 - add price group in product export
