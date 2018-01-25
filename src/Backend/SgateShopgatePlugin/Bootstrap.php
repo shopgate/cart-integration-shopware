@@ -142,7 +142,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
     public function getVersion()
     {
-        return "2.9.74";
+        return "2.9.75";
     }
 
     public function getLabel()
