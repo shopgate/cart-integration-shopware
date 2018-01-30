@@ -4537,7 +4537,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $basketAmount                          = $basket->sGetAmount();
         Shopware()->Session()->sBasketQuantity = $basket->sCountBasket();
         Shopware()->Session()->sBasketAmount   = empty($basketAmount) ? 0 : array_shift($basketAmount);
-	    
+
         $paymentMethods = Shopware()->Modules()->Admin()->sGetPaymentMeans();
         $sUserData      = Shopware()->Modules()->Admin()->sGetUserData();
 
