@@ -4533,7 +4533,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             }
         }
 
-	// add basket data to session in order to be risk management compliant
+        // add basket data to session in order to be risk management compliant
         $basketAmount                          = $basket->sGetAmount();
         Shopware()->Session()->sBasketQuantity = $basket->sCountBasket();
         Shopware()->Session()->sBasketAmount   = empty($basketAmount) ? 0 : array_shift($basketAmount);
