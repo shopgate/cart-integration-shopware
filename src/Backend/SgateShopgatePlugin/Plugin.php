@@ -3678,6 +3678,11 @@ class ShopgatePluginShopware extends ShopgatePlugin
         // same code as in frontend-checkout-getBasket method
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
 
+        if ($this->config->assertMinimumVersion('5.0.0')) {
+            $basket['sCurrencyId']   = Shopware()->Shop()->getCurrency()->getId();
+            $basket['sCurrencyName'] = Shopware()->Shop()->getCurrency()->getCurrency();
+        }
+
         $basket['sShippingcostsWithTax'] = $shippingcosts['brutto'];
         $basket['sShippingcostsNet']     = $shippingcosts['netto'];
         $basket['sShippingcostsTax']     = $shippingcosts['tax'];
