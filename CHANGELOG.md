@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - missing shipping methods in cart validation
+- acquisition of availability text
 
 ## [2.9.76] - 2018-01-29
 ### Fixed

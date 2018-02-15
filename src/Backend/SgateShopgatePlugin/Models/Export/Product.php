@@ -169,7 +169,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             : Enlight_Application::Instance()->Bootstrap()->getResource('Template');
 
         $view           = new Enlight_View_Default($template);
-        $view->sArticle = Shopware()->Modules()->Articles()->sGetProductByOrdernumber($detail->getNumber());
+        $sArticle = Shopware()->Modules()->Articles()->sGetProductByOrdernumber($detail->getNumber());
+        $sArticle['shippingtime'] = $detail->getShippingTime();
+        $view->sArticle = $sArticle;
         $availableText  = Shopware()->Template()->fetch(self::AVAILABLE_TEXT_TEMPLATE);
         $availableText  = strip_tags($availableText);
         $availableText  = html_entity_decode($availableText);
