@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - missing shipping methods in cart validation
 - compatibility with the Payone plugin
+- acquisition of availability text
 
 ## [2.9.76] - 2018-01-29
 ### Fixed
