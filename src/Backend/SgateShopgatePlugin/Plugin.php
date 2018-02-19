@@ -4972,7 +4972,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
                             'tax_class'       => null,
                             'tax_percent'     => $shippingMethod['max_tax'],
 
-                            'internal_shipping_infos' => $this->jsonEncode(
+                            'internal_shipping_info' => $this->jsonEncode(
                                 array(
                                     'id'                            => $shippingMethod['id'],
                                     'active'                        => $shippingMethod['active'],
