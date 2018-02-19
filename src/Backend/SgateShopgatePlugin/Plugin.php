@@ -3115,7 +3115,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             // check cart also returns the dispatchId per available dispatch
             if (strlen($sgShippingInfo->getApiResponse()) > 0) {
                 $apiResponse        = $this->jsonDecode($sgShippingInfo->getApiResponse(), true);
-                $oOrder->dispatchId = $apiResponse['dispatchId'];
+                $oOrder->dispatchId = $apiResponse['id'];
             } else {
                 // search for a valid dispatch type per shipping name
                 $oOrder->dispatchId = Shopware()->Db()->fetchOne(
@@ -4972,7 +4972,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
                             'tax_class'       => null,
                             'tax_percent'     => $shippingMethod['max_tax'],
 
-                            'internal_shipping_infos' => $this->jsonEncode(
+                            'internal_shipping_info' => $this->jsonEncode(
                                 array(
                                     'id'                            => $shippingMethod['id'],
                                     'active'                        => $shippingMethod['active'],
