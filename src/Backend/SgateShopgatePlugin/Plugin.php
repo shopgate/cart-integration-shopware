@@ -4600,7 +4600,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         $basketArray = $basket->sGetBasket();
         foreach ($basketArray['content'] as $item) {
-            if ($item['ordernumber'] == $this->system->sCONFIG['sDISCOUNTNUMBER']) {
+            if ($item['modus'] == 3) {
                 $coupon = new ShopgateExternalCoupon();
                 $coupon->setIsValid(true);
                 $coupon->setIsFreeShipping(false);
