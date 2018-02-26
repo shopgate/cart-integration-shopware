@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - acquisition of availability text
 - cart rule validation
 - shipping method mapping
+- exporting selected attributes as part of the product description
 
 ## [2.9.76] - 2018-01-29
 ### Fixed
