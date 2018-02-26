@@ -493,22 +493,21 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             return $description;
         }
 
-        if (empty(self::$attributesCache)) {
-            self::$attributesCache = Shopware()->Db()->fetchAll(
-                "select * " .
-                "from `s_core_engine_elements` " .
-                "where `label` in ('" . implode("', '", $attributesAsDescription) . "') " .
-                "order by `position`, `name`"
-            );
+        $elements  = $this->exportComponent->getArticleElements();
+
+        foreach ($elements as $elementIndex => $elementName) {
+            if (!in_array($elementName, $attributesAsDescription)) {
+                unset($elements[$elementIndex]);
+            }
         }
 
         $customFields = array();
-        foreach (self::$attributesCache as $attribute) {
-            if (!empty($this->articleData[$attribute['name']])) {
-                $customField = $this->articleData[$attribute['name']];
+        foreach ($elements as $elementIndex => $elementName) {
+            if (!empty($this->articleData[$elementIndex])) {
+                $customField = $this->articleData[$elementIndex];
             }
 
-            $getterName = 'get' . $attribute['name'];
+            $getterName = 'get' . $elementIndex;
             if (!empty($this->detail) && method_exists($this->detail->getAttribute(), $getterName)) {
                 $detailAttr = $this->detail->getAttribute()->{$getterName}();
                 if (!empty($detailAttr)) {
@@ -517,7 +516,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             }
 
             if (!empty($customField)) {
-                $customFields[] = "<h4>{$attribute['label']}</h4>\n{$customField}\n\n";
+                $customFields[] = "<h4>{$elementName}</h4>\n{$customField}\n\n";
             }
             unset($customField);
         }
