@@ -493,14 +493,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             return $description;
         }
 
-        $elements  = $this->exportComponent->getArticleElements();
-
-        foreach ($elements as $elementIndex => $elementName) {
-            if (!in_array($elementName, $attributesAsDescription)) {
-                unset($elements[$elementIndex]);
-            }
-        }
-
+        $elements  = array_intersect($this->exportComponent->getArticleElements(), $attributesAsDescription);
         $customFields = array();
         foreach ($elements as $elementIndex => $elementName) {
             if (!empty($this->articleData[$elementIndex])) {
