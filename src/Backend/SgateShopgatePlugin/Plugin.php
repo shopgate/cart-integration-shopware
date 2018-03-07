@@ -4930,7 +4930,11 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 );
                 $costs       = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts($countryInfo);
 
-                $shippingMethods[$key]['shipping_costs'] = $costs['brutto'] - $costs['surcharge'];
+                $shippingMethods[$key]['shipping_costs'] = $costs['brutto'];
+
+                if ($payment->getSurcharge() <= $costs['surcharge']) {
+                    $shippingMethods[$key]['shipping_costs'] -= $payment->getSurcharge();
+                }
             }
         }
         Shopware()->Session()->sCountry = $countryId;
