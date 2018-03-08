@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - cart rule validation
 - shipping method mapping
 - exporting selected attributes as part of the product description
+- how payment surcharge is deducted from shipping costs
 
 ## [2.9.76] - 2018-01-29
 ### Fixed

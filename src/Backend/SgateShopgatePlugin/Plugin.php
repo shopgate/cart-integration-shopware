@@ -4897,6 +4897,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
             )
         );
 
+        Shopware()->System()->_SESSION['sPaymentID'] = $payment->getId();
+
         // let shopware handle the loading of the shipping methods
         $shippingMethods = Shopware()->Modules()->Admin()->sGetPremiumDispatches($countryId, $payment->getId());
 
@@ -4930,7 +4932,11 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 );
                 $costs       = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts($countryInfo);
 
-                $shippingMethods[$key]['shipping_costs'] = $costs['brutto'] - $costs['surcharge'];
+                $shippingMethods[$key]['shipping_costs'] = $costs['brutto'];
+
+                if ($payment->getSurcharge() > 0 && $shippingMethods[$key]['surchargeCalculation'] !== 3) {
+                    $shippingMethods[$key]['shipping_costs'] -= $costs['surcharge'];
+                }
             }
         }
         Shopware()->Session()->sCountry = $countryId;
