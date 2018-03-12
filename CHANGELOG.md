@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.77] - 2018-03-12
 ### Fixed
 - missing shipping methods in cart validation
 - compatibility with the Payone plugin
@@ -723,7 +725,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.76...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.77...HEAD
+[2.9.77]: https://github.com/shopgate/interface-shopware/compare/2.9.76...2.9.77
 [2.9.76]: https://github.com/shopgate/interface-shopware/compare/2.9.75...2.9.76
 [2.9.75]: https://github.com/shopgate/interface-shopware/compare/2.9.74...2.9.75
 [2.9.74]: https://github.com/shopgate/interface-shopware/compare/2.9.73...2.9.74
