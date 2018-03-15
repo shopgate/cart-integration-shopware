@@ -3650,6 +3650,11 @@ class ShopgatePluginShopware extends ShopgatePlugin
         // copy only cart data
         $oOrder->sBasketData["content"] = $basket['content'];
 
+        if ($this->config->assertMinimumVersion('5.0.0')) {
+            $oOrder->sBasketData['sCurrencyId']   = Shopware()->Shop()->getCurrency()->getId();
+            $oOrder->sBasketData['sCurrencyName'] = Shopware()->Shop()->getCurrency()->getCurrency();
+        }
+
         return $oOrder;
     }
 
@@ -3677,11 +3682,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         // same code as in frontend-checkout-getBasket method
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
-
-        if ($this->config->assertMinimumVersion('5.0.0')) {
-            $basket['sCurrencyId']   = Shopware()->Shop()->getCurrency()->getId();
-            $basket['sCurrencyName'] = Shopware()->Shop()->getCurrency()->getCurrency();
-        }
 
         $basket['sShippingcostsWithTax'] = $shippingcosts['brutto'];
         $basket['sShippingcostsNet']     = $shippingcosts['netto'];
