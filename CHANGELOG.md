@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - compatibility with the Payone plugin
+- adjustment for exporting attributes as part of the product description when attributes returned with empty elements
 
 ## [2.9.77] - 2018-03-12
 ### Fixed

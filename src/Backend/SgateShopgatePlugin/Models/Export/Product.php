@@ -488,7 +488,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
      */
     protected function getCustomFieldsAsDescription($description)
     {
-        $attributesAsDescription = $this->config->getExportAttributesAsDescription();
+        $attributesAsDescription = array_filter($this->config->getExportAttributesAsDescription());
         if (empty($attributesAsDescription)) {
             return $description;
         }
