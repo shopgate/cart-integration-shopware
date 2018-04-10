@@ -731,7 +731,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - use doctrine models
 
 [Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.78...HEAD
-[2.9.77]: https://github.com/shopgate/interface-shopware/compare/2.9.77...2.9.78
+[2.9.78]: https://github.com/shopgate/interface-shopware/compare/2.9.77...2.9.78
 [2.9.77]: https://github.com/shopgate/interface-shopware/compare/2.9.76...2.9.77
 [2.9.76]: https://github.com/shopgate/interface-shopware/compare/2.9.75...2.9.76
 [2.9.75]: https://github.com/shopgate/interface-shopware/compare/2.9.74...2.9.75
