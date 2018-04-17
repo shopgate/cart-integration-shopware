@@ -3547,17 +3547,19 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
             if (!empty($updateData[$tmpArticle['id']])) {
                 // update prices again AFTER basket gets Loaded by shopware
-                $price                                   = $updateData[$tmpArticle['id']]['price'];
+                $priceGross                              = $updateData[$tmpArticle['id']]['price'];
                 $priceNet                                = $updateData[$tmpArticle['id']]['netprice'];
                 $taxRate                                 = $updateData[$tmpArticle['id']]['tax_rate'];
-                $basket['content'][$key]['amount']       = $price;
-                $basket['content'][$key]['amountnet']    = $priceNet;
-                $basket['content'][$key]['price']        = $price;
+                $quantity                                = $tmpArticle['quantity'];
+                $basket['content'][$key]['amount']       = $priceGross * $quantity;
+                $basket['content'][$key]['amountnet']    = $priceNet * $quantity;
+                $basket['content'][$key]['price']        = $priceGross;
                 $basket['content'][$key]['netprice']     = $priceNet;
-                $basket['content'][$key]['priceNumeric'] = $price;
+                $basket['content'][$key]['priceNumeric'] = $priceGross;
                 $basket['content'][$key]['tax_rate']     = $taxRate;
-                $basket['content'][$key]['tax']          =
-                    $this->formatPriceNumber($price) - $this->formatPriceNumber($priceNet);
+                $basket['content'][$key]['tax']          = $this->formatPriceNumber(
+                    ($priceGross - $priceNet) * $quantity
+                );
 
                 if ((int)$updateData[$tmpArticle['id']]['tax_rate'] === 0) {
                     $basket['content'][$key]['taxID'] = 0;
@@ -3581,6 +3583,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         // add missing "virtual" items like shopgate coupons (must be added afterwards because the getBasket method does not load such basket articles)
         foreach ($skippedItemList as $oItem) {
+            $priceNet     = $oItem->getUnitAmount();
+            $priceGross   = $oItem->getUnitAmountWithTax();
+            $quantity     = $oItem->getQuantity();
             $newOrderItem = array(
                 'id'                      => -1,
                 'sessionID'               => $sessionId,
@@ -3589,9 +3594,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 'articleID'               => 0,
                 'ordernumber'             => $oItem->getItemNumberPublic(),
                 'shippingfree'            => 0,
-                'quantity'                => $oItem->getQuantity(),
-                'price'                   => $this->formatPriceNumber($oItem->getUnitAmountWithTax()),
-                'netprice'                => $this->formatPriceNumber($oItem->getUnitAmount()),
+                'quantity'                => $quantity,
+                'price'                   => $this->formatPriceNumber($priceGross),
+                'netprice'                => $this->formatPriceNumber($priceNet),
                 'tax_rate'                => $oItem->getTaxPercent(),
                 'datum'                   => date('Y-m-d H:i:s'),
                 'modus'                   => 2,
@@ -3628,15 +3633,14 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 'shippinginfo'            => true,
                 'esd'                     => 0,
                 'additional_details'      => array(),
-                'amount'                  => $this->formatPriceNumber($oItem->getUnitAmountWithTax()),
-                'amountnet'               => $this->formatPriceNumber($oItem->getUnitAmount()),
-                'priceNumeric'            => $this->formatPriceNumber($oItem->getUnitAmountWithTax()),
+                'amount'                  => $this->formatPriceNumber($priceGross * $quantity),
+                'amountnet'               => $this->formatPriceNumber($priceNet * $quantity),
+                'priceNumeric'            => $this->formatPriceNumber($priceGross),
                 'image'                   => array(),
                 'linkDetails'             => '',
                 'linkDelete'              => '',
                 'linkNote'                => '',
-                'tax'                     => $this->formatPriceNumber($oItem->getUnitAmountWithTax())
-                    - $this->formatPriceNumber($oItem->getUnitAmount()),
+                'tax'                     => $this->formatPriceNumber(($priceGross - $priceNet) * $quantity),
                 'order_item_id'           => $oItem->getOrderItemId(),
             );
 
