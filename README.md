@@ -18,7 +18,7 @@ See [CHANGELOG.md](CHANGELOG.md) file for more information.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) file for more information.
+See [CONTRIBUTING.md](docs/CONTRIBUTING.md) file for more information.
 
 ## About Shopgate
 
