@@ -4424,6 +4424,38 @@ class ShopgatePluginShopware extends ShopgatePlugin
         Shopware()->Session()->sUserGroup     = $groupData['id'];
         Shopware()->Session()->sUserGroupData = $groupData;
 
+        $userDeliveryAddress = $cart->getDeliveryAddress();
+        if (!empty($userDeliveryAddress)
+            && ($userCountry = $userDeliveryAddress->getCountry())
+            // assignment on purpose to make sure the same country is used in every place
+            && strlen($userCountry) > 0
+        ) {
+            $country       = $this->customerImport->getCountryByIso($userDeliveryAddress->getCountry());
+            $state         = $this->customerImport->getStateByIso($userDeliveryAddress->getState());
+            $userCountryId = $country->getId();
+            $userAreaId    = $country->getArea()->getId();
+            $userStateId   = $state ? $state->getId() : 0;
+
+            if (Shopware()->Session()->sCountry != $userCountryId
+                || Shopware()->Session()->sState != $userStateId
+                || Shopware()->Session()->sArea != $userAreaId
+            ) {
+                Shopware()->Session()->sCountry = $userCountryId;
+                Shopware()->Session()->sState   = $userStateId;
+                Shopware()->Session()->sArea    = $userAreaId;
+                Shopware()->Container()->get('shopware_storefront.context_service')->initializeShopContext();
+            }
+
+            // check for existing non guest accounts
+            $addressQuery           = "SELECT * FROM `s_user_shippingaddress` WHERE userID = ?";
+            $currentShippingAddress = Shopware()->Db()->fetchRow($addressQuery, array($cart->getExternalCustomerId()));
+
+
+            if (!empty($currentShippingAddress)) {
+                $this->customerImport->updateShippingAddress($currentShippingAddress, $cart->getDeliveryAddress());
+            }
+        }
+
         $basket = Shopware()->Modules()->Basket();
         if (!empty($groupData)) {
             $basket->sSYSTEM->sUSERGROUP     = $groupData['id'];
@@ -4518,28 +4550,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         if ($couponCount > 1) {
             throw new ShopgateLibraryException(ShopgateLibraryException::COUPON_TOO_MANY_COUPONS);
-        }
-
-        $userDeliveryAddress = $cart->getDeliveryAddress();
-
-        if (!empty($userDeliveryAddress)
-            && ($userCountry = $userDeliveryAddress->getCountry())
-            // assignment on purpose to make sure the same country is used in every place
-            && strlen($userCountry) > 0
-        ) {
-            $userCountryId                  = Shopware()->Db()->fetchOne(
-                "SELECT `id` FROM `s_core_countries` WHERE `countryiso` = ?",
-                $userCountry
-            );
-            Shopware()->Session()->sCountry = $userCountryId;
-
-            // check for existing non guest accounts
-            $addressQuery           = "SELECT * FROM `s_user_shippingaddress` WHERE userID = ?";
-            $currentShippingAddress = Shopware()->Db()->fetchRow($addressQuery, array($cart->getExternalCustomerId()));
-
-            if (!empty($currentShippingAddress)) {
-                $this->customerImport->updateShippingAddress($currentShippingAddress, $cart->getDeliveryAddress());
-            }
         }
 
         // add basket data to session in order to be risk management compliant
