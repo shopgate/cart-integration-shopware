@@ -3103,6 +3103,10 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $aBasket["sTaxRates"]         = $taxRates;
         $aBasket["sShippingcosts"]    = $oShopgateOrder->getAmountShipping();
 
+        $aBasket["sCurrencyId"]       = Shopware()->Shop()->getCurrency()->getId();
+        $aBasket["sCurrencyFactor"]   = Shopware()->Shop()->getCurrency()->getFactor();
+        $aBasket["sCurrencyName"]     = Shopware()->Shop()->getCurrency()->getCurrency();
+
         $oOrder->sBasketData = $aBasket;
         $oOrder->dispatchId  = null;
 
@@ -3653,11 +3657,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         // copy only cart data
         $oOrder->sBasketData["content"] = $basket['content'];
-
-        if ($this->config->assertMinimumVersion('5.0.0')) {
-            $oOrder->sBasketData['sCurrencyId']   = Shopware()->Shop()->getCurrency()->getId();
-            $oOrder->sBasketData['sCurrencyName'] = Shopware()->Shop()->getCurrency()->getCurrency();
-        }
 
         return $oOrder;
     }
