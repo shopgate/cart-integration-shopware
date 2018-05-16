@@ -4434,7 +4434,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $state         = $this->customerImport->getStateByIso($userDeliveryAddress->getState());
             $userCountryId = $country->getId();
             $userAreaId    = $country->getArea()->getId();
-            $userStateId   = $state ? $state->getId() : 0;
+            $userStateId   = $state ? $state->getId() : null;
 
             if (Shopware()->Session()->sCountry != $userCountryId
                 || Shopware()->Session()->sState != $userStateId
@@ -4473,6 +4473,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
             "items"            => $this->validateItems($cart, $basket),
             "customer"         => $this->getGroupDataToCustomer($cart->getExternalCustomerId()),
         );
+
+        // trigger item price calculation by calling $basket->sGetBasket() before coupon evaluation
+        $basketArray = $basket->sGetBasket();
 
         $couponCount = 0;
         // Add external coupons
