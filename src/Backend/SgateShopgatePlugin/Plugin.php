@@ -4443,7 +4443,10 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 Shopware()->Session()->sCountry = $userCountryId;
                 Shopware()->Session()->sState   = $userStateId;
                 Shopware()->Session()->sArea    = $userAreaId;
-                Shopware()->Container()->get('shopware_storefront.context_service')->initializeShopContext();
+                $version                        = new Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Version();
+                if ($version->assertMinimum('5.0.0')) {
+                    Shopware()->Container()->get('shopware_storefront.context_service')->initializeShopContext();
+                }
             }
 
             // check for existing non guest accounts
@@ -4458,7 +4461,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         $basket = Shopware()->Modules()->Basket();
         if (!empty($groupData)) {
-            $basket->sSYSTEM->sUSERGROUP     = $groupData['id'];
+            $basket->sSYSTEM->sUSERGROUP     = $groupData['groupkey'];
             $basket->sSYSTEM->sUSERGROUPDATA = $groupData;
         }
 
