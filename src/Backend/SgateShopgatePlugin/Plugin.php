@@ -4421,7 +4421,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $groupData = Shopware()->Db()->fetchRow($sql, array($userData['customergroup']));
 
         Shopware()->Session()->sUserId        = $cart->getExternalCustomerId();
-        Shopware()->Session()->sUserGroup     = $groupData['id'];
+        Shopware()->Session()->sUserGroup     = $groupData['groupkey'];
         Shopware()->Session()->sUserGroupData = $groupData;
 
         $userDeliveryAddress = $cart->getDeliveryAddress();
