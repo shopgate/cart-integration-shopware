@@ -3102,6 +3102,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $aBasket["sShippingcostsTax"] = $maxTax;
         $aBasket["sTaxRates"]         = $taxRates;
         $aBasket["sShippingcosts"]    = $oShopgateOrder->getAmountShipping();
+        $aBasket["sCurrencyFactor"]   = Shopware()->Shop()->getCurrency()->getFactor();
+        $aBasket["sCurrencyName"]     = Shopware()->Shop()->getCurrency()->getCurrency();
 
         $oOrder->sBasketData = $aBasket;
         $oOrder->dispatchId  = null;
