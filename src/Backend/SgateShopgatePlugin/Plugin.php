@@ -4420,12 +4420,52 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $groupData = Shopware()->Db()->fetchRow($sql, array($userData['customergroup']));
 
         Shopware()->Session()->sUserId        = $cart->getExternalCustomerId();
-        Shopware()->Session()->sUserGroup     = $groupData['id'];
+        Shopware()->Session()->sUserGroup     = $groupData['groupkey'];
         Shopware()->Session()->sUserGroupData = $groupData;
+
+        $userDeliveryAddress = $cart->getDeliveryAddress();
+        if (!empty($userDeliveryAddress)
+            && ($userCountry = $userDeliveryAddress->getCountry())
+            // assignment on purpose to make sure the same country is used in every place
+            && strlen($userCountry) > 0
+        ) {
+            $country       = $this->customerImport->getCountryByIso($userDeliveryAddress->getCountry());
+            $state         = $this->customerImport->getStateByIso($userDeliveryAddress->getState());
+            $userCountryId = $country->getId();
+            $userAreaId    = $country->getArea()->getId();
+            $userStateId   = $state ? $state->getId() : null;
+            $taxFree       = $country->getTaxFree();
+
+            if (Shopware()->Session()->sCountry != $userCountryId
+                || Shopware()->Session()->sState != $userStateId
+                || Shopware()->Session()->sArea != $userAreaId
+            ) {
+                Shopware()->Session()->sCountry = $userCountryId;
+                Shopware()->Session()->sState   = $userStateId;
+                Shopware()->Session()->sArea    = $userAreaId;
+                $version                        = new Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Version();
+                if ($version->assertMinimum('5.0.0')) {
+                    Shopware()->Container()->get('shopware_storefront.context_service')->initializeShopContext();
+                }
+            }
+
+            if ($taxFree) {
+                $groupData['tax'] = 0;
+            }
+
+            // check for existing non guest accounts
+            $addressQuery           = "SELECT * FROM `s_user_shippingaddress` WHERE userID = ?";
+            $currentShippingAddress = Shopware()->Db()->fetchRow($addressQuery, array($cart->getExternalCustomerId()));
+
+
+            if (!empty($currentShippingAddress)) {
+                $this->customerImport->updateShippingAddress($currentShippingAddress, $cart->getDeliveryAddress());
+            }
+        }
 
         $basket = Shopware()->Modules()->Basket();
         if (!empty($groupData)) {
-            $basket->sSYSTEM->sUSERGROUP     = $groupData['id'];
+            $basket->sSYSTEM->sUSERGROUP     = $groupData['groupkey'];
             $basket->sSYSTEM->sUSERGROUPDATA = $groupData;
         }
 
@@ -4437,6 +4477,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
             "items"            => $this->validateItems($cart, $basket),
             "customer"         => $this->getGroupDataToCustomer($cart->getExternalCustomerId()),
         );
+
+        // trigger item price calculation by calling $basket->sGetBasket() before coupon evaluation
+        $basketArray = $basket->sGetBasket();
 
         $couponCount = 0;
         // Add external coupons
@@ -4517,28 +4560,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         if ($couponCount > 1) {
             throw new ShopgateLibraryException(ShopgateLibraryException::COUPON_TOO_MANY_COUPONS);
-        }
-
-        $userDeliveryAddress = $cart->getDeliveryAddress();
-
-        if (!empty($userDeliveryAddress)
-            && ($userCountry = $userDeliveryAddress->getCountry())
-            // assignment on purpose to make sure the same country is used in every place
-            && strlen($userCountry) > 0
-        ) {
-            $userCountryId                  = Shopware()->Db()->fetchOne(
-                "SELECT `id` FROM `s_core_countries` WHERE `countryiso` = ?",
-                $userCountry
-            );
-            Shopware()->Session()->sCountry = $userCountryId;
-
-            // check for existing non guest accounts
-            $addressQuery           = "SELECT * FROM `s_user_shippingaddress` WHERE userID = ?";
-            $currentShippingAddress = Shopware()->Db()->fetchRow($addressQuery, array($cart->getExternalCustomerId()));
-
-            if (!empty($currentShippingAddress)) {
-                $this->customerImport->updateShippingAddress($currentShippingAddress, $cart->getDeliveryAddress());
-            }
         }
 
         // add basket data to session in order to be risk management compliant

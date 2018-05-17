@@ -606,6 +606,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
      */
     public function getStreamProducts($categoryId, $productStreamId)
     {
+        $version = new Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Version();
+        if (!$version->assertMinimum('5.0.0')) {
+            return array();
+        }
+
         $cacheKey = self::CACHE_KEY_STREAM_CATEGORY_PRODUCT_SORTING . $categoryId;
 
         if (empty($this->exportCache[$cacheKey])) {
@@ -619,7 +624,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             $customerGroupKey = ContextService::FALLBACK_CUSTOMER_GROUP;
 
             /** @var ProductContext|ShopContext $context */
-            $context = version_compare(Shopware::VERSION, '5.2.0', '<')
+            $context = !$version->assertMinimum('5.2.0')
                 ? Shopware()->Container()->get('shopware_storefront.context_service')
                     ->createProductContext($shopId, $currencyId, $customerGroupKey)
                 : Shopware()->Container()->get('shopware_storefront.context_service')
