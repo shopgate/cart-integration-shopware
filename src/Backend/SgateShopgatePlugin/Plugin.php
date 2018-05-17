@@ -4434,6 +4434,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $userCountryId = $country->getId();
             $userAreaId    = $country->getArea()->getId();
             $userStateId   = $state ? $state->getId() : null;
+            $taxFree       = $country->getTaxFree();
 
             if (Shopware()->Session()->sCountry != $userCountryId
                 || Shopware()->Session()->sState != $userStateId
@@ -4446,6 +4447,10 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 if ($version->assertMinimum('5.0.0')) {
                     Shopware()->Container()->get('shopware_storefront.context_service')->initializeShopContext();
                 }
+            }
+
+            if ($taxFree) {
+                $groupData['tax'] = 0;
             }
 
             // check for existing non guest accounts
