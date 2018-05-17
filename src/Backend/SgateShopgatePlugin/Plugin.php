@@ -4416,8 +4416,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
     {
         $sql       = "SELECT customergroup FROM `s_user` WHERE id = ? AND accountmode = 0";
         $userData  = Shopware()->Db()->fetchRow($sql, array($cart->getExternalCustomerId()));
+        $groupKey  = isset($userData['customergroup']) ? $userData['customergroup'] : 'EK';
         $sql       = "SELECT * FROM `s_core_customergroups` WHERE `groupkey` = ?";
-        $groupData = Shopware()->Db()->fetchRow($sql, array($userData['customergroup']));
+        $groupData = Shopware()->Db()->fetchRow($sql, array($groupKey));
 
         Shopware()->Session()->sUserId        = $cart->getExternalCustomerId();
         Shopware()->Session()->sUserGroup     = $groupData['groupkey'];
