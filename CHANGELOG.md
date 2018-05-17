@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
-## [2.9.78] - 2018-05-17
+## [2.9.79] - 2018-05-17
 ### Fixed
 - line item totals in order confirmation mails
 - tax calculation for international orders
