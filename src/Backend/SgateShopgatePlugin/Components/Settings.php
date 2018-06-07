@@ -139,7 +139,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Settings
                     $iso   = $rule->getCountry()
                         ? $rule->getCountry()->getIso()
                         : "";
-                    $state = $rule->getState()
+                    $state = ($rule->getState() && $rule->getState()->getId())
                         ? $rule->getState()->getShortCode()
                         : "";
                     if (!$rule->getCountry() && $rule->getState()) {
