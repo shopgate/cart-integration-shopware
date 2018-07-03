@@ -44,6 +44,8 @@ use Shopware\Models\Dispatch\Dispatch;
 use Shopware\Models\Order\Status;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config as ShopwareShopgatePluginConfig;
+use Firebase\JWT\JWT;
+use Shopware\Components\Api\Resource\Cache;
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -142,7 +144,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
     public function getVersion()
     {
-        return "2.9.79";
+        return "2.9.80";
     }
 
     public function getLabel()
@@ -369,6 +371,32 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             'Shopware_Modules_Order_SendMail_Send',
             'sendOrderMailForShopgateOrders',
             450
+        );
+
+        /* insert javascript for web checkout */
+        $this->subscribeEvent(
+            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout',
+            'onFrontendCheckout'
+        );
+
+        $this->subscribeEvent(
+            'Enlight_Controller_Action_PostDispatch_Frontend_Register',
+            'onFrontendRegister'
+        );
+
+        $this->subscribeEvent(
+            'Enlight_Controller_Action_PostDispatch_Frontend_Account',
+            'onFrontendAccount'
+        );
+
+        $this->subscribeEvent(
+            'Enlight_Controller_Action_PostDispatch_Frontend_Custom',
+            'onFrontendCustom'
+        );
+
+        $this->subscribeEvent(
+            'Enlight_Controller_Action_Frontend_Account_Password',
+            'onFrontendPassword'
         );
     }
 
@@ -1019,7 +1047,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                         if (empty($data) || empty($data['id'])) {
                             continue;
                         }
-                        
+
                         $orderId = $data['id'];
                         if ($orderId) {
                             self::cancelOrder($orderId);
@@ -1114,6 +1142,108 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         $installer = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Install();
         $installer->updateShopgateInstall();
+    }
+
+    /**
+     * Modifies the checkout view when the user agent is the shopgate app's web view
+     *
+     * @param Enlight_Event_EventArgs $args
+     * @TODO: check compatibility with shopware 4.0.1
+     */
+    public function onFrontendCheckout(\Enlight_Event_EventArgs $args)
+    {
+
+        $view = $args->getSubject()->View();
+        if ($args->getRequest()->getActionName() !== 'cart') {
+            $view->addTemplateDir(__DIR__ . '/Views/');
+            $view->assign('sgWebCheckout', $this->isInWebView());
+            $view->assign('sgActionName', $args->getRequest()->getActionName());
+            $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+        }
+
+        if ($args->getRequest()->getActionName() === 'finish') {
+            $basket = $view->getAssign('sBasket');
+            $orderNumber = $view->getAssign('sOrderNumber');
+
+            $params = [
+                'number' => $orderNumber,
+                'currency' => $basket['sCurrencyName'],
+                'totals' => [
+                    [
+                        'type' => 'shipping',
+                        'amount' => $basket['sShippingcosts'],
+                    ],
+                    [
+                        'type' => 'tax',
+                        'amount' => $basket['sAmountTax']
+                    ],
+                    [
+                        'type' => 'grandTotal',
+                        'amount' => $basket['AmountNumeric']
+                    ]
+                ],
+                'products' => []
+            ];
+
+            foreach ($basket['content'] as $item) {
+                $params['products'][] = [
+                    'id' => $item['id'],
+                    'name' => $item['articlename'],
+                    'quantity' => $item['quantity'],
+                    'price' => [
+                        'withTax' => $item['price'],
+                        'net' => $item['netprice']
+                    ]
+                ];
+            }
+
+            $view->assign('sgCheckoutParams', json_encode($params));
+        }
+    }
+
+    /**
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function onFrontendRegister(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir(__DIR__ . '/Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView());
+    }
+
+    /**
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function onFrontendAccount(\Enlight_Event_EventArgs $args)
+    {
+        $sgCloudCallbackData = Shopware()->Session()->offsetGet('sgCloudCallbackData');
+
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir($this->Path() . 'Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView());
+        $view->assign('sgForgotPassword', false);
+
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $user = $user['additional']['user'];
+        $hash = $user['password'];
+        $email = $user['email'];
+
+        $view->assign('sgCloudCallbackData', $sgCloudCallbackData);
+        $view->assign('sgHash', $hash);
+        $view->assign('sgEmail', $email);
+    }
+
+    public function onFrontendPassword(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->assign('sgForgotPassword', true);
+    }
+
+    public function onFrontendCustom(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir($this->Path() . 'Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView());
     }
 
     /**
@@ -1241,5 +1371,29 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         }
 
         return $attributesStore;
+    }
+
+    /**
+     * Gets order number
+     *
+     * @return string
+     */
+    protected function getOrderNumber()
+    {
+        return Shopware()->Session()->sOrderVariables->sOrderNumber;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isInWebView()
+    {
+        $shopgateApp = Shopware()->Session()->offsetGet('sgWebView');
+
+        if (isset($shopgateApp) && $shopgateApp) {
+            return true;
+        }
+
+        return false;
     }
 }
