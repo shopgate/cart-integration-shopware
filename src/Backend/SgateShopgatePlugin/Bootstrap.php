@@ -1191,8 +1191,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                     'name' => $item['articlename'],
                     'quantity' => $item['quantity'],
                     'price' => [
-                        'withTax' => $item['price'],
-                        'net' => $item['netprice']
+                        'withTax' => floatval($item['priceNumeric']),
+                        'net' => floatval($item['netprice'])
                     ]
                 ];
             }
