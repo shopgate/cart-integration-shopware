@@ -44,8 +44,6 @@ use Shopware\Models\Dispatch\Dispatch;
 use Shopware\Models\Order\Status;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config as ShopwareShopgatePluginConfig;
-use Firebase\JWT\JWT;
-use Shopware\Components\Api\Resource\Cache;
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
