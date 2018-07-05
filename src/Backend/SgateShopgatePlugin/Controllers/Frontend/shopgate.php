@@ -467,8 +467,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $sessionId = $params['sessionId'];
 
         if (!isset($articles)) {
-            // @TODO: Better error handling
-            throw new Exception('The request doesn\'t contain an \'articles\' parameter!', 400);
+            $this->Response()->setHttpResponseCode(400);
+            $this->Response()->setBody(json_encode(['message' => 'The request doesn\'t contain an \'articles\' parameter!']));
         }
 
         if (isset($sessionId)) {
