@@ -596,8 +596,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
     /**
      * Adds an array of articles to the cart based on an array of article IDs
-     *
-     * @TODO: Maybe work with transactions to avoid partial insertions
      */
     protected function addArticlesToCart($articles)
     {

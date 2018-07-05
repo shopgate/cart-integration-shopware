@@ -371,31 +371,35 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             450
         );
 
-        /* insert javascript for web checkout */
-        $this->subscribeEvent(
-            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout',
-            'onFrontendCheckout'
-        );
+        $config = new ShopwareShopgatePluginConfig();
+        if ($config->assertMinimumVersion("5.2.0")) {
 
-        $this->subscribeEvent(
-            'Enlight_Controller_Action_PostDispatch_Frontend_Register',
-            'onFrontendRegister'
-        );
+            /* insert javascript for web checkout */
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatch_Frontend_Checkout',
+                'onFrontendCheckout'
+            );
 
-        $this->subscribeEvent(
-            'Enlight_Controller_Action_PostDispatch_Frontend_Account',
-            'onFrontendAccount'
-        );
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatch_Frontend_Register',
+                'onFrontendRegister'
+            );
 
-        $this->subscribeEvent(
-            'Enlight_Controller_Action_PostDispatch_Frontend_Custom',
-            'onFrontendCustom'
-        );
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatch_Frontend_Account',
+                'onFrontendAccount'
+            );
 
-        $this->subscribeEvent(
-            'Enlight_Controller_Action_Frontend_Account_Password',
-            'onFrontendPassword'
-        );
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatch_Frontend_Custom',
+                'onFrontendCustom'
+            );
+
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_Frontend_Account_Password',
+                'onFrontendPassword'
+            );
+        }
     }
 
     /**
@@ -1146,11 +1150,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      * Modifies the checkout view when the user agent is the shopgate app's web view
      *
      * @param Enlight_Event_EventArgs $args
-     * @TODO: check compatibility with shopware 4.0.1
      */
     public function onFrontendCheckout(\Enlight_Event_EventArgs $args)
     {
-
         $view = $args->getSubject()->View();
         if ($args->getRequest()->getActionName() !== 'cart') {
             $view->addTemplateDir(__DIR__ . '/Views/');
