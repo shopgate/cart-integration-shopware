@@ -687,6 +687,51 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     }
 
     /**
+     * Custom get user action
+     */
+    public function getUserAction()
+    {
+
+        $customerId = $this->Request()->getCookie('sg_id');
+        $sessionId = $this->Request()->getCookie('sg_session');
+        $this->session->offsetSet('sessionId', $sessionId);
+        session_id($sessionId);
+
+        $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
+        $password = Shopware()->Db()->fetchCol($sql, [$customerId]);
+
+        $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
+        $email = Shopware()->Db()->fetchCol($sql, [$customerId]);
+
+        $this->Request()->setPost('email', $email[0]);
+        $this->Request()->setPost('passwordMD5', $password[0]);
+
+        $checkUser = $this->admin->sLogin(true);
+
+        if(isset($checkUser['sErrorFlag'])) {
+            throw new Exception($checkUser['sErrorMessages'][0] , 400);
+        }
+
+        $this->basket->sRefreshBasket();
+
+        $user = $this->admin->sGetUserData();
+        $user = $user['additional']['user'];
+
+        $this->Response()->setBody(json_encode([
+            'id' => $user['customernumber'],
+            'mail' => $user['email'],
+            'firstName' => $user['firstname'],
+            'lastName' => $user['lastname'],
+            'birthday' => $user['birthday'],
+            'customerGroups' => $user['customergroup'],
+            'addresses' => [],
+            'session_id' => $user['sessionID']
+        ]));
+        $this->Response()->sendResponse();
+        exit();
+    }
+
+    /**
      * Custom registration action which checks whether the user is inside the app's web view
      */
     public function registrationAction()
