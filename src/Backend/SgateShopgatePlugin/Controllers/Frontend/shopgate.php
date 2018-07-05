@@ -423,18 +423,14 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $decoded = json_decode(json_encode($decoded), true);
             $customerId = $decoded['customer_id'];
 
-            // @TODO: SQL escape string
-            $sql = 'SELECT `password` FROM `s_user` WHERE customernumber="'.$customerId.'"';
-            $query = Shopware()->Db()->query($sql);
-            $password = $query->fetch();
+            $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
+            $password = Shopware()->Db()->fetchCol($sql, [$customerId]);
 
-            // @TODO: SQL escape string
-            $sql = 'SELECT `email` FROM `s_user` WHERE customernumber="'.$customerId.'"';
-            $query = Shopware()->Db()->query($sql);
-            $email = $query->fetch();
+            $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
+            $email = Shopware()->Db()->fetchCol($sql, [$customerId]);
 
-            $this->Request()->setPost('email', $email['email']);
-            $this->Request()->setPost('passwordMD5', $password['password']);
+            $this->Request()->setPost('email', $email[0]);
+            $this->Request()->setPost('passwordMD5', $password[0]);
 
             $checkUser = $this->admin->sLogin(true);
 
