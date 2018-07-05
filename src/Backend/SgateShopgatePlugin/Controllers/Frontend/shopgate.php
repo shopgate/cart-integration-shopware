@@ -731,9 +731,21 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function registrationAction()
     {
+        $sessionId = $this->Request()->getParam('sessionId');
+
+        if (isset($sessionId)) {
+            $this->session->offsetSet('sessionId', $sessionId);
+            session_id($sessionId);
+        }
+
         $this->admin->logout();
         $this->session->offsetSet('sgWebView', true);
-        $this->redirect('account#show-registration');
+        $sgCloud = $this->Request()->getParam('sgcloud_checkout');
+        if(isset($sgCloud)) {
+            $this->redirect('checkout/confirm#show-registration');
+        } else {
+            $this->redirect('account#show-registration');
+        }
     }
 
     /**
