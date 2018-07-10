@@ -1166,27 +1166,29 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $orderNumber = $view->getAssign('sOrderNumber');
 
             $params = [
-                'number' => $orderNumber,
-                'currency' => $basket['sCurrencyName'],
-                'totals' => [
-                    [
-                        'type' => 'shipping',
-                        'amount' => $basket['sShippingcosts'],
+                'order' => [
+                    'number' => $orderNumber,
+                    'currency' => $basket['sCurrencyName'],
+                    'totals' => [
+                        [
+                            'type' => 'shipping',
+                            'amount' => $basket['sShippingcosts'],
+                        ],
+                        [
+                            'type' => 'tax',
+                            'amount' => $basket['sAmountTax']
+                        ],
+                        [
+                            'type' => 'grandTotal',
+                            'amount' => $basket['AmountNumeric']
+                        ]
                     ],
-                    [
-                        'type' => 'tax',
-                        'amount' => $basket['sAmountTax']
-                    ],
-                    [
-                        'type' => 'grandTotal',
-                        'amount' => $basket['AmountNumeric']
-                    ]
-                ],
-                'products' => []
+                    'products' => []
+                ]
             ];
 
             foreach ($basket['content'] as $item) {
-                $params['products'][] = [
+                $params['order']['products'][] = [
                     'id' => $item['id'],
                     'name' => $item['articlename'],
                     'quantity' => $item['quantity'],
