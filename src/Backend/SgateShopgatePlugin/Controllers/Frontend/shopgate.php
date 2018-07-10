@@ -346,9 +346,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function getCartAction()
     {
-        $sessionId = $this->Request()->getParam('sessionId');
+        $sessionId = $this->Request()->getCookie('sg_session');
 
         $this->session->offsetSet('sessionId', $sessionId);
+        session_id($sessionId);
 
         $basket = $this->basket->sGetBasket();
 
@@ -437,11 +438,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 throw new Exception($checkUser['sErrorMessages'][0] , 400);
             }
 
-            $basket = $this->basket->sGetBasket();
-
-            $response['newSession'] = $this->session->offsetGet('sessionId');
-            $response['newBasket'] = count($basket);
-
             $this->basket->sRefreshBasket();
         }
 
@@ -472,6 +468,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
+            session_id($sessionId);
         }
 
         $response = $this->addArticlesToCart($articles);
@@ -502,6 +499,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
+            session_id($sessionId);
         }
 
         $response = $this->basket->sAddVoucher($code);
@@ -526,6 +524,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
+            session_id($sessionId);
         }
 
         $response = $this->basket->sDeleteArticle($articleId);
@@ -551,15 +550,15 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
+            session_id($sessionId);
         }
 
         $this->Response()->setHeader('Content-Type', 'application/json');
         if ($error = $this->verifyItemStock($basketId, $quantity)) {
             $this->Response()->setHttpResponseCode(401);
             $this->Response()->setBody(json_encode([
-                'reason' => $error,
-                'cartItemId' => $basketId,
-                'quantity' => $quantity,
+                'error' => true,
+                'reason' => $error
             ]));
         } else {
             $response = $this->basket->sUpdateArticle($basketId, $quantity);
@@ -616,7 +615,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 if ($infoMessage = $this->getInstockInfo($orderNumber, $article['quantity'])) {
                     $response[$articleId] = $this->getInstockInfo($orderNumber, $article['quantity']);
                 }
-                $insertID = $this->basket->sAddArticle($orderNumber, $article['quantity']);
+                $this->basket->sAddArticle($orderNumber, $article['quantity']);
             } else {
                 // Fallback error message isn't translated.
                 $response[$articleId] = 'Could not find article with id in cart!';
@@ -729,7 +728,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function registrationAction()
     {
-        $sessionId = $this->Request()->getParam('sessionId');
+        $path = $this->Request()->getPathInfo();
+        $segments = explode('/', trim($path, '/'));
+
+        $sessionId = $segments[2];
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
