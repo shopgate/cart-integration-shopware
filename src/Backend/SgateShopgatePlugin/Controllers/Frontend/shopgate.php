@@ -684,8 +684,14 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     public function getUserAction()
     {
 
-        $customerId = $this->Request()->getCookie('sg_id');
-        $sessionId = $this->Request()->getCookie('sg_session');
+        $token = $this->Request()->getCookie('token');
+
+        $key = trim($this->getConfig()->getApikey());
+        $decoded = static::jwtDecode($token, $key);
+        $decoded = json_decode(json_encode($decoded), true);
+        $customerId = $decoded['customer_id'];
+        $sessionId = $decoded['session_id'];
+
         $this->session->offsetSet('sessionId', $sessionId);
         session_id($sessionId);
 
@@ -738,7 +744,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             session_id($sessionId);
         }
 
-        $this->admin->logout();
+        $user = $this->admin->sGetUserData();
+        if ($user->id) {
+            $this->admin->logout();
+        }
         $this->session->offsetSet('sgWebView', true);
         $sgCloud = $this->Request()->getParam('sgcloud_checkout');
         if(isset($sgCloud)) {
