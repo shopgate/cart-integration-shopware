@@ -27,6 +27,7 @@
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends Shopgate_Model_Catalog_Product
 {
     const AVAILABLE_TEXT_TEMPLATE = 'frontend/plugins/index/delivery_informations.tpl';
+    const ORIGINAL                = 'original';
 
     /**
      * @var \Shopware\Models\Article\Detail $detail
@@ -282,7 +283,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
     {
         $image = '';
         if (!empty($imgSrcArray)) {
-            if (!file_exists($this->getShopRootFS() . $this->getRelativeImagePath($imgSrcArray['original']))) {
+            // check if image url is hosted externally
+            if ($this->isWebAddress($imgSrcArray[self::ORIGINAL])
+                && !$this->isUrlInStoreDomain($imgSrcArray[self::ORIGINAL])
+            ) {
+                return $imgSrcArray[self::ORIGINAL];
+            }
+
+            if (!file_exists($this->getShopRootFS() . $this->getRelativeImagePath($imgSrcArray[self::ORIGINAL]))) {
                 $images = array();
                 foreach ($imgSrcArray as $image) {
                     // check for the highest resolution and availablitity of the image
@@ -297,7 +305,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
                 ksort($images);
                 $image = end($images);
             } else {
-                $image = $this->getShopRootWS() . $this->getRelativeImagePath($imgSrcArray['original']);
+                $image = $this->getShopRootWS() . $this->getRelativeImagePath($imgSrcArray[self::ORIGINAL]);
             }
         }
 
@@ -381,6 +389,28 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             // append base path of the shop with slashes trimmed and a single one appended
             trim(Shopware()->Shop()->getBasePath(), '/') . '/'
         );
+    }
+
+    /**
+     * determines if url is a web address
+     *
+     * @param string $address
+     * @return bool
+     */
+    protected function isWebAddress($address)
+    {
+        return preg_match('/^https?:\/\/.*/i', $address) !== false;
+    }
+
+    /**
+     * determines if url is in store's domain
+     *
+     * @param string $address
+     * @return bool
+     */
+    protected function isUrlInStoreDomain($address)
+    {
+        return stripos($address, $this->getShopRootWS()) !== false;
     }
 
     /**
