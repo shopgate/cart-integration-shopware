@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - state validation for tax rules
+- export of externally hosted product images
 
 ## [2.9.79] - 2018-05-17
 ### Fixed
