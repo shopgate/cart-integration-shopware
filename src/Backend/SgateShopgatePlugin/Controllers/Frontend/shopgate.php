@@ -412,8 +412,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $sessionId = $this->Request()->getParam('sessionId');
 
         if (isset($sessionId)) {
-            $this->session->offsetSet('sessionId', $sessionId);
-            session_id($sessionId);
+            session_start([
+                'sessionId'=> $sessionId
+            ]);
         }
 
         $token = $this->Request()->getParam('token');
@@ -740,8 +741,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $sessionId = $segments[2];
 
         if (isset($sessionId)) {
-            $this->session->offsetSet('sessionId', $sessionId);
-            session_id($sessionId);
+            session_start([
+                'sessionId'=> $sessionId
+            ]);
         }
 
         $user = $this->admin->sGetUserData();
