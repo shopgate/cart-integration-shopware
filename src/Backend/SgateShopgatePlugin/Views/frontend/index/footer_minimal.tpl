@@ -6,7 +6,7 @@
     {/if}
 
     {block name="frontend_index_page_wrap_shopgate_script"}
-        {if $sgActionName === 'confirm'}
+        {if $sgActionName === 'confirm' || $sgActionName === 'shippingPayment'}
             <script type="text/javascript">
                 function initPipelineCall () {ldelim}
                     window.SGAppConnector.sendPipelineRequest(

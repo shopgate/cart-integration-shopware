@@ -1156,7 +1156,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view = $args->getSubject()->View();
         if ($args->getRequest()->getActionName() !== 'cart') {
             $view->addTemplateDir(__DIR__ . '/Views/');
-            $view->assign('sgWebCheckout', $this->isInWebView());
+            $view->assign('sgWebCheckout', $this->isInWebView($args));
             $view->assign('sgActionName', $args->getRequest()->getActionName());
             $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
         }
@@ -1210,7 +1210,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
-        $view->assign('sgWebCheckout', $this->isInWebView());
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
     }
 
     /**
@@ -1222,7 +1223,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
         $view = $args->getSubject()->View();
         $view->addTemplateDir($this->Path() . 'Views/');
-        $view->assign('sgWebCheckout', $this->isInWebView());
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
         $view->assign('sgForgotPassword', false);
 
         $user = Shopware()->Modules()->Admin()->sGetUserData();
@@ -1233,6 +1234,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgCloudCallbackData', $sgCloudCallbackData);
         $view->assign('sgHash', $hash);
         $view->assign('sgEmail', $email);
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
     }
 
     public function onFrontendPassword(\Enlight_Event_EventArgs $args)
@@ -1245,7 +1247,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         $view = $args->getSubject()->View();
         $view->addTemplateDir($this->Path() . 'Views/');
-        $view->assign('sgWebCheckout', $this->isInWebView());
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
     }
 
     /**
@@ -1388,11 +1390,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     /**
      * @return bool
      */
-    protected function isInWebView()
+    protected function isInWebView($args)
     {
+        $shopgateAppCookie = $args->getRequest()->getCookie('sgWebView');
         $shopgateApp = Shopware()->Session()->offsetGet('sgWebView');
 
-        if (isset($shopgateApp) && $shopgateApp) {
+        if ((isset($shopgateApp) && $shopgateApp) || (isset($shopgateAppCookie) && $shopgateAppCookie)) {
             return true;
         }
 

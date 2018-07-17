@@ -10,32 +10,39 @@
                     window.location.href = '/account#show-registration';
                     showLoadingScreen()
                     window.SGAppConnector.sendPipelineRequest(
-                        'shopgate.user.loginUser.v1',
-                        true,
-                            {ldelim}'strategy': 'auth_code', 'parameters': {ldelim}'email': '{$sgEmail}', 'hash': '{$sgHash}'{rdelim}{rdelim},
+                        'onedot.checkout.updateSession.v1',
+                        false,
+                        {ldelim}'sessionId': '{$sgSessionId}'{rdelim},
                         function (err, serial, output) {ldelim}
-                            var commands = [
-                                {ldelim}
-                                    'c': 'broadcastEvent',
-                                    'p': {ldelim}
-                                        'event': 'userLoggedIn'
+                            window.SGAppConnector.sendPipelineRequest(
+                                'shopgate.user.loginUser.v1',
+                                true,
+                                {ldelim}'strategy': 'auth_code', 'parameters': {ldelim}'email': '{$sgEmail}', 'hash': '{$sgHash}'{rdelim}{rdelim},
+                                function (err, serial, output) {ldelim}
+                                    var commands = [
+                                        {ldelim}
+                                            'c': 'broadcastEvent',
+                                            'p': {ldelim}
+                                                'event': 'userLoggedIn'
+                                                {rdelim}
+                                            {rdelim},
+                                        {ldelim}
+                                            'c': 'broadcastEvent',
+                                            'p': {ldelim}
+                                                'event': 'closeNotification'
+                                                {rdelim}
+                                            {rdelim},
+                                        {ldelim}
+                                            'c': 'broadcastEvent',
+                                            'p': {ldelim}
+                                                'event': 'closeInAppBrowser',
+                                                'parameters': [{ldelim}'redirectTo': '/'{rdelim}]
+                                                {rdelim}
+                                            {rdelim}
+                                    ]
+                                    window.SGAppConnector.sendAppCommands(commands)
                                     {rdelim}
-                                {rdelim},
-                                {ldelim}
-                                    'c': 'broadcastEvent',
-                                    'p': {ldelim}
-                                        'event': 'closeNotification'
-                                    {rdelim}
-                                {rdelim},
-                                {ldelim}
-                                    'c': 'broadcastEvent',
-                                    'p': {ldelim}
-                                        'event': 'closeInAppBrowser',
-                                        'parameters': [{ldelim}'redirectTo': '/'{rdelim}]
-                                    {rdelim}
-                                {rdelim}
-                            ]
-                            window.SGAppConnector.sendAppCommands(commands)
+                            )
                         {rdelim}
                     )
                 {rdelim}

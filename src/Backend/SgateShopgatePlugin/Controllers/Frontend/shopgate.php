@@ -409,12 +409,16 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function checkoutAction()
     {
+        $user = $this->admin->sGetUserData();
+        if ($user->id) {
+            $this->admin->logout();
+        }
+
         $sessionId = $this->Request()->getParam('sessionId');
 
         if (isset($sessionId)) {
-            session_start([
-                'sessionId'=> $sessionId
-            ]);
+            $this->session->offsetSet('sessionId', $sessionId);
+            session_id($sessionId);
         }
 
         $token = $this->Request()->getParam('token');
@@ -442,6 +446,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $this->basket->sRefreshBasket();
         }
 
+        $this->Response()->setHeader('Set-Cookie', 'session-1='.$this->session->offsetGet('sessionId').'; path=/; HttpOnly');
+        $this->Response()->setHeader('Set-Cookie', 'sgWebView=true; path=/; HttpOnly');
         $this->session->offsetSet('sgWebView', true);
 
         $this->redirect('checkout/confirm');
@@ -691,10 +697,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $decoded = static::jwtDecode($token, $key);
         $decoded = json_decode(json_encode($decoded), true);
         $customerId = $decoded['customer_id'];
-        $sessionId = $decoded['session_id'];
-
-        $this->session->offsetSet('sessionId', $sessionId);
-        session_id($sessionId);
 
         $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
         $password = Shopware()->Db()->fetchCol($sql, [$customerId]);
@@ -723,8 +725,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             'lastName' => $user['lastname'],
             'birthday' => $user['birthday'],
             'customerGroups' => $user['customergroup'],
-            'addresses' => [],
-            'session_id' => $user['sessionID']
+            'addresses' => []
         ]));
         $this->Response()->sendResponse();
         exit();
@@ -741,17 +742,17 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $sessionId = $segments[2];
 
         if (isset($sessionId)) {
-            session_start([
-                'sessionId'=> $sessionId
-            ]);
+            $this->session->offsetSet('sessionId', $sessionId);
+            session_id($sessionId);
+            $this->Response()->setHeader('Set-Cookie', 'session-1='.$sessionId.'; path=/; HttpOnly');
         }
 
-        $user = $this->admin->sGetUserData();
-        if ($user->id) {
-            $this->admin->logout();
-        }
         $this->session->offsetSet('sgWebView', true);
         $sgCloud = $this->Request()->getParam('sgcloud_checkout');
+
+        $this->session->offsetSet('sgWebView', true);
+        $this->Response()->setHeader('Set-Cookie', 'sgWebView=true; path=/; HttpOnly');
+
         if(isset($sgCloud)) {
             $this->redirect('checkout/confirm#show-registration');
         } else {
