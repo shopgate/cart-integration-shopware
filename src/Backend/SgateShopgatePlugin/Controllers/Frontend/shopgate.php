@@ -409,11 +409,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function checkoutAction()
     {
-        $user = $this->admin->sGetUserData();
-        if ($user->id) {
-            $this->admin->logout();
-        }
-
         $sessionId = $this->Request()->getParam('sessionId');
 
         if (isset($sessionId)) {
