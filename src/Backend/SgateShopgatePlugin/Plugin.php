@@ -3257,6 +3257,24 @@ class ShopgatePluginShopware extends ShopgatePlugin
     }
 
     /**
+     * Checks if the external customer id and the mail address of the shopgate order matches to a shopware user
+     *
+     * @param ShopgateOrder $oShopgateOrder
+     *
+     * @return bool
+     */
+    protected function mailAndUserIdMatches(ShopgateOrder $oShopgateOrder)
+    {
+        /** @var \Shopware\Models\Customer\Customer $customer */
+        $customer = Shopware()->Models()->find(
+            '\Shopware\Models\Customer\Customer',
+            $oShopgateOrder->getExternalCustomerId()
+        );
+
+        return $customer->getEmail() === $oShopgateOrder->getMail();
+    }
+
+    /**
      * @param sOrder        $oOrder
      * @param ShopgateOrder $oShopgateOrder
      *
@@ -3272,14 +3290,15 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
             // check if the customer number exists
             if (empty($this->customerId)) {
-                throw new ShopgateLibraryException(
-                    ShopgateLibraryException::PLUGIN_DATABASE_ERROR,
+                $this->log(
                     "insertOrderCustomer:: no customer has been found for the given (connect-)cutomer-number [= {$extCustomerNumber}].",
-                    true
+                    ShopgateLogger::LOGTYPE_ERROR
                 );
             }
         }
-        if (empty($this->customerId)) {
+        if (empty($this->customerId)
+            && $this->mailAndUserIdMatches($oShopgateOrder)
+        ) {
             $this->customerId = $oShopgateOrder->getExternalCustomerId();
         }
         if (empty($this->customerId)) {
