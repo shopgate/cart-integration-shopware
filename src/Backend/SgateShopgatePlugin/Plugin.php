@@ -3263,7 +3263,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
      *
      * @return bool
      */
-    protected function mailAndUserIdMatches(ShopgateOrder $oShopgateOrder)
+    protected function mailAndUserIdMatch(ShopgateOrder $oShopgateOrder)
     {
         /** @var \Shopware\Models\Customer\Customer $customer */
         $customer = Shopware()->Models()->find(
@@ -3291,14 +3291,12 @@ class ShopgatePluginShopware extends ShopgatePlugin
             // check if the customer number exists
             if (empty($this->customerId)) {
                 $this->log(
-                    "insertOrderCustomer:: no customer has been found for the given (connect-)cutomer-number [= {$extCustomerNumber}].",
+                    "insertOrderCustomer:: no customer has been found for the given (connect-)customer-number [= {$extCustomerNumber}].",
                     ShopgateLogger::LOGTYPE_ERROR
                 );
             }
         }
-        if (empty($this->customerId)
-            && $this->mailAndUserIdMatches($oShopgateOrder)
-        ) {
+        if (empty($this->customerId) && $this->mailAndUserIdMatch($oShopgateOrder)) {
             $this->customerId = $oShopgateOrder->getExternalCustomerId();
         }
         if (empty($this->customerId)) {
