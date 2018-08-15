@@ -410,7 +410,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
      */
     protected function isUrlInStoreDomain($address)
     {
-        return stripos($address, $this->getShopRootWS()) !== false;
+        $patterns = array('/^https?:\/\//i', '/\/\/?$/');
+        $address = preg_replace($patterns, '', $address);
+        $webRoot = preg_replace($patterns, '', $this->getShopRootWS());
+
+        return stripos($address, $webRoot) !== false;
     }
 
     /**
