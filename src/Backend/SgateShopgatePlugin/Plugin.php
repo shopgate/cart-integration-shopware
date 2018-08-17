@@ -3267,8 +3267,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
     {
         if (!$oShopgateOrder->getExternalCustomerId()) {
             return false;
-        }    
-	    
+        }
+
         /** @var \Shopware\Models\Customer\Customer $customer */
         $customer = Shopware()->Models()->find(
             '\Shopware\Models\Customer\Customer',
