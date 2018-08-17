@@ -3265,6 +3265,10 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function mailAndUserIdMatch(ShopgateOrder $oShopgateOrder)
     {
+        if (!$oShopgateOrder->getExternalCustomerId()) {
+            return false;
+        }
+
         /** @var \Shopware\Models\Customer\Customer $customer */
         $customer = Shopware()->Models()->find(
             '\Shopware\Models\Customer\Customer',
