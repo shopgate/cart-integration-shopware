@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - order import error with customer was not found
+- test for CDN images in product export
 
 ## [2.9.80] - 2018-08-02
 ### Fixed
