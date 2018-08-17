@@ -3265,7 +3265,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function mailAndUserIdMatch(ShopgateOrder $oShopgateOrder)
     {
-	if (!$oShopgateOrder->getExternalCustomerId()) {
+        if (!$oShopgateOrder->getExternalCustomerId()) {
             return false;
         }    
 	    
