@@ -3,7 +3,7 @@
 {block name='frontend_register_login_customer'}
     {$smarty.block.parent}
 
-    {block name="frontend_index_page_wrap_shopgate_script"}
+    {block name="frontend_register_login_javascript_shopgate"}
         {if $sgWebCheckout}
             <script type="text/javascript">
                 {literal}
@@ -440,18 +440,55 @@
                 {/literal}
             </script>
         {/if}
-        {if $sgActionName === 'confirm' || $sgActionName === 'shippingPayment'}
+        {if $sgWebCheckout}
             <script type="text/javascript">
-                function initPipelineCall () {ldelim}
-                    window.SGAppConnector.sendPipelineRequest(
-                        'onedot.checkout.updateSession.v1',
-                        false,
-                        {ldelim}'sessionId': '{$sgSessionId}'{rdelim},
-                        function (err, serial, output) {ldelim}
-
-                            {rdelim}
-                    )
-                    {rdelim}
+                {literal}
+                ;(function () {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var $registrationButton = document.getElementById('new-customer-action');
+                        if (!$registrationButton.classList.contains('is--active')) {
+                            setTimeout(function(){
+                                $registrationButton.click();
+                            }, 1000);
+                        }
+                    });
+                    var targetLink = null;
+                    Array.from(document.getElementsByTagName('a')).forEach(function (link) {
+                        if (link.getAttribute("target") === '_blank') {
+                            targetLink = link;
+                            // Overwrite default behavior of the "Continue Shopping"-Button
+                            var url = targetLink.getAttribute('href');
+                            targetLink.onclick = (function (e) {
+                                e.preventDefault();
+                                var commands = [
+                                    {
+                                        c: 'openPage',
+                                        p: {
+                                            src: url,
+                                            emulateBrowser: true,
+                                            targetTab: 'in_app_browser',
+                                            requestManipulation: false,
+                                            navigationBarParams: {
+                                                type: 'in-app-browser-default',
+                                                popTab: 'in_app_browser',
+                                                animation: 'none'
+                                            }
+                                        }
+                                    },
+                                    {
+                                        c: 'showTab',
+                                        p: {
+                                            targetTab: 'in_app_browser',
+                                            transition: 'slideInFromBottom'
+                                        }
+                                    }
+                                ];
+                                window.SGAppConnector.sendAppCommands(commands);
+                            })
+                        }
+                    })
+                })();
+                {/literal}
             </script>
         {/if}
     {/block}
