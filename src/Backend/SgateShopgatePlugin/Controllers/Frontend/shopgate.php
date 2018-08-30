@@ -313,9 +313,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                     // get the shopware order
                     Shopware()->Models()->clear();
                     $oShopwareOrder = Shopware()->Models()
-                                                ->getRepository("\Shopware\Models\Order\Order")
+                        ->getRepository("\Shopware\Models\Order\Order")
                         // -> use the shopgate order number as transactionid as mapping to get the shopware order number
-                                                ->findOneBy(array("number" => $orderNumbers[$sgOrder->getOrderNumber()]));
+                        ->findOneBy(array("number" => $orderNumbers[$sgOrder->getOrderNumber()]));
 
                     // create the database entry
                     $data = new \Shopware\CustomModels\Shopgate\Order();
@@ -412,8 +412,11 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $sessionId = $this->Request()->getParam('sessionId');
 
         if (isset($sessionId)) {
-            $this->session->offsetSet('sessionId', $sessionId);
+            session_write_close();
             session_id($sessionId);
+            session_start([
+                'sessionId' => $sessionId
+            ]);
         }
 
         $token = $this->Request()->getParam('token');
@@ -441,8 +444,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $this->basket->sRefreshBasket();
         }
 
-        $this->Response()->setHeader('Set-Cookie', 'session-1='.$this->session->offsetGet('sessionId').'; path=/; HttpOnly');
-        $this->Response()->setHeader('Set-Cookie', 'sgWebView=true; path=/; HttpOnly');
         $this->session->offsetSet('sgWebView', true);
 
         $this->redirect('checkout/confirm');
@@ -597,6 +598,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
     /**
      * Adds an array of articles to the cart based on an array of article IDs
+     *
      */
     protected function addArticlesToCart($articles)
     {
@@ -731,24 +733,27 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function registrationAction()
     {
+
         $path = $this->Request()->getPathInfo();
         $segments = explode('/', trim($path, '/'));
 
         $sessionId = $segments[2];
 
         if (isset($sessionId)) {
-            $this->session->offsetSet('sessionId', $sessionId);
+            session_write_close();
             session_id($sessionId);
-            $this->Response()->setHeader('Set-Cookie', 'session-1='.$sessionId.'; path=/; HttpOnly');
+            session_start([
+                'sessionId' => $sessionId
+            ]);
         }
 
-        $this->session->offsetSet('sgWebView', true);
         $sgCloud = $this->Request()->getParam('sgcloud_checkout');
 
         $this->session->offsetSet('sgWebView', true);
         $this->Response()->setHeader('Set-Cookie', 'sgWebView=true; path=/; HttpOnly');
 
         if(isset($sgCloud)) {
+            $this->Response()->setHeader('Set-Cookie', 'session-1='.$sessionId.'; path=/; HttpOnly');
             $this->redirect('checkout/confirm#show-registration');
         } else {
             $this->redirect('account#show-registration');
