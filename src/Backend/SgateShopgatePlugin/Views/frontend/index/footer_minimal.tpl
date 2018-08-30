@@ -10,6 +10,12 @@
             <script type="text/javascript">
                 {literal}
                 ;(function () {
+                    var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                    if (!iOS) {
+                        document.getElementsByTagName("BODY")[0].setAttribute("style", "margin-top: 48px;");
+                    }
+                })();
+                ;(function () {
                     /**
                      * Inject Shopgate app scripts, if we're in the app.
                      */
@@ -450,7 +456,6 @@
                         false,
                         {ldelim}'sessionId': '{$sgSessionId}'{rdelim},
                         function (err, serial, output) {ldelim}
-
                         {rdelim}
                     )
                 {rdelim}
