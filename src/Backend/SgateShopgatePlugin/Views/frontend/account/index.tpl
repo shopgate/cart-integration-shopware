@@ -1,7 +1,9 @@
 {extends file="parent:frontend/account/index.tpl"}
 
 {block name='frontend_index_content'}
-    {$smarty.block.parent}
+    {if !$sgWebCheckout}
+        {$smarty.block.parent}
+    {/if}
 
     {block name="frontend_account_index_page_wrap_shopgate_script"}
         {if $sgWebCheckout}
@@ -110,7 +112,6 @@
                         if (!window.SGJavascriptBridge) {
                             return false
                         }
-
                         // disable in the Shopgate app only
                         disableBrowserZoom()
 
@@ -430,7 +431,7 @@
                         }
                     }
 
-                    // add String.prototype.endsWith backwards compatibility
+                    //add String.prototype.endsWith backwards compatibility
                     if (window.SGAppConnector.functionExists(String.prototype.endsWith)) {
                         String.prototype.endsWith = function (suffix) {
                             return this.indexOf(suffix, this.length - suffix.length) !== -1
@@ -444,7 +445,7 @@
             <script type="text/javascript">
                 function initPipelineCall () {ldelim}
                     window.location.href = '/account#show-registration';
-                    showLoadingScreen()
+                    showLoadingScreen();
                     window.SGAppConnector.sendPipelineRequest(
                         'onedot.checkout.updateSession.v1',
                         false,
@@ -479,9 +480,9 @@
                                     window.SGAppConnector.sendAppCommands(commands)
                                     {rdelim}
                             )
-                        {rdelim}
+                            {rdelim}
                     )
-                {rdelim}
+                    {rdelim}
 
                 /**
                  * Showing up the loading screen to tell the customer "something" is happening in the background
@@ -495,11 +496,11 @@
                             timeout: 10,
                             notificationParams: {ldelim}
                                 fullSize: true
+                                {rdelim}
                             {rdelim}
                         {rdelim}
-                    {rdelim}
                     window.SGAppConnector.sendAppCommand(command)
-                {rdelim}
+                    {rdelim}
             </script>
         {/if}
     {/block}
