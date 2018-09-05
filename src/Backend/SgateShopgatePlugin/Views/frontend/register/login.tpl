@@ -16,7 +16,9 @@
                         enableShopgateAppEvents()
 
                         // No retry required for Android devices in the app; init contains another check
-                        return initShopgateApp()
+                        if (initShopgateApp()) {
+                            return true;
+                        }
 
                         // try to init the app scripts with a retry mechanism as fallback
                         executeWithRetry(40, 3000, initShopgateApp)

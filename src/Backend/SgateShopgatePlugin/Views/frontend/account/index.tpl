@@ -18,7 +18,9 @@
                         enableShopgateAppEvents()
 
                         // No retry required for Android devices in the app; init contains another check
-                        return initShopgateApp()
+                        if (initShopgateApp()) {
+                            return true;
+                        }
 
                         // try to init the app scripts with a retry mechanism as fallback
                         executeWithRetry(40, 3000, initShopgateApp)
@@ -445,7 +447,6 @@
             <script type="text/javascript">
                 function initPipelineCall () {ldelim}
                     window.location.href = '/account#show-registration';
-                    showLoadingScreen();
                     window.SGAppConnector.sendPipelineRequest(
                         'onedot.checkout.updateSession.v1',
                         false,
@@ -482,24 +483,6 @@
                             )
                             {rdelim}
                     )
-                    {rdelim}
-
-                /**
-                 * Showing up the loading screen to tell the customer "something" is happening in the background
-                 */
-                function showLoadingScreen () {ldelim}
-                    var command = {ldelim}
-                        'c': 'presentNotification',
-                        'p': {ldelim}
-                            presentationType: 'centeredFade',
-                            src: 'sgapi:loading_notification',
-                            timeout: 10,
-                            notificationParams: {ldelim}
-                                fullSize: true
-                                {rdelim}
-                            {rdelim}
-                        {rdelim}
-                    window.SGAppConnector.sendAppCommand(command)
                     {rdelim}
             </script>
         {/if}
