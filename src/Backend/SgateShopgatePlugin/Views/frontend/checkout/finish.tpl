@@ -27,8 +27,8 @@
                             'p': {ldelim}
                                 'event': 'checkoutSuccess',
                                 "parameters": [{$sgCheckoutParams}]
-                                {rdelim}
-                            {rdelim},
+                            {rdelim}
+                        {rdelim},
                         {ldelim}
                             'c': 'setNavigationBarParams',
                             'p': {ldelim}
@@ -36,9 +36,9 @@
                                     'rightButton' : true,
                                     'rightButtonType' : 'close',
                                     'rightButtonCallback' : "SGAction.broadcastEvent({ldelim}event: 'closeInAppBrowser','parameters': [{ldelim}'redirectTo': '/'{rdelim}]{rdelim});"
-                                    {rdelim}
                                 {rdelim}
                             {rdelim}
+                        {rdelim}
                     ];
                     window.SGAppConnector.sendAppCommands(commands);
                 {rdelim}

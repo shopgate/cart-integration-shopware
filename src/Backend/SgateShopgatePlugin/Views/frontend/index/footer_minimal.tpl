@@ -13,6 +13,12 @@
                     var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
                     if (!iOS) {
                         document.getElementsByTagName("BODY")[0].setAttribute("style", "margin-top:48px;position:relative;");
+                        var css = '.js--modal { top: 92px!important; }',
+                            head = document.head || document.getElementsByTagName('head')[0],
+                            style = document.createElement('style');
+                        style.type = 'text/css';
+                        style.appendChild(document.createTextNode(css));
+                        head.appendChild(style);
                     }
                 })();
                 ;(function () {
