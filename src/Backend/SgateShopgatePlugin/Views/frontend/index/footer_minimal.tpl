@@ -12,7 +12,7 @@
                 ;(function () {
                     var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
                     if (!iOS) {
-                        document.getElementsByTagName("BODY")[0].setAttribute("style", "margin-top: 48px;");
+                        document.getElementsByTagName("BODY")[0].setAttribute("style", "margin-top:48px;position:relative;");
                     }
                 })();
                 ;(function () {
