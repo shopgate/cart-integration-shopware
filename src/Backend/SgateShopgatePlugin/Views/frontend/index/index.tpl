@@ -1,7 +1,11 @@
 {extends file="parent:frontend/index/index.tpl"}
 
 {block name='frontend_index_html'}
-<html class="no-js" lang="{s name='IndexXmlLang'}{/s}" itemscope="itemscope" itemtype="http://schema.org/WebPage" data-disallow-pull-to-refresh="true">
+    {if !$sgWebCheckout}
+        {$smarty.block.parent}
+    {else}
+        <html class="no-js" lang="{s name='IndexXmlLang'}{/s}" itemscope="itemscope" itemtype="http://schema.org/WebPage" data-disallow-pull-to-refresh="true">
+    {/if}
 {/block}
 
 {block name='frontend_index_navigation'}
