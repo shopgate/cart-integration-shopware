@@ -4,7 +4,7 @@
     {if !$sgWebCheckout}
         {$smarty.block.parent}
     {else}
-        <html class="no-js" lang="{s name='IndexXmlLang'}{/s}" itemscope="itemscope" itemtype="http://schema.org/WebPage" data-disallow-pull-to-refresh="true">
+        <html class="no-js" lang="{s name='IndexXmlLang'}{/s}" itemscope="itemscope" itemtype="http://schema.org/WebPage" data-disallow-pull-to-refresh="1">
     {/if}
 {/block}
 
