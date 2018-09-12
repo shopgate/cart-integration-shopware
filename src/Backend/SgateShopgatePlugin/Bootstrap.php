@@ -1160,16 +1160,20 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $view->assign('sgActionName', $args->getRequest()->getActionName());
             $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
             $view->assign('sgIsNewCustomer', false);
-            $view->assign('sgCustomerNumber', false);
+            $view->assign('sgHash', false);
+            $view->assign('sgEmail', false);
         }
 
         if ($args->getRequest()->getActionName() === 'shippingPayment') {
             $user = Shopware()->Modules()->Admin()->sGetUserData();
             $user = $user['additional']['user'];
+            $hash = $user['password'];
+            $email = $user['email'];
 
             if ($user['accountmode'] === '0') {
                 $view->assign('sgIsNewCustomer', true);
-                $view->assign('sgCustomerNumber', $user['customernumber']);
+                $view->assign('sgHash', $hash);
+                $view->assign('sgEmail', $email);
             }
         }
 
@@ -1240,10 +1244,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
         $user = Shopware()->Modules()->Admin()->sGetUserData();
         $user = $user['additional']['user'];
-        $customerNumber = $user['customernumber'];
+        $hash = $user['password'];
+        $email = $user['email'];
 
         $view->assign('sgCloudCallbackData', $sgCloudCallbackData);
-        $view->assign('sgCustomerNumber', $customerNumber);
+        $view->assign('sgHash', $hash);
+        $view->assign('sgEmail', $email);
         $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
     }
 

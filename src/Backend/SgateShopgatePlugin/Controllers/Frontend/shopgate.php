@@ -37,11 +37,41 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     protected $admin;
 
     /**
+     * Database connection which used for each database operation in this class.
+     * Injected over the class constructor
+     *
+     * @var Enlight_Components_Db_Adapter_Pdo_Mysql
+     */
+    private $db;
+
+    /**
      * Reference to Shopware session object (Shopware()->Session)
      *
      * @var Enlight_Components_Session_Namespace
      */
     protected $session;
+
+    /**
+     * Check if current active shop has own registration
+     *
+     * @var bool s_core_shops.customer_scope
+     */
+    public $scopedRegistration;
+
+    /**
+     * Id of current active shop
+     *
+     * @var int s_core_shops.id
+     */
+    public $subshopId;
+
+    /**
+     * Shopware password encoder.
+     * Injected over the class constructor
+     *
+     * @var \Shopware\Components\Password\Manager
+     */
+    private $passwordEncoder;
 
     /**
      * @var StoreFrontBundle\Service\ProductServiceInterface
@@ -65,9 +95,16 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->basket = Shopware()->Modules()->Basket();
         $this->admin = Shopware()->Modules()->Admin();
         $this->session = Shopware()->Session();
+        $this->db = Shopware()->Db();
+        $this->passwordEncoder = Shopware()->PasswordEncoder();
 
         $this->contextService = $container->get('shopware_storefront.context_service');
         $this->productService = $container->get('shopware_storefront.product_service');
+
+        $this->subshopId = $this->contextService->getShopContext()->getShop()->getParentId();
+
+        $mainShop = Shopware()->Shop()->getMain() !== null ? Shopware()->Shop()->getMain() : Shopware()->Shop();
+        $this->scopedRegistration = $mainShop->getCustomerScope();
     }
 
     public function getWhitelistedCSRFActions()
@@ -649,13 +686,34 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             session_id($sessionId);
         }
 
+        $this->Response()->setHeader('Content-Type', 'application/json');
+
         if (isset($hash)) {
-            $error = $this->admin->sLogin(true);
+            //$error = $this->admin->sLogin(true);
+            $email = strtolower($this->Request()->getPost('email'));
+            $user = $this->verifyUser($email, $hash);
+            if (!empty($user['sErrorMessages'])) {
+                $this->Response()->setHttpResponseCode(401);
+                $this->Response()->setBody(json_encode($user));
+                $this->Response()->sendResponse();
+                exit();
+            } else {
+                $this->Response()->setHttpResponseCode(200);
+                $this->Response()->setBody(json_encode([
+                    'id' => $user['customernumber'],
+                    'mail' => $user['email'],
+                    'first_name' => $user['firstname'],
+                    'last_name' => $user['lastname'],
+                    'birthday' => $user['birthday'],
+                    'customer_groups' => $user['customergroup'],
+                    'session_id' => $user['sessionID']
+                ]));
+                $this->Response()->sendResponse();
+                exit();
+            }
         } else {
             $error = $this->admin->sLogin();
         }
-
-        $this->Response()->setHeader('Content-Type', 'application/json');
 
         if (!empty($error['sErrorMessages'])) {
             $this->Response()->setHttpResponseCode(401);
@@ -758,6 +816,62 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         } else {
             $this->redirect('account#show-registration');
         }
+    }
+
+    protected function verifyUser($email, $hash)
+    {
+        if (empty($email)) {
+            $sErrorFlag['email'] = true;
+        }
+        if (empty($hash)) {
+            $sErrorFlag['password'] = true;
+        }
+
+        $addScopeSql = '';
+        if ($this->scopedRegistration == true) {
+            $addScopeSql = $this->db->quoteInto(' AND subshopID = ? ', $this->subshopId);
+        }
+
+        $preHashedSql = $this->db->quoteInto(' AND password = ? ', $hash);
+
+        $sql = '
+                SELECT id, customergroup, password, encoder
+                FROM s_user WHERE email = ? AND active=1
+                AND (lockeduntil < now() OR lockeduntil IS NULL) '
+            . $addScopeSql
+            . $preHashedSql;
+
+        $getUser = $this->db->fetchRow($sql, [$email]) ?: [];
+
+        if (!count($getUser)) {
+            $isValidLogin = false;
+        } else {
+            $encoderName = 'Prehashed';
+
+            $plaintext = $hash;
+            $password = $getUser['password'];
+
+            $isValidLogin = $this->passwordEncoder->isPasswordValid($plaintext, $password, $encoderName);
+        }
+
+        if (!$isValidLogin) {
+            $sErrorMessages = [];
+            $sErrorMessages['sErrorMessages'] = 'your account is invalid';
+            return $sErrorMessages;
+        }
+
+        $userId = $getUser['id'];
+        $sql = '
+            SELECT * FROM s_user
+            WHERE password = ? AND email = ? AND id = ?
+            AND UNIX_TIMESTAMP(lastlogin) >= (UNIX_TIMESTAMP(now())-?)
+        ';
+
+        $user = $this->db->fetchRow(
+            $sql, [$hash, $email, $userId, 7200,]
+        );
+
+        return $user;
     }
 
     /**

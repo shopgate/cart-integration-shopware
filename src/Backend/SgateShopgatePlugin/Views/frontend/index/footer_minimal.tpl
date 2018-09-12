@@ -474,10 +474,11 @@
                     )
                 {rdelim}
                 {if $sgActionName === 'shippingPayment'}
-                    {if $sgIsNewCustomer && $sgCustomerNumber}
+                    {if $sgIsNewCustomer && $sgEmail && $sgHash }
                         window.SGAppConnector.sendPipelineRequest(
-                            'shopgate.user.loginUser.v1', true,
-                            {ldelim}'strategy': 'auth_code', 'parameters': {ldelim}'sessionId': '{$sgSessionId}', 'customerNumber': '{$sgCustomerNumber}'{rdelim}{rdelim},
+                            'shopgate.user.loginUser.v1',
+                            true,
+                            {ldelim}'strategy': 'auth_code', 'parameters': {ldelim}'email': '{$sgEmail}', 'hash': '{$sgHash}'{rdelim}{rdelim},
                             function (err, serial, output) {ldelim}
                                 var commands = [
                                     {ldelim}
