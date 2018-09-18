@@ -27,6 +27,9 @@
             })();
             {/literal}
         </script>
+        <style type="text/css">
+            {$sgCustomCss}
+        </style>
     {/if}
 {/block}
 {block name='frontend_index_left_last_articles'}

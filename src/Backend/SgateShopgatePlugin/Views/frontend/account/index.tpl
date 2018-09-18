@@ -442,6 +442,9 @@
                 })();
                 {/literal}
             </script>
+            <style type="text/css">
+                {$sgCustomCss}
+            </style>
         {/if}
         {if $sgWebCheckout && !$sgForgotPassword}
             <script type="text/javascript">

@@ -918,6 +918,17 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             );
 
         $formElementTextfield                 = new FormElementTextfield();
+        $formElementOptionsContainerTextfield = new FormElementOptionsContainerTextfield();
+        $formElements[]                  = $formElementTextfield
+            ->setKey('SGATE_CUSTOM_CSS')
+            ->setOptions(
+                $formElementOptionsContainerTextfield
+                    ->setLabel('CSS Anpassungen Webcheckout')
+                    ->setDescription('Hier können Sie CSS Anpassungen für den Webcheckout Ihrer Shopgate App hinterlegen')
+                    ->setPosition($position++)
+            );
+
+        $formElementTextfield                 = new FormElementTextfield();
         $formElementOptionsContainerTextfield = new FormElementOptionsContainerTextfield;
         $formElements[]                       = $formElementTextfield
             ->setKey(ShopwareShopgatePluginConfig::HIDDEN_CONFIG_IDENTIFIER)
@@ -1162,6 +1173,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $view->assign('sgIsNewCustomer', false);
             $view->assign('sgHash', false);
             $view->assign('sgEmail', false);
+
+            $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+            $view->assign('sgCustomCss', $customCss);
         }
 
         if ($args->getRequest()->getActionName() === 'shippingPayment') {
@@ -1228,6 +1242,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->addTemplateDir(__DIR__ . '/Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
         $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
     }
 
     /**
@@ -1251,12 +1268,18 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgHash', $hash);
         $view->assign('sgEmail', $email);
         $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
     }
 
     public function onFrontendPassword(\Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->assign('sgForgotPassword', true);
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
     }
 
     public function onFrontendCustom(\Enlight_Event_EventArgs $args)
@@ -1264,6 +1287,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view = $args->getSubject()->View();
         $view->addTemplateDir($this->Path() . 'Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
     }
 
     /**
@@ -1416,5 +1442,19 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         }
 
         return false;
+    }
+
+    /**
+     * @return Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config
+     */
+    protected function getConfig()
+    {
+        static $config = null;
+
+        if (!$config) {
+            $config = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
+        }
+
+        return $config;
     }
 }

@@ -461,6 +461,9 @@
                 })();
                 {/literal}
             </script>
+            <style type="text/css">
+                {$sgCustomCss}
+            </style>
         {/if}
         {if $sgActionName === 'confirm' || $sgActionName === 'shippingPayment'}
             <script type="text/javascript">
