@@ -451,8 +451,12 @@ class ShopgatePluginShopware extends ShopgatePlugin
         }
         $oCustomer        = Shopware()->Models()->find("\Shopware\Models\Customer\Customer", $userId);
         $customerGroupKey = $userData['customergroup'];
-        $oBilling         = $oCustomer->getBilling();
-        $oShipping        = $oCustomer->getShipping();
+        $oBilling         = $this->config->assertMinimumVersion('5.5.0')
+            ? $oCustomer->getDefaultBillingAddress()
+            : $oCustomer->getBilling();
+        $oShipping        = $this->config->assertMinimumVersion('5.5.0')
+            ? $oCustomer->getDefaultShippingAddress()
+            : $oCustomer->getShipping();
 
         if (!$oShipping && $oBilling) {
             $oShipping = $oBilling;
@@ -547,13 +551,21 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $oInvoiceAddress->setCity($oBilling->getCity());
         $oInvoiceAddress->setBirthday($userData->getBirthday());
 
-        $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $oBilling->getCountryId());
+        $countryId = $this->config->assertMinimumVersion('5.5.0')
+            ? $oBilling->getCountry()->getId()
+            : $oBilling->getCountryId();
+
+        $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $countryId);
         $oInvoiceAddress->setCountry($oCountry->getIso());
         $oInvoiceAddress->setPhone($oBilling->getPhone());
 
-        if ($oBilling->getStateId()) {
+        $stateId = $this->config->assertMinimumVersion('5.5.0')
+            ? $oBilling->getState()->getId()
+            : $oBilling->getStateId();
+
+        if ($stateId) {
             /** @var Shopware\Models\Country\State $state */
-            $state = Shopware()->Models()->find('\Shopware\Models\Country\State', $oBilling->getStateId());
+            $state = Shopware()->Models()->find('\Shopware\Models\Country\State', $stateId);
             $oInvoiceAddress->setState($oCountry->getIso() . '-' . $state->getShortCode());
         }
 
@@ -585,12 +597,21 @@ class ShopgatePluginShopware extends ShopgatePlugin
         }
         $oShippingAddress->setZipcode($oShipping->getZipCode());
         $oShippingAddress->setCity($oShipping->getCity());
-        $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $oShipping->getCountryId());
+
+        $countryId = $this->config->assertMinimumVersion('5.5.0')
+            ? $oShipping->getCountry()->getId()
+            : $oShipping->getCountryId();
+
+        $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $countryId);
         $oShippingAddress->setCountry($oCountry->getIso());
 
-        if ($oShipping->getStateId()) {
+        $stateId = $this->config->assertMinimumVersion('5.5.0')
+            ? $oShipping->getState()->getId()
+            : $oShipping->getStateId();
+
+        if ($stateId) {
             /** @var Shopware\Models\Country\State $state */
-            $state = Shopware()->Models()->find('\Shopware\Models\Country\State', $oShipping->getStateId());
+            $state = Shopware()->Models()->find('\Shopware\Models\Country\State', $stateId);
             $oShippingAddress->setState($oCountry->getIso() . '-' . $state->getShortCode());
         }
 
@@ -3191,13 +3212,18 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function _fillShippingAddressAttributes(\Shopware\Models\Customer\Customer $customer)
     {
-        $shipping = $customer->getShipping();
+        $shipping = $this->config->assertMinimumVersion('5.5.0')
+            ? $customer->getDefaultShippingAddress()
+            : $customer->getShipping();
 
         if (!is_object($shipping) || null !== $shipping->getAttribute()) {
             return;
         }
 
-        $customerShippingAttribute = new \Shopware\Models\Attribute\CustomerShipping();
+        $customerShippingAttribute = $this->config->assertMinimumVersion('5.5.0')
+            ? new \Shopware\Models\Attribute\CustomerAddress()
+            : new \Shopware\Models\Attribute\CustomerShipping();
+
         $shipping->setAttribute($customerShippingAttribute);
         Shopware()->Models()->persist($shipping);
     }
@@ -3207,13 +3233,18 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function _fillBillingAddressAttributes(\Shopware\Models\Customer\Customer $customer)
     {
-        $billing = $customer->getBilling();
+        $billing = $this->config->assertMinimumVersion('5.5.0')
+            ? $customer->getDefaultBillingAddress()
+            : $customer->getBilling();
 
         if (!is_object($billing) || null !== $billing->getAttribute()) {
             return;
         }
 
-        $customerBillingAttribute = new \Shopware\Models\Attribute\CustomerBilling();
+        $customerBillingAttribute = $this->config->assertMinimumVersion('5.5.0')
+            ? new \Shopware\Models\Attribute\CustomerAddress()
+            : new \Shopware\Models\Attribute\CustomerBilling();
+
         $billing->setAttribute($customerBillingAttribute);
         Shopware()->Models()->persist($billing);
     }
