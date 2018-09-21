@@ -1148,17 +1148,18 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         $quantity = max(1, (int) $quantity);
         $inStock = $this->getAvailableStock($orderNumber);
-        $inStock['quantity'] += $quantity;
+
+        $inStock['quantity'] = (int)$quantity;
 
         if (empty($inStock['articleID'])) {
             return Shopware()->Snippets()->getNamespace('frontend')->get('CheckoutArticleNotFound',
                 'Product could not be found.', true);
         }
         if (!empty($inStock['laststock']) || !empty(Shopware()->Config()->InstockInfo)) {
-            if ($inStock['instock'] <= 0 && !empty($inStock['laststock'])) {
+            if ((int)$inStock['instock'] <= 0 && !empty($inStock['laststock'])) {
                 return Shopware()->Snippets()->getNamespace('frontend')->get('CheckoutArticleNoStock',
                     'Unfortunately we can not deliver the desired product in sufficient quantity', true);
-            } elseif ($inStock['instock'] < $inStock['quantity']) {
+            } elseif ((int)$inStock['instock'] < (int)$inStock['quantity']) {
                 $result = 'Unfortunately we can not deliver the desired product in sufficient quantity. (#0 of #1 in stock).';
                 $result = Shopware()->Snippets()->getNamespace('frontend')->get('CheckoutArticleLessStock', $result,
                     true);
