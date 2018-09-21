@@ -511,7 +511,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             session_id($sessionId);
         }
 
-        $response = $this->addArticlesToCart($articles);
+        $response = $this->addArticlesToCart($articles, $sessionId);
         if ($response) {
             $this->Response()->setHttpResponseCode(400);
             $this->Response()->setBody(json_encode($response));
@@ -637,7 +637,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      * Adds an array of articles to the cart based on an array of article IDs
      *
      */
-    protected function addArticlesToCart($articles)
+    protected function addArticlesToCart($articles, $sessionId)
     {
         $response = []; // Contains only errors
 
@@ -653,10 +653,31 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                     $orderNumber = $product['ordernumber'];
                 }
 
-                if ($infoMessage = $this->getInstockInfo($orderNumber, $article['quantity'])) {
-                    $response[$articleId] = $this->getInstockInfo($orderNumber, $article['quantity']);
+                $builder = Shopware()->Models()->getConnection()->createQueryBuilder();
+
+                $builder->select('id', 'quantity')
+                    ->from('s_order_basket', 'basket')
+                    ->where('articleID = :articleId')
+                    ->andWhere('sessionID = :sessionId')
+                    ->andWhere('ordernumber = :ordernumber')
+                    ->andWhere('modus != 1')
+                    ->setParameter('articleId', $product['articleID'])
+                    ->setParameter('sessionId', $sessionId)
+                    ->setParameter('ordernumber', $orderNumber);
+
+                $statement = $builder->execute();
+
+                $quantity =  $article['quantity'];
+
+                if ($basketProduct = $statement->fetch()) {
+                    $quantity +=  $basketProduct['quantity'];
                 }
-                $this->basket->sAddArticle($orderNumber, $article['quantity']);
+
+                if ($infoMessage = $this->getInstockInfo($orderNumber, $quantity)) {
+                    $response[$articleId] = $infoMessage;
+                } else {
+                    $this->basket->sAddArticle($orderNumber, $article['quantity']);
+                }
             } else {
                 // Fallback error message isn't translated.
                 $response[$articleId] = 'Could not find article with id in cart!';
@@ -1149,7 +1170,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $quantity = max(1, (int) $quantity);
         $inStock = $this->getAvailableStock($orderNumber);
 
-        $inStock['quantity'] = (int)$quantity;
+        $inStock['quantity'] = $quantity;
 
         if (empty($inStock['articleID'])) {
             return Shopware()->Snippets()->getNamespace('frontend')->get('CheckoutArticleNotFound',
