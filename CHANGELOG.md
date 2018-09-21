@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- compatibility with Shopware 5.5.x
+
 ## [2.9.81] - 2018-08-22
 ### Fixed
 - order import error with customer was not found
