@@ -602,6 +602,13 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $oShippingAddress->setZipcode($oShipping->getZipCode());
         $oShippingAddress->setCity($oShipping->getCity());
 
+        $countryId = $this->config->assertMinimumVersion('5.5.0')
+            ? $oShipping->getCountry()->getId()
+            : $oShipping->getCountryId();
+
+        $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $countryId);
+        $oShippingAddress->setCountry($oCountry->getIso());
+
         if ($this->config->assertMinimumVersion('5.5.0')) {
             $stateId = $oShipping->getState()
                 ? $oShipping->getState()->getId()
@@ -609,13 +616,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
         } else {
             $stateId = $oShipping->getStateId();
         }
-
-        $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $countryId);
-        $oShippingAddress->setCountry($oCountry->getIso());
-
-        $stateId = $this->config->assertMinimumVersion('5.5.0')
-            ? $oShipping->getState()->getId()
-            : $oShipping->getStateId();
 
         if ($stateId) {
             /** @var Shopware\Models\Country\State $state */
