@@ -559,9 +559,13 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $oInvoiceAddress->setCountry($oCountry->getIso());
         $oInvoiceAddress->setPhone($oBilling->getPhone());
 
-        $stateId = $this->config->assertMinimumVersion('5.5.0')
-            ? $oBilling->getState()->getId()
-            : $oBilling->getStateId();
+        if ($this->config->assertMinimumVersion('5.5.0')) {
+            $stateId = $oBilling->getState()
+                ? $oBilling->getState()->getId()
+                : null;
+        } else {
+            $stateId = $oBilling->getStateId();
+        }
 
         if ($stateId) {
             /** @var Shopware\Models\Country\State $state */
@@ -598,9 +602,13 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $oShippingAddress->setZipcode($oShipping->getZipCode());
         $oShippingAddress->setCity($oShipping->getCity());
 
-        $countryId = $this->config->assertMinimumVersion('5.5.0')
-            ? $oShipping->getCountry()->getId()
-            : $oShipping->getCountryId();
+        if ($this->config->assertMinimumVersion('5.5.0')) {
+            $stateId = $oShipping->getState()
+                ? $oShipping->getState()->getId()
+                : null;
+        } else {
+            $stateId = $oShipping->getStateId();
+        }
 
         $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $countryId);
         $oShippingAddress->setCountry($oCountry->getIso());
