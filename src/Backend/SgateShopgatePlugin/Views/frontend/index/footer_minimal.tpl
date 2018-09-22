@@ -473,35 +473,35 @@
                         false,
                         {ldelim}'sessionId': '{$sgSessionId}'{rdelim},
                         function (err, serial, output) {ldelim}
+                            {if $sgActionName === 'shippingPayment'}
+                                {if $sgIsNewCustomer && $sgEmail && $sgHash }
+                                    window.SGAppConnector.sendPipelineRequest(
+                                        'shopgate.user.loginUser.v1',
+                                        true,
+                                        {ldelim}'strategy': 'auth_code', 'parameters': {ldelim}'email': '{$sgEmail}', 'hash': '{$sgHash}'{rdelim}{rdelim},
+                                        function (err, serial, output) {ldelim}
+                                            var commands = [
+                                                {ldelim}
+                                                    'c': 'broadcastEvent',
+                                                    'p': {ldelim}
+                                                        'event': 'userLoggedIn'
+                                                        {rdelim}
+                                                    {rdelim},
+                                                {ldelim}
+                                                    'c': 'broadcastEvent',
+                                                    'p': {ldelim}
+                                                        'event': 'closeNotification'
+                                                        {rdelim}
+                                                    {rdelim}
+                                            ]
+                                            window.SGAppConnector.sendAppCommands(commands)
+                                        {rdelim}
+                                    )
+                                {/if}
+                            {/if}
                         {rdelim}
                     )
                 {rdelim}
-                {if $sgActionName === 'shippingPayment'}
-                    {if $sgIsNewCustomer && $sgEmail && $sgHash }
-                        window.SGAppConnector.sendPipelineRequest(
-                            'shopgate.user.loginUser.v1',
-                            true,
-                            {ldelim}'strategy': 'auth_code', 'parameters': {ldelim}'email': '{$sgEmail}', 'hash': '{$sgHash}'{rdelim}{rdelim},
-                            function (err, serial, output) {ldelim}
-                                var commands = [
-                                    {ldelim}
-                                        'c': 'broadcastEvent',
-                                        'p': {ldelim}
-                                            'event': 'userLoggedIn'
-                                        {rdelim}
-                                    {rdelim},
-                                    {ldelim}
-                                        'c': 'broadcastEvent',
-                                        'p': {ldelim}
-                                            'event': 'closeNotification'
-                                        {rdelim}
-                                    {rdelim}
-                                ]
-                                window.SGAppConnector.sendAppCommands(commands)
-                            {rdelim}
-                        )
-                    {/if}
-                {/if}
             </script>
         {/if}
     {/block}
