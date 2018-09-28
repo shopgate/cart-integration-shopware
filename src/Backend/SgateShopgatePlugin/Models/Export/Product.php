@@ -692,7 +692,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
                     continue;
                 }
 
-                $attr = $attribute->{"$methodName"}();
+                $attr = $attribute->$methodName();
                 if (!empty($attr)) {
                     $properties[$label][] = $attr;
                 }
