@@ -4805,7 +4805,11 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
             $detailOrderNumber = $item->getItemNumberPublic();
 
-            $insertId = $basket->sAddArticle($detailOrderNumber, $quantity);
+            try{
+                $insertId = $basket->sAddArticle($detailOrderNumber, $quantity);
+            } catch (Exception $e) {
+                $this->log("Error getting insertId in Validate Items." . $e->getMessage(), ShopgateLogger::LOGTYPE_ERROR);
+            }
 
             $isBuyable     = false;
             $qtyBuyable    = 0;
