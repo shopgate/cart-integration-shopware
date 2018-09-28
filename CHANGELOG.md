@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- support for custom attributes based on new database columns
+
 ## [2.9.82] - 2018-09-21
 ### Added
 - compatibility with Shopware 5.5.x
