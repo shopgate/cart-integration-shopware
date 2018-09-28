@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - support for custom attributes based on new database columns
 
+### Fixed
+- properly catch errors from shopware basked when validating items for check stock
+
 ## [2.9.82] - 2018-09-21
 ### Added
 - compatibility with Shopware 5.5.x
