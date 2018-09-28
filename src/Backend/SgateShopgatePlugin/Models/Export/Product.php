@@ -685,13 +685,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         $elements  = $this->exportComponent->getArticleElements();
         if ($attribute) {
             foreach ($elements as $attr => $label) {
+                $methodName = 'get' . str_replace('_', '', $attr);
                 if (!in_array($label, $this->getConfig()->getExportAttributes())
-                    || !method_exists($attribute, 'get' . $attr)
+                    || !method_exists($attribute, $methodName)
                 ) {
                     continue;
                 }
 
-                $attr = $attribute->{"get$attr"}();
+                $attr = $attribute->{"$methodName"}();
                 if (!empty($attr)) {
                     $properties[$label][] = $attr;
                 }
