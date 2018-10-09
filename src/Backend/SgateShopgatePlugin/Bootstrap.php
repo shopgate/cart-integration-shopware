@@ -1171,6 +1171,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $view->assign('sgActionName', $args->getRequest()->getActionName());
             $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
             $view->assign('sgIsNewCustomer', false);
+            $view->assign('sgFrontendAccount', false);
+            $view->assign('sgFrontendRegister', false);
             $view->assign('sgHash', false);
             $view->assign('sgEmail', false);
 
@@ -1241,6 +1243,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgFrontendRegister', true);
+        $view->assign('sgForgotPassword', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgActionName', false);
         $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
 
         $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
@@ -1258,6 +1264,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->addTemplateDir($this->Path() . 'Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
         $view->assign('sgForgotPassword', false);
+        $view->assign('sgFrontendAccount', true);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgActionName', false);
 
         $user = Shopware()->Modules()->Admin()->sGetUserData();
         $user = $user['additional']['user'];
@@ -1277,6 +1286,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         $view = $args->getSubject()->View();
         $view->assign('sgForgotPassword', true);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgActionName', false);
 
         $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
         $view->assign('sgCustomCss', $customCss);
@@ -1287,6 +1299,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view = $args->getSubject()->View();
         $view->addTemplateDir($this->Path() . 'Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgForgotPassword', false);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgActionName', false);
 
         $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
         $view->assign('sgCustomCss', $customCss);
