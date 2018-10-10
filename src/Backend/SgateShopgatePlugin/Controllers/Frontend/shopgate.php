@@ -391,7 +391,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $basket = $this->basket->sGetBasket();
 
         if (!isset($basket)) {
-            $this->Response()->setHttpResponseCode(400);
+            $this->Response()->setHttpResponseCode(401);
             $this->Response()->setHeader('Content-Type', 'application/json');
             $this->Response()->setBody(json_encode($basket));
             $this->Response()->sendResponse();
@@ -502,7 +502,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $sessionId = $params['sessionId'];
 
         if (!isset($articles)) {
-            $this->Response()->setHttpResponseCode(400);
+            $this->Response()->setHttpResponseCode(401);
             $this->Response()->setBody(json_encode(['message' => 'The request doesn\'t contain an \'articles\' parameter!']));
         }
 
@@ -513,7 +513,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         $response = $this->addArticlesToCart($articles, $sessionId);
         if ($response) {
-            $this->Response()->setHttpResponseCode(400);
+            $this->Response()->setHttpResponseCode(401);
             $this->Response()->setBody(json_encode($response));
         } else {
             $sessionId = $this->session->get('sessionId');
