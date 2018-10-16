@@ -405,6 +405,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $basket['sCurrencyId'] = $currency->getId();
         $basket['sCurrencyName'] = $currency->getCurrency();
         $basket['sCurrencyFactor'] = $currency->getFactor();
+        $basket['sCurrencySymbol'] = $currency->getSymbol();
 
         $basket['sShippingcostsWithTax'] = $shippingcosts['brutto'];
         $basket['sShippingcostsNet'] = $shippingcosts['netto'];
