@@ -457,6 +457,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             ]);
         }
 
+        $basket = $this->basket->sGetBasket();
+
         $token = $this->Request()->getParam('token');
         if (isset($token)) {
             $key = trim($this->getConfig()->getApikey());
@@ -479,7 +481,12 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 throw new Exception($checkUser['sErrorMessages'][0] , 400);
             }
 
+            $this->basket->clearBasket();
             $this->basket->sRefreshBasket();
+
+            foreach ($basket['content'] as $basketItem) {
+                $this->basket->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
+            }
         }
 
         $this->session->offsetSet('sgWebView', true);
