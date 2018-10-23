@@ -481,11 +481,13 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 throw new Exception($checkUser['sErrorMessages'][0] , 400);
             }
 
-            $this->basket->clearBasket();
             $this->basket->sRefreshBasket();
+            if (!empty($basket['content'])) {
+                $this->basket->clearBasket();
 
-            foreach ($basket['content'] as $basketItem) {
-                $this->basket->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
+                foreach ($basket['content'] as $basketItem) {
+                    $this->basket->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
+                }
             }
         }
 
@@ -715,6 +717,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             session_id($sessionId);
         }
 
+        $basket = $this->basket->sGetBasket();
+
         $this->Response()->setHeader('Content-Type', 'application/json');
 
         if (isset($hash)) {
@@ -748,6 +752,16 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $this->Response()->setHttpResponseCode(401);
             $this->Response()->setBody(json_encode($error));
         } else {
+
+            if (!empty($basket['content'])) {
+                $this->basket->clearBasket();
+                $this->basket->sRefreshBasket();
+
+                foreach ($basket['content'] as $basketItem) {
+                    $this->basket->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
+                }
+            }
+
             $user = $this->admin->sGetUserData();
             $user = $user['additional']['user'];
 
