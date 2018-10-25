@@ -399,6 +399,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                 'Enlight_Controller_Action_Frontend_Account_Password',
                 'onFrontendPassword'
             );
+
+            $this->subscribeEvent(
+                'Shopgate_Frontend_Custom_Event',
+                'onCustomEvent'
+            );
         }
     }
 
@@ -1158,6 +1163,26 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     }
 
     /**
+     * Modifies custom views
+     *
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function onCustomEvent(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir(__DIR__ . '/Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgFrontendRegister', true);
+        $view->assign('sgForgotPassword', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgActionName', false);
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
+    }
+
+    /**
      * Modifies the checkout view when the user agent is the shopgate app's web view
      *
      * @param Enlight_Event_EventArgs $args
@@ -1243,7 +1268,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
-        $view->assign('sgFrontendRegister', true);
+        $view->assign('sgFrontendRegister', false);
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendAccount', false);
         $view->assign('sgActionName', false);
