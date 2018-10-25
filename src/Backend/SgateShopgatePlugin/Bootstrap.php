@@ -1172,7 +1172,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
-        $view->assign('sgFrontendRegister', true);
+        $view->assign('sgFrontendRegister', false);
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendAccount', false);
         $view->assign('sgActionName', false);
@@ -1268,7 +1268,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
-        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgFrontendRegister', true);
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendAccount', false);
         $view->assign('sgActionName', false);
