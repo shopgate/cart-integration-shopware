@@ -1211,11 +1211,15 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $hash = $user['password'];
             $email = $user['email'];
 
-            if ($user['accountmode'] === '0') {
+            if ($user['accountmode'] === '0' && !Shopware()->Session()->offsetGet('registeredUser')) {
                 $view->assign('sgIsNewCustomer', true);
                 $view->assign('sgHash', $hash);
                 $view->assign('sgEmail', $email);
             }
+        }
+
+        if ($args->getRequest()->getActionName() === 'confirm') {
+            Shopware()->Session()->offsetSet('registeredUser', true);
         }
 
         if ($args->getRequest()->getActionName() === 'finish') {
