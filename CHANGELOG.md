@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Added
 - support for custom attributes based on new database columns
+- support for the new Shopware PayPal Plus Plugin
 ### Fixed
 - catch Shopware basket errors when validating items during check_stock
 

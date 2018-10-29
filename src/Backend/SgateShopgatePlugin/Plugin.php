@@ -284,6 +284,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
             /** @see ShopgatePluginShopware::insertPayolutionOrderData */
             'insertPaypalPlusOrderData',
             /** @see ShopgatePluginShopware::insertPaypalPlusOrderData */
+            'insertPaypalUnifiedOrderData',
+            /** @see ShopgatePluginShopware::insertPaypalUnifiedOrderData */
             'insertSepaOrderData',
             /** @see ShopgatePluginShopware::insertSepaOrderData */
             'insertAmazonPaymentsOrderData',
@@ -2533,6 +2535,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
             if ($this->isPaypalPlusOrder($shopgateOrder)) {
                 return $shopgateOrder->getPaymentTransactionNumber();
             }
+            if ($this->isPaypalUnifiedOrder($shopgateOrder)) {
+                return $shopgateOrder->getPaymentTransactionNumber();
+            }
             if ($this->isBillsafeOrder($shopgateOrder)) {
                 return $shopgateOrder->getPaymentTransactionNumber();
             }
@@ -2906,6 +2911,62 @@ class ShopgatePluginShopware extends ShopgatePlugin
     }
 
     /**
+     * Set payment instructions for PP+ orders (only invoice) for the SwagPaymentPayPalUnified plugin
+     *
+     * @param Order         $order
+     * @param ShopgateOrder $shopgateOrder
+     *
+     * @return Order
+     */
+    protected function insertPaypalUnifiedOrderData(Order $order, ShopgateOrder $shopgateOrder)
+    {
+        if ($this->isPaypalUnifiedOrder($shopgateOrder)) {
+            $paymentInfos = $shopgateOrder->getPaymentInfos();
+            $orderNumber  = $order->getNumber();
+
+            if (!empty($paymentInfos['payment_info']['payment_instruction'])) {
+                $instructions   = $paymentInfos['payment_info']['payment_instruction'];
+                $amountValue    = $shopgateOrder->getAmountComplete();
+
+                $insertQuery = "INSERT INTO swag_payment_paypal_unified_payment_instruction (
+                      order_number,
+                      bank_name,
+                      account_holder,
+                      iban,
+                      bic,
+                      amount,
+                      reference,
+                      due_date
+                  ) VALUES (
+                      :order_number,
+                      :bank_name,
+                      :account_holder,
+                      :iban,
+                      :bic,
+                      :amount,
+                      :reference,
+                      :due_date
+                );";
+
+                $parameter = array(
+                    'order_number'     => $orderNumber,
+                    'bank_name'        => $instructions['recipient_banking_instruction']['bank_name'],
+                    'account_holder'   => $instructions['recipient_banking_instruction']['account_holder_name'],
+                    'iban'             => $instructions['recipient_banking_instruction']['international_bank_account_number'],
+                    'bic'              => $instructions['recipient_banking_instruction']['bank_identifier_code'],
+                    'amount'           => $amountValue,
+                    'reference'        => $instructions['reference_number'],
+                    'due_date'         => $instructions['payment_due_date'],
+                );
+
+                Shopware()->Db()->query($insertQuery, $parameter);
+            }
+        }
+
+        return $order;
+    }
+
+    /**
      * Set payment instructions for SEPA orders
      *
      * @param Order         $order
@@ -3037,6 +3098,17 @@ class ShopgatePluginShopware extends ShopgatePlugin
         return $shopgateOrder->getPaymentMethod() == ShopgateOrder::PPAL_PLUS
             && $this->config->isModuleEnabled('SwagPaymentPaypal')
             && $this->config->isModuleEnabled('SwagPaymentPaypalPlus');
+    }
+
+    /**
+     * @param ShopgateOrder $shopgateOrder
+     *
+     * @return bool
+     */
+    protected function isPaypalUnifiedOrder(ShopgateOrder $shopgateOrder)
+    {
+        return $shopgateOrder->getPaymentMethod() == ShopgateOrder::PPAL_PLUS
+            && $this->config->isModuleEnabled('SwagPaymentPayPalUnified');
     }
 
     /**
@@ -4007,6 +4079,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
                     ? "paypal"
                     : $fallbackPaymentMethodName;
             case ShopgateOrder::PPAL_PLUS:
+                if ($this->config->isModuleEnabled('SwagPaymentPayPalUnified')) {
+                    return "SwagPaymentPayPalUnified";
+                }
                 return (
                     $this->config->isModuleEnabled('SwagPaymentPaypal')
                     && $this->config->isModuleEnabled(
