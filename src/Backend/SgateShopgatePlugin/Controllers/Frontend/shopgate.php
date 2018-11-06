@@ -381,7 +381,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     }
 
     /**
-     *
+     * Custom function to get the cart
      */
     public function getCartAction()
     {
@@ -421,7 +421,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         if (!empty($basket['AmountWithTaxNumeric'])) {
             $basket['AmountWithTaxNumeric'] += $shippingcosts['brutto'];
         }
-        if ((!Shopware()->System()->sUSERGROUPDATA['tax'] && Shopware()->System()->sUSERGROUPDATA['id'])) {
+        if (!Shopware()->System()->sUSERGROUPDATA['tax'] && Shopware()->System()->sUSERGROUPDATA['id']) {
             $basket['sTaxRates'] = $this->getTaxRates($basket);
 
             $basket['sShippingcosts'] = $shippingcosts['netto'];
@@ -444,6 +444,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         exit();
     }
 
+    /**
+     * Custom function to login user and redirect to account view
+     */
     public function accountAction()
     {
         $sessionId = $this->Request()->getParam('sessionId');
@@ -485,6 +488,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->redirect('account');
     }
 
+    /**
+     * Custom function to login user and redirect to orders view
+     */
     public function accountOrdersAction()
     {
         $sessionId = $this->Request()->getParam('sessionId');
@@ -527,7 +533,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     }
 
     /**
-     *
+     * Custom action to login user and redirect to checkout
      */
     public function checkoutAction()
     {
@@ -619,6 +625,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         exit();
     }
 
+    /**
+     * Custom function to add coupon to cart
+     */
     public function addCouponsCodeAction()
     {
         if (!$this->Request()->isPost()) {
@@ -644,6 +653,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         exit();
     }
 
+    /**
+     * Custom function to delete article from cart
+     */
     public function deleteCartItemAction()
     {
         if (!$this->Request()->isDelete()) {
@@ -669,6 +681,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         exit();
     }
 
+    /**
+     * Custom function to update a cart item
+     */
     public function updateCartItemAction()
     {
         if (!$this->Request()->isPut()) {
@@ -703,6 +718,13 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         exit();
     }
 
+    /**
+     * Verify if item quantity is in stock
+     *
+     * @param $basketId
+     * @param $quantity
+     * @return null|string
+     */
     protected function verifyItemStock($basketId, $quantity)
     {
         $basket = $this->basket->sGetBasket();
@@ -711,8 +733,12 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 return $this->getInstockInfo($basketItem['ordernumber'], $quantity);
             }
         }
+        return null;
     }
 
+    /**
+     * @return mixed
+     */
     protected function getJsonParams()
     {
         $header = $this->Request()->getHeader('Content-Type');
@@ -730,6 +756,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     /**
      * Adds an array of articles to the cart based on an array of article IDs
      *
+     * @param $articles
+     * @param $sessionId
+     * @return array
      */
     protected function addArticlesToCart($articles, $sessionId)
     {
@@ -945,6 +974,13 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         }
     }
 
+    /**
+     * Verify if user credentials are valid
+     *
+     * @param $email
+     * @param $hash
+     * @return array
+     */
     protected function verifyUser($email, $hash)
     {
         if (empty($email)) {
@@ -1408,7 +1444,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      * @param string            $msg        The original message (header and body)
      * @param string            $signature  The original signature
      * @param string|resource   $key        For HS*, a string key works. for RS*, must be a resource of an openssl public key
-     * @param string            $alg        The algorithm
      *
      * @return bool
      *
