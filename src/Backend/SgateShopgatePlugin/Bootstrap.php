@@ -1172,6 +1172,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgAccountView', false);
         $view->assign('sgFrontendRegister', false);
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendAccount', false);
@@ -1195,6 +1196,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $view->assign('sgWebCheckout', $this->isInWebView($args));
             $view->assign('sgActionName', $args->getRequest()->getActionName());
             $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+            $view->assign('sgAccountView', false);
             $view->assign('sgIsNewCustomer', false);
             $view->assign('sgFrontendAccount', false);
             $view->assign('sgFrontendRegister', false);
@@ -1272,6 +1274,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgAccountView', false);
         $view->assign('sgFrontendRegister', true);
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendAccount', false);
@@ -1288,10 +1291,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     public function onFrontendAccount(\Enlight_Event_EventArgs $args)
     {
         $sgCloudCallbackData = Shopware()->Session()->offsetGet('sgCloudCallbackData');
+        $sgAccountView = $this->isAccountView();
 
         $view = $args->getSubject()->View();
         $view->addTemplateDir($this->Path() . 'Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgAccountView', $sgAccountView);
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendAccount', true);
         $view->assign('sgFrontendRegister', false);
@@ -1314,6 +1319,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     public function onFrontendPassword(\Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
+        $view->assign('sgAccountView', false);
         $view->assign('sgForgotPassword', true);
         $view->assign('sgFrontendRegister', false);
         $view->assign('sgFrontendAccount', false);
@@ -1328,6 +1334,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view = $args->getSubject()->View();
         $view->addTemplateDir($this->Path() . 'Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgAccountView', false);
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendRegister', false);
         $view->assign('sgFrontendAccount', false);
@@ -1483,6 +1490,20 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $shopgateApp = Shopware()->Session()->offsetGet('sgWebView');
 
         if ((isset($shopgateApp) && $shopgateApp) || (isset($shopgateAppCookie) && $shopgateAppCookie)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isAccountView()
+    {
+        $sgAccount = Shopware()->Session()->offsetGet('sgAccountView');
+
+        if ((isset($sgAccount) && $sgAccount)) {
             return true;
         }
 

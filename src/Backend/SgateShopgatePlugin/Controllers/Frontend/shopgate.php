@@ -132,7 +132,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             'addToCart',
             'deleteCartItem',
             'updateCartItem',
-            'addCouponsCode'
+            'addCouponsCode',
+            'account',
+            'accountOrders'
         );
     }
 
@@ -440,6 +442,47 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setBody(json_encode($basket));
         $this->Response()->sendResponse();
         exit();
+    }
+
+    public function accountAction()
+    {
+        $sessionId = $this->Request()->getParam('sessionId');
+
+        if (isset($sessionId)) {
+            session_write_close();
+            session_id($sessionId);
+            session_start([
+                'sessionId' => $sessionId
+            ]);
+        }
+
+        $token = $this->Request()->getParam('token');
+        if (isset($token)) {
+            $key = trim($this->getConfig()->getApikey());
+            $decoded = static::jwtDecode($token, $key);
+            $decoded = json_decode(json_encode($decoded), true);
+            $customerId = $decoded['customer_id'];
+
+            $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
+            $password = Shopware()->Db()->fetchCol($sql, [$customerId]);
+
+            $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
+            $email = Shopware()->Db()->fetchCol($sql, [$customerId]);
+
+            $this->Request()->setPost('email', $email[0]);
+            $this->Request()->setPost('passwordMD5', $password[0]);
+
+            $checkUser = $this->admin->sLogin(true);
+
+            if(isset($checkUser['sErrorFlag'])) {
+                throw new Exception($checkUser['sErrorMessages'][0] , 400);
+            }
+        }
+
+        $this->session->offsetSet('sgWebView', true);
+        $this->session->offsetSet('sgAccountView', true);
+
+        $this->redirect('account');
     }
 
     /**

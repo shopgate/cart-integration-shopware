@@ -123,7 +123,9 @@
             {if $sgFrontendAccount && !$sgForgotPassword}
                 <script type="text/javascript">
                     function initPipelineCall () {ldelim}
-                        window.location.href = '/account#show-registration';
+                        {if !$sgAccountView }
+                            window.location.href = '/account#show-registration';
+                        {/if}
                         window.SGAppConnector.sendPipelineRequest(
                             'onedot.checkout.updateSession.v1',
                             false,
@@ -145,15 +147,17 @@
                                                 'c': 'broadcastEvent',
                                                 'p': {ldelim}
                                                     'event': 'closeNotification'
-                                                    {rdelim}
-                                                {rdelim},
-                                            {ldelim}
-                                                'c': 'broadcastEvent',
-                                                'p': {ldelim}
-                                                    'event': 'closeInAppBrowser',
-                                                    'parameters': [{ldelim}'redirectTo': '/'{rdelim}]
+                                                {rdelim}
+                                            {rdelim},
+                                            {if !$sgAccountView }
+                                                {ldelim}
+                                                    'c': 'broadcastEvent',
+                                                    'p': {ldelim}
+                                                        'event': 'closeInAppBrowser',
+                                                        'parameters': [{ldelim}'redirectTo': '/'{rdelim}]
                                                     {rdelim}
                                                 {rdelim}
+                                            {/if}
                                         ]
                                         window.SGAppConnector.sendAppCommands(commands)
                                         {rdelim}
