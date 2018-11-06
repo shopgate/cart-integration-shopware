@@ -18,6 +18,11 @@
         {$smarty.block.parent}
     {/if}
 {/block}
+{block name="frontend_index_footer"}
+    {if !$sgWebCheckout}
+        {$smarty.block.parent}
+    {/if}
+{/block}
 {block name="frontend_index_page_wrap"}
     {$smarty.block.parent}
     {block name="frontend_index_shopgate_script"}

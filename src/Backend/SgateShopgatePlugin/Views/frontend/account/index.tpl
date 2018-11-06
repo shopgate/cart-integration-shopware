@@ -5,3 +5,8 @@
         {$smarty.block.parent}
     {/if}
 {/block}
+{block name='frontend_index_content_left'}
+    {if !$sgWebCheckout }
+        {$smarty.block.parent}
+    {/if}
+{/block}
