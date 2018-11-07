@@ -423,7 +423,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         if (!empty($basket['AmountWithTaxNumeric'])) {
             $basket['AmountWithTaxNumeric'] += $shippingcosts['brutto'];
         }
-        if (!Shopware()->System()->sUSERGROUPDATA['tax'] && Shopware()->System()->sUSERGROUPDATA['id']) {
+        if (!Shopware()->Modules()->System()->sUSERGROUPDATA['tax'] && Shopware()->Modules()->System()->sUSERGROUPDATA['id']) {
             $basket['sTaxRates'] = $this->getTaxRates($basket);
 
             $basket['sShippingcosts'] = $shippingcosts['netto'];
