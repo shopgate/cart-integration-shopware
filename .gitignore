@@ -1,7 +1,7 @@
 /.buildpath
 /.project
 /*.zip
-/.php-cs.cache
+/.php_cs.cache
 /nbproject
 /.settings
 /.idea
