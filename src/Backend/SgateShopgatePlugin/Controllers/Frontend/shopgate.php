@@ -456,9 +456,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         if (isset($sessionId)) {
             session_write_close();
             session_id($sessionId);
-            session_start([
+            session_start(array(
                 'sessionId' => $sessionId
-            ]);
+            ));
         }
 
         $token = $this->Request()->getParam('token');
@@ -470,17 +470,17 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $customerId = $decoded['customer_id'];
 
             $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
-            $password = Shopware()->Db()->fetchCol($sql, [$customerId]);
+            $password = Shopware()->Db()->fetchCol($sql, array($customerId));
 
             $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
-            $email = Shopware()->Db()->fetchCol($sql, [$customerId]);
+            $email = Shopware()->Db()->fetchCol($sql, array($customerId));
 
             $this->Request()->setPost('email', $email[0]);
             $this->Request()->setPost('passwordMD5', $password[0]);
 
             $checkUser = $this->admin->sLogin(true);
 
-            if(isset($checkUser['sErrorFlag'])) {
+            if (isset($checkUser['sErrorFlag'])) {
                 throw new Exception($checkUser['sErrorMessages'][0] , 400);
             }
         }
@@ -501,9 +501,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         if (isset($sessionId)) {
             session_write_close();
             session_id($sessionId);
-            session_start([
+            session_start(array(
                 'sessionId' => $sessionId
-            ]);
+            ));
         }
 
         $token = $this->Request()->getParam('token');
@@ -515,17 +515,17 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $customerId = $decoded['customer_id'];
 
             $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
-            $password = Shopware()->Db()->fetchCol($sql, [$customerId]);
+            $password = Shopware()->Db()->fetchCol($sql, array($customerId));
 
             $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
-            $email = Shopware()->Db()->fetchCol($sql, [$customerId]);
+            $email = Shopware()->Db()->fetchCol($sql, array($customerId));
 
             $this->Request()->setPost('email', $email[0]);
             $this->Request()->setPost('passwordMD5', $password[0]);
 
             $checkUser = $this->admin->sLogin(true);
 
-            if(isset($checkUser['sErrorFlag'])) {
+            if (isset($checkUser['sErrorFlag'])) {
                 throw new Exception($checkUser['sErrorMessages'][0] , 400);
             }
         }
@@ -546,9 +546,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         if (isset($sessionId)) {
             session_write_close();
             session_id($sessionId);
-            session_start([
+            session_start(array(
                 'sessionId' => $sessionId
-            ]);
+            ));
         }
 
         $basket = $this->basket->sGetBasket();
@@ -562,17 +562,17 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $customerId = $decoded['customer_id'];
 
             $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
-            $password = Shopware()->Db()->fetchCol($sql, [$customerId]);
+            $password = Shopware()->Db()->fetchCol($sql, array($customerId));
 
             $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
-            $email = Shopware()->Db()->fetchCol($sql, [$customerId]);
+            $email = Shopware()->Db()->fetchCol($sql, array($customerId));
 
             $this->Request()->setPost('email', $email[0]);
             $this->Request()->setPost('passwordMD5', $password[0]);
 
             $checkUser = $this->admin->sLogin(true);
 
-            if(isset($checkUser['sErrorFlag'])) {
+            if (isset($checkUser['sErrorFlag'])) {
                 throw new Exception($checkUser['sErrorMessages'][0] , 400);
             }
 
@@ -608,7 +608,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         if (!isset($articles)) {
             $this->Response()->setHttpResponseCode(401);
-            $this->Response()->setBody(json_encode(['message' => 'The request doesn\'t contain an \'articles\' parameter!']));
+            $this->Response()->setBody(json_encode(array('message' => 'The request doesn\'t contain an \'articles\' parameter!')));
         }
 
         if (isset($sessionId)) {
@@ -623,7 +623,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         } else {
             $sessionId = $this->session->get('sessionId');
             $this->Response()->setHttpResponseCode(201);
-            $this->Response()->setBody(json_encode(['sessionId'=> $sessionId]));
+            $this->Response()->setBody(json_encode(array('sessionId'=> $sessionId)));
         }
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->sendResponse();
@@ -710,10 +710,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         if ($error = $this->verifyItemStock($basketId, $quantity)) {
             $this->Response()->setHttpResponseCode(401);
-            $this->Response()->setBody(json_encode([
+            $this->Response()->setBody(json_encode(array(
                 'error' => true,
                 'reason' => $error
-            ]));
+            )));
         } else {
             $response = $this->basket->sUpdateArticle($basketId, $quantity);
             $this->Response()->setBody(json_encode($response));
@@ -734,7 +734,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     {
         $basket = $this->basket->sGetBasket();
         foreach ($basket['content'] as $basketItem) {
-            if($basketItem['id'] === $basketId) {
+            if ($basketItem['id'] === $basketId) {
                 return $this->getInstockInfo($basketItem['ordernumber'], $quantity);
             }
         }
@@ -767,10 +767,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     protected function addArticlesToCart($articles, $sessionId)
     {
-        $response = []; // Contains only errors
+        $response = array(); // Contains only errors
 
         foreach ($articles as $article) {
-
             $articleId = trim($article['product_id']);
             $orderNumber = trim($article['variant_id']);
 
@@ -829,7 +828,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $hash = $this->Request()->getPost('passwordMD5');
         $sessionId = $this->Request()->getPost('sessionId');
 
-        if(isset($sessionId)) {
+        if (isset($sessionId)) {
             //Set session id using both methods because standard shopware login merges basket with session_id
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
@@ -849,7 +848,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 exit();
             } else {
                 $this->Response()->setHttpResponseCode(200);
-                $this->Response()->setBody(json_encode([
+                $this->Response()->setBody(json_encode(array(
                     'id' => $user['customernumber'],
                     'mail' => $user['email'],
                     'first_name' => $user['firstname'],
@@ -857,7 +856,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                     'birthday' => $user['birthday'],
                     'customer_groups' => $user['customergroup'],
                     'session_id' => $user['sessionID']
-                ]));
+                )));
                 $this->Response()->sendResponse();
                 exit();
             }
@@ -869,7 +868,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $this->Response()->setHttpResponseCode(401);
             $this->Response()->setBody(json_encode($error));
         } else {
-
             if (!empty($basket['content'])) {
                 $this->basket->clearBasket();
                 $this->basket->sRefreshBasket();
@@ -883,7 +881,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $user = $user['additional']['user'];
 
             $this->Response()->setHttpResponseCode(200);
-            $this->Response()->setBody(json_encode([
+            $this->Response()->setBody(json_encode(array(
                 'id' => $user['customernumber'],
                 'mail' => $user['email'],
                 'first_name' => $user['firstname'],
@@ -891,7 +889,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 'birthday' => $user['birthday'],
                 'customer_groups' => $user['customergroup'],
                 'session_id' => $user['sessionID']
-            ]));
+            )));
         }
 
         $this->basket->sRefreshBasket();
@@ -905,7 +903,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function getUserAction()
     {
-
         $token = $this->Request()->getCookie('token');
 
         $key = trim($this->getConfig()->getApikey());
@@ -915,17 +912,17 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $customerId = $decoded['customer_id'];
 
         $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
-        $password = Shopware()->Db()->fetchCol($sql, [$customerId]);
+        $password = Shopware()->Db()->fetchCol($sql, array($customerId));
 
         $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
-        $email = Shopware()->Db()->fetchCol($sql, [$customerId]);
+        $email = Shopware()->Db()->fetchCol($sql, array($customerId));
 
         $this->Request()->setPost('email', $email[0]);
         $this->Request()->setPost('passwordMD5', $password[0]);
 
         $checkUser = $this->admin->sLogin(true);
 
-        if(isset($checkUser['sErrorFlag'])) {
+        if (isset($checkUser['sErrorFlag'])) {
             throw new Exception($checkUser['sErrorMessages'][0] , 400);
         }
 
@@ -934,15 +931,15 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $user = $this->admin->sGetUserData();
         $user = $user['additional']['user'];
 
-        $this->Response()->setBody(json_encode([
+        $this->Response()->setBody(json_encode(array(
             'id' => $user['customernumber'],
             'mail' => $user['email'],
             'firstName' => $user['firstname'],
             'lastName' => $user['lastname'],
             'birthday' => $user['birthday'],
             'customerGroups' => $user['customergroup'],
-            'addresses' => []
-        ]));
+            'addresses' => array()
+        )));
         $this->Response()->sendResponse();
         exit();
     }
@@ -952,7 +949,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function registrationAction()
     {
-
         $path = $this->Request()->getPathInfo();
         $segments = explode('/', trim($path, '/'));
 
@@ -961,9 +957,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         if (isset($sessionId)) {
             session_write_close();
             session_id($sessionId);
-            session_start([
+            session_start(array(
                 'sessionId' => $sessionId
-            ]);
+            ));
         }
 
         $sgCloud = $this->Request()->getParam('sgcloud_checkout');
@@ -971,7 +967,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->session->offsetSet('sgWebView', true);
         $this->Response()->setHeader('Set-Cookie', 'sgWebView=true; path=/; HttpOnly');
 
-        if(isset($sgCloud)) {
+        if (isset($sgCloud)) {
             $this->Response()->setHeader('Set-Cookie', 'session-1='.$sessionId.'; path=/; HttpOnly');
             $this->redirect('checkout/confirm#show-registration');
         } else {
@@ -1009,7 +1005,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             . $addScopeSql
             . $preHashedSql;
 
-        $getUser = $this->db->fetchRow($sql, [$email]) ?: [];
+        $getUser = $this->db->fetchRow($sql, array($email)) ?: array();
 
         if (!count($getUser)) {
             $isValidLogin = false;
@@ -1023,7 +1019,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         }
 
         if (!$isValidLogin) {
-            $sErrorMessages = [];
+            $sErrorMessages = array();
             $sErrorMessages['sErrorMessages'] = 'your account is invalid';
             return $sErrorMessages;
         }
@@ -1036,7 +1032,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         ';
 
         $user = $this->db->fetchRow(
-            $sql, [$hash, $email, $userId, 7200,]
+            $sql, array($hash, $email, $userId, 7200,)
         );
 
         return $user;
@@ -1070,11 +1066,11 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $country = $this->getSelectedCountry();
         $payment = $this->getSelectedPayment();
         if (empty($country) || empty($payment)) {
-            return ['brutto' => 0, 'netto' => 0];
+            return array('brutto' => 0, 'netto' => 0);
         }
         $shippingcosts = $this->admin->sGetPremiumShippingcosts($country);
 
-        return empty($shippingcosts) ? ['brutto' => 0, 'netto' => 0] : $shippingcosts;
+        return empty($shippingcosts) ? array('brutto' => 0, 'netto' => 0) : $shippingcosts;
     }
 
     /**
@@ -1231,7 +1227,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     private function getTaxRates($basket)
     {
-        $result = [];
+        $result = array();
 
         if (!empty($basket['sShippingcostsTax'])) {
             $basket['sShippingcostsTax'] = number_format((float) $basket['sShippingcostsTax'], 2);
@@ -1256,7 +1252,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 // Ticket 4842 - dynamic tax-rates
                 $resultVoucherTaxMode = Shopware()->Db()->fetchOne(
                     'SELECT taxconfig FROM s_emarketing_vouchers WHERE ordercode=?
-                ', [$item['ordernumber']]);
+                ', array($item['ordernumber']));
                 // Old behaviour
                 if (empty($resultVoucherTaxMode) || $resultVoucherTaxMode === 'default') {
                     $tax = Shopware()->Config()->get('sVOUCHERTAX');
@@ -1270,7 +1266,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                     // Fix defined tax
                     $tax = Shopware()->Db()->fetchOne('
                     SELECT tax FROM s_core_tax WHERE id = ?
-                    ', [$resultVoucherTaxMode]);
+                    ', array($resultVoucherTaxMode));
                 }
                 $item['tax_rate'] = $tax;
             } else {
@@ -1332,7 +1328,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 $result = Shopware()->Snippets()->getNamespace('frontend')->get('CheckoutArticleLessStock', $result,
                     true);
 
-                return str_replace(['#0', '#1'], [$inStock['instock'], $inStock['quantity']], $result);
+                return str_replace(array('#0', '#1'), array($inStock['instock'], $inStock['quantity']), $result);
             }
         }
 
@@ -1365,10 +1361,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             AND ob.modus=0
             WHERE a.id=ad.articleID
         ';
-        $row = Shopware()->Db()->fetchRow($sql, [
+        $row = Shopware()->Db()->fetchRow($sql, array(
             $ordernumber,
             Shopware()->Session()->get('sessionId'),
-        ]);
+        ));
 
         return $row;
     }

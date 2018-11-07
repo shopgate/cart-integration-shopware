@@ -1228,38 +1228,38 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $basket = $view->getAssign('sBasket');
             $orderNumber = $view->getAssign('sOrderNumber');
 
-            $params = [
-                'order' => [
+            $params = array(
+                'order' => array(
                     'number' => $orderNumber,
                     'currency' => $basket['sCurrencyName'],
-                    'totals' => [
-                        [
+                    'totals' => array(
+                        array(
                             'type' => 'shipping',
                             'amount' => $basket['sShippingcosts'],
-                        ],
-                        [
+                        ),
+                        array(
                             'type' => 'tax',
                             'amount' => $basket['sAmountTax']
-                        ],
-                        [
+                        ),
+                        array(
                             'type' => 'grandTotal',
                             'amount' => $basket['AmountNumeric']
-                        ]
-                    ],
-                    'products' => []
-                ]
-            ];
+                        )
+                    ),
+                    'products' => array()
+                )
+            );
 
             foreach ($basket['content'] as $item) {
-                $params['order']['products'][] = [
+                $params['order']['products'][] = array(
                     'id' => $item['id'],
                     'name' => $item['articlename'],
                     'quantity' => $item['quantity'],
-                    'price' => [
+                    'price' => array(
                         'withTax' => floatval($item['priceNumeric']),
                         'net' => floatval($item['netprice'])
-                    ]
-                ];
+                    )
+                );
             }
 
             $view->assign('sgCheckoutParams', json_encode($params));
