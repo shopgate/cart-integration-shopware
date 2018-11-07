@@ -1,5 +1,4 @@
-dist: precise
-sudo: false
+dist: trusty
 language: php
 
 before_script:
