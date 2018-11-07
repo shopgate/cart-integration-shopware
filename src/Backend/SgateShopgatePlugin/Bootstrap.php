@@ -181,8 +181,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $shopgateCacheDir = Shopware()->DocPath() . DS . 'cache' . DS . 'shopgate' . DS;
             $shopgateSdkDir   = __DIR__ . DS . 'vendor' . DS . 'shopgate' . DS . 'cart-integration-sdk' . DS;
 
-            copy($shopgateSdkDir . '.htaccess', $shopgateCacheDir . '.htaccess');
-            unlink($shopgateCacheDir . 'log' . DS . 'shopgate_access.log');
+            @copy($shopgateSdkDir . '.htaccess', $shopgateCacheDir . '.htaccess');
+            @unlink($shopgateCacheDir . 'log' . DS . 'shopgate_access.log');
         }
     }
 
