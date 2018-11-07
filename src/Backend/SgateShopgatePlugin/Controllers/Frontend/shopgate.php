@@ -19,10 +19,8 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
-require_once __DIR__ . '/../../Helpers/JWT.php';
-
 use Shopware\Components\CSRFWhitelistAware;
-use Shopgate\Helpers\JWT;
+use \Firebase\JWT\JWT;
 
 class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action implements CSRFWhitelistAware
 {
@@ -465,7 +463,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $token = $this->Request()->getParam('token');
         if (isset($token)) {
             $key = trim($this->getConfig()->getApikey());
-            $decoded = JWT::jwtDecode($token, $key);
+            JWT::$leeway = 60;
+            $decoded = JWT::decode($token, $key, array('HS256'));
             $decoded = json_decode(json_encode($decoded), true);
             $customerId = $decoded['customer_id'];
 
@@ -509,7 +508,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $token = $this->Request()->getParam('token');
         if (isset($token)) {
             $key = trim($this->getConfig()->getApikey());
-            $decoded = JWT::jwtDecode($token, $key);
+            JWT::$leeway = 60;
+            $decoded = JWT::decode($token, $key, array('HS256'));
             $decoded = json_decode(json_encode($decoded), true);
             $customerId = $decoded['customer_id'];
 
@@ -555,7 +555,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $token = $this->Request()->getParam('token');
         if (isset($token)) {
             $key = trim($this->getConfig()->getApikey());
-            $decoded = JWT::jwtDecode($token, $key);
+            JWT::$leeway = 60;
+            $decoded = JWT::decode($token, $key, array('HS256'));
             $decoded = json_decode(json_encode($decoded), true);
             $customerId = $decoded['customer_id'];
 
@@ -838,7 +839,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
 
         if (isset($hash)) {
-            //$error = $this->admin->sLogin(true);
             $email = strtolower($this->Request()->getPost('email'));
             $user = $this->verifyUser($email, $hash);
             if (!empty($user['sErrorMessages'])) {
@@ -908,7 +908,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $token = $this->Request()->getCookie('token');
 
         $key = trim($this->getConfig()->getApikey());
-        $decoded = JWT::jwtDecode($token, $key);
+        JWT::$leeway = 60;
+        $decoded = JWT::decode($token, $key, array('HS256'));
         $decoded = json_decode(json_encode($decoded), true);
         $customerId = $decoded['customer_id'];
 
