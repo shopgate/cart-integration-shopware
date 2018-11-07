@@ -405,6 +405,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         $currency = $this->get('shop')->getCurrency();
 
+        // Below code comes from the getBasket function in the Checkout Controller
         $basket['sCurrencyId'] = $currency->getId();
         $basket['sCurrencyName'] = $currency->getCurrency();
         $basket['sCurrencyFactor'] = $currency->getFactor();
