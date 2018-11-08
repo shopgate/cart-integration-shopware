@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - support for custom attributes based on new database columns
 - support for the new Shopware PayPal Plus Plugin
+### Changed
+- Uses Shopgate Cart Integration SDK 2.9.77
 ### Fixed
 - catch Shopware basket errors when validating items during check_stock
 
