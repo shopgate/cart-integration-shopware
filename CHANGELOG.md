@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.83] - 2018-11-08
 ### Added
 - support for custom attributes based on new database columns
 - support for the new Shopware PayPal Plus Plugin
@@ -757,7 +759,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.82...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.83...HEAD
+[2.9.83]: https://github.com/shopgate/interface-shopware/compare/2.9.82...2.9.83
 [2.9.82]: https://github.com/shopgate/interface-shopware/compare/2.9.81...2.9.82
 [2.9.81]: https://github.com/shopgate/interface-shopware/compare/2.9.80...2.9.81
 [2.9.80]: https://github.com/shopgate/interface-shopware/compare/2.9.79...2.9.80
