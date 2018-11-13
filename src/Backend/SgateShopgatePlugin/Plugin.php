@@ -284,6 +284,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
             /** @see ShopgatePluginShopware::insertPayolutionOrderData */
             'insertPaypalPlusOrderData',
             /** @see ShopgatePluginShopware::insertPaypalPlusOrderData */
+            'insertPaypalUnifiedOrderData',
+            /** @see ShopgatePluginShopware::insertPaypalUnifiedOrderData */
             'insertSepaOrderData',
             /** @see ShopgatePluginShopware::insertSepaOrderData */
             'insertAmazonPaymentsOrderData',
@@ -451,8 +453,12 @@ class ShopgatePluginShopware extends ShopgatePlugin
         }
         $oCustomer        = Shopware()->Models()->find("\Shopware\Models\Customer\Customer", $userId);
         $customerGroupKey = $userData['customergroup'];
-        $oBilling         = $oCustomer->getBilling();
-        $oShipping        = $oCustomer->getShipping();
+        $oBilling         = $this->config->assertMinimumVersion('5.5.0')
+            ? $oCustomer->getDefaultBillingAddress()
+            : $oCustomer->getBilling();
+        $oShipping        = $this->config->assertMinimumVersion('5.5.0')
+            ? $oCustomer->getDefaultShippingAddress()
+            : $oCustomer->getShipping();
 
         if (!$oShipping && $oBilling) {
             $oShipping = $oBilling;
@@ -547,13 +553,25 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $oInvoiceAddress->setCity($oBilling->getCity());
         $oInvoiceAddress->setBirthday($userData->getBirthday());
 
-        $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $oBilling->getCountryId());
+        $countryId = $this->config->assertMinimumVersion('5.5.0')
+            ? $oBilling->getCountry()->getId()
+            : $oBilling->getCountryId();
+
+        $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $countryId);
         $oInvoiceAddress->setCountry($oCountry->getIso());
         $oInvoiceAddress->setPhone($oBilling->getPhone());
 
-        if ($oBilling->getStateId()) {
+        if ($this->config->assertMinimumVersion('5.5.0')) {
+            $stateId = $oBilling->getState()
+                ? $oBilling->getState()->getId()
+                : null;
+        } else {
+            $stateId = $oBilling->getStateId();
+        }
+
+        if ($stateId) {
             /** @var Shopware\Models\Country\State $state */
-            $state = Shopware()->Models()->find('\Shopware\Models\Country\State', $oBilling->getStateId());
+            $state = Shopware()->Models()->find('\Shopware\Models\Country\State', $stateId);
             $oInvoiceAddress->setState($oCountry->getIso() . '-' . $state->getShortCode());
         }
 
@@ -585,12 +603,25 @@ class ShopgatePluginShopware extends ShopgatePlugin
         }
         $oShippingAddress->setZipcode($oShipping->getZipCode());
         $oShippingAddress->setCity($oShipping->getCity());
-        $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $oShipping->getCountryId());
+
+        $countryId = $this->config->assertMinimumVersion('5.5.0')
+            ? $oShipping->getCountry()->getId()
+            : $oShipping->getCountryId();
+
+        $oCountry = Shopware()->Models()->find('\Shopware\Models\Country\Country', $countryId);
         $oShippingAddress->setCountry($oCountry->getIso());
 
-        if ($oShipping->getStateId()) {
+        if ($this->config->assertMinimumVersion('5.5.0')) {
+            $stateId = $oShipping->getState()
+                ? $oShipping->getState()->getId()
+                : null;
+        } else {
+            $stateId = $oShipping->getStateId();
+        }
+
+        if ($stateId) {
             /** @var Shopware\Models\Country\State $state */
-            $state = Shopware()->Models()->find('\Shopware\Models\Country\State', $oShipping->getStateId());
+            $state = Shopware()->Models()->find('\Shopware\Models\Country\State', $stateId);
             $oShippingAddress->setState($oCountry->getIso() . '-' . $state->getShortCode());
         }
 
@@ -2504,6 +2535,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
             if ($this->isPaypalPlusOrder($shopgateOrder)) {
                 return $shopgateOrder->getPaymentTransactionNumber();
             }
+            if ($this->isPaypalUnifiedOrder($shopgateOrder)) {
+                return $shopgateOrder->getPaymentTransactionNumber();
+            }
             if ($this->isBillsafeOrder($shopgateOrder)) {
                 return $shopgateOrder->getPaymentTransactionNumber();
             }
@@ -2877,6 +2911,62 @@ class ShopgatePluginShopware extends ShopgatePlugin
     }
 
     /**
+     * Set payment instructions for PP+ orders (only invoice) for the SwagPaymentPayPalUnified plugin
+     *
+     * @param Order         $order
+     * @param ShopgateOrder $shopgateOrder
+     *
+     * @return Order
+     */
+    protected function insertPaypalUnifiedOrderData(Order $order, ShopgateOrder $shopgateOrder)
+    {
+        if ($this->isPaypalUnifiedOrder($shopgateOrder)) {
+            $paymentInfos = $shopgateOrder->getPaymentInfos();
+            $orderNumber  = $order->getNumber();
+
+            if (!empty($paymentInfos['payment_info']['payment_instruction'])) {
+                $instructions   = $paymentInfos['payment_info']['payment_instruction'];
+                $amountValue    = $shopgateOrder->getAmountComplete();
+
+                $insertQuery = "INSERT INTO swag_payment_paypal_unified_payment_instruction (
+                      order_number,
+                      bank_name,
+                      account_holder,
+                      iban,
+                      bic,
+                      amount,
+                      reference,
+                      due_date
+                  ) VALUES (
+                      :order_number,
+                      :bank_name,
+                      :account_holder,
+                      :iban,
+                      :bic,
+                      :amount,
+                      :reference,
+                      :due_date
+                );";
+
+                $parameter = array(
+                    'order_number'     => $orderNumber,
+                    'bank_name'        => $instructions['recipient_banking_instruction']['bank_name'],
+                    'account_holder'   => $instructions['recipient_banking_instruction']['account_holder_name'],
+                    'iban'             => $instructions['recipient_banking_instruction']['international_bank_account_number'],
+                    'bic'              => $instructions['recipient_banking_instruction']['bank_identifier_code'],
+                    'amount'           => $amountValue,
+                    'reference'        => $instructions['reference_number'],
+                    'due_date'         => $instructions['payment_due_date'],
+                );
+
+                Shopware()->Db()->query($insertQuery, $parameter);
+            }
+        }
+
+        return $order;
+    }
+
+    /**
      * Set payment instructions for SEPA orders
      *
      * @param Order         $order
@@ -3008,6 +3098,17 @@ class ShopgatePluginShopware extends ShopgatePlugin
         return $shopgateOrder->getPaymentMethod() == ShopgateOrder::PPAL_PLUS
             && $this->config->isModuleEnabled('SwagPaymentPaypal')
             && $this->config->isModuleEnabled('SwagPaymentPaypalPlus');
+    }
+
+    /**
+     * @param ShopgateOrder $shopgateOrder
+     *
+     * @return bool
+     */
+    protected function isPaypalUnifiedOrder(ShopgateOrder $shopgateOrder)
+    {
+        return $shopgateOrder->getPaymentMethod() == ShopgateOrder::PPAL_PLUS
+            && $this->config->isModuleEnabled('SwagPaymentPayPalUnified');
     }
 
     /**
@@ -3191,13 +3292,18 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function _fillShippingAddressAttributes(\Shopware\Models\Customer\Customer $customer)
     {
-        $shipping = $customer->getShipping();
+        $shipping = $this->config->assertMinimumVersion('5.5.0')
+            ? $customer->getDefaultShippingAddress()
+            : $customer->getShipping();
 
         if (!is_object($shipping) || null !== $shipping->getAttribute()) {
             return;
         }
 
-        $customerShippingAttribute = new \Shopware\Models\Attribute\CustomerShipping();
+        $customerShippingAttribute = $this->config->assertMinimumVersion('5.5.0')
+            ? new \Shopware\Models\Attribute\CustomerAddress()
+            : new \Shopware\Models\Attribute\CustomerShipping();
+
         $shipping->setAttribute($customerShippingAttribute);
         Shopware()->Models()->persist($shipping);
     }
@@ -3207,13 +3313,18 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function _fillBillingAddressAttributes(\Shopware\Models\Customer\Customer $customer)
     {
-        $billing = $customer->getBilling();
+        $billing = $this->config->assertMinimumVersion('5.5.0')
+            ? $customer->getDefaultBillingAddress()
+            : $customer->getBilling();
 
         if (!is_object($billing) || null !== $billing->getAttribute()) {
             return;
         }
 
-        $customerBillingAttribute = new \Shopware\Models\Attribute\CustomerBilling();
+        $customerBillingAttribute = $this->config->assertMinimumVersion('5.5.0')
+            ? new \Shopware\Models\Attribute\CustomerAddress()
+            : new \Shopware\Models\Attribute\CustomerBilling();
+
         $billing->setAttribute($customerBillingAttribute);
         Shopware()->Models()->persist($billing);
     }
@@ -3968,6 +4079,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
                     ? "paypal"
                     : $fallbackPaymentMethodName;
             case ShopgateOrder::PPAL_PLUS:
+                if ($this->config->isModuleEnabled('SwagPaymentPayPalUnified')) {
+                    return "SwagPaymentPayPalUnified";
+                }
                 return (
                     $this->config->isModuleEnabled('SwagPaymentPaypal')
                     && $this->config->isModuleEnabled(
@@ -4766,7 +4880,11 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
             $detailOrderNumber = $item->getItemNumberPublic();
 
-            $insertId = $basket->sAddArticle($detailOrderNumber, $quantity);
+            try {
+                $insertId = $basket->sAddArticle($detailOrderNumber, $quantity);
+            } catch (Exception $e) {
+                $this->log("Error getting insertId in Validate Items." . $e->getMessage(), ShopgateLogger::LOGTYPE_ERROR);
+            }
 
             $isBuyable     = false;
             $qtyBuyable    = 0;

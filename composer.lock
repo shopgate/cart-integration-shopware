@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bed7b11387c3877247cfc125f3f30fe7",
+    "content-hash": "f0029d5f95228ee8129e0cde33401270",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -54,27 +54,30 @@
         },
         {
             "name": "shopgate/cart-integration-sdk",
-            "version": "2.9.68",
+            "version": "2.9.77",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopgate/cart-integration-sdk.git",
-                "reference": "39a4d81c1a0113308d3ea6a7c08b5f257a01bcad"
+                "reference": "ac01022f987ba9d1a7cfa1223f1a4f99790cc7cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopgate/cart-integration-sdk/zipball/39a4d81c1a0113308d3ea6a7c08b5f257a01bcad",
-                "reference": "39a4d81c1a0113308d3ea6a7c08b5f257a01bcad",
+                "url": "https://api.github.com/repos/shopgate/cart-integration-sdk/zipball/ac01022f987ba9d1a7cfa1223f1a4f99790cc7cb",
+                "reference": "ac01022f987ba9d1a7cfa1223f1a4f99790cc7cb",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3",
-                "zendframework/zend-json": "2.2.*"
+                "zendframework/zend-json": "~2.2"
             },
             "require-dev": {
                 "phpunit/phpunit": "4.8.*"
             },
             "type": "library",
             "autoload": {
+                "psr-4": {
+                    "shopgate\\cart_integration_sdk\\tests\\": "tests/"
+                },
                 "files": [
                     "src/core.php",
                     "src/apis.php",
@@ -166,7 +169,7 @@
             ],
             "description": "A PHP framework supporting the implementation of the Shopgate Plugin API and abstracting access to the Shopgate Merchant API.",
             "homepage": "https://github.com/shopgate/cart-integration-sdk",
-            "time": "2017-08-29T11:12:32+00:00"
+            "time": "2018-11-08T11:41:28+00:00"
         },
         {
             "name": "zendframework/zend-json",
@@ -384,33 +387,33 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "v1.7.0",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "93d39f1f7f9326d746203c7c056f300f7f126073"
+                "reference": "4ba436b55987b4bf311cb7c6ba82aa528aac0a06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/93d39f1f7f9326d746203c7c056f300f7f126073",
-                "reference": "93d39f1f7f9326d746203c7c056f300f7f126073",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/4ba436b55987b4bf311cb7c6ba82aa528aac0a06",
+                "reference": "4ba436b55987b4bf311cb7c6ba82aa528aac0a06",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.0.2",
                 "php": "^5.3|^7.0",
-                "phpdocumentor/reflection-docblock": "^2.0|^3.0.2",
-                "sebastian/comparator": "^1.1|^2.0",
+                "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0",
+                "sebastian/comparator": "^1.1|^2.0|^3.0",
                 "sebastian/recursion-context": "^1.0|^2.0|^3.0"
             },
             "require-dev": {
                 "phpspec/phpspec": "^2.5|^3.2",
-                "phpunit/phpunit": "^4.8 || ^5.6.5"
+                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5 || ^7.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6.x-dev"
+                    "dev-master": "1.8.x-dev"
                 }
             },
             "autoload": {
@@ -443,7 +446,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2017-03-02T20:05:34+00:00"
+            "time": "2018-08-05T17:53:17+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -509,16 +512,16 @@
         },
         {
             "name": "phpunit/php-file-iterator",
-            "version": "1.4.2",
+            "version": "1.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-file-iterator.git",
-                "reference": "3cc8f69b3028d0f96a9078e6295d86e9bf019be5"
+                "reference": "730b01bc3e867237eaac355e06a36b85dd93a8b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/3cc8f69b3028d0f96a9078e6295d86e9bf019be5",
-                "reference": "3cc8f69b3028d0f96a9078e6295d86e9bf019be5",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/730b01bc3e867237eaac355e06a36b85dd93a8b4",
+                "reference": "730b01bc3e867237eaac355e06a36b85dd93a8b4",
                 "shasum": ""
             },
             "require": {
@@ -552,7 +555,7 @@
                 "filesystem",
                 "iterator"
             ],
-            "time": "2016-10-03T07:40:28+00:00"
+            "time": "2017-11-27T13:52:08+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -646,16 +649,16 @@
         },
         {
             "name": "phpunit/php-token-stream",
-            "version": "1.4.11",
+            "version": "1.4.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "e03f8f67534427a787e21a385a67ec3ca6978ea7"
+                "reference": "1ce90ba27c42e4e44e6d8458241466380b51fa16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/e03f8f67534427a787e21a385a67ec3ca6978ea7",
-                "reference": "e03f8f67534427a787e21a385a67ec3ca6978ea7",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/1ce90ba27c42e4e44e6d8458241466380b51fa16",
+                "reference": "1ce90ba27c42e4e44e6d8458241466380b51fa16",
                 "shasum": ""
             },
             "require": {
@@ -691,7 +694,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2017-02-27T10:12:30+00:00"
+            "time": "2017-12-04T08:55:13+00:00"
         },
         {
             "name": "phpunit/phpunit",

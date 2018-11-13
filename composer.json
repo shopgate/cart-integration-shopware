@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": ">=5.3",
-    "shopgate/cart-integration-sdk" : "~2.9.68",
+    "shopgate/cart-integration-sdk" : "~2.9.77",
     "firebase/php-jwt": "^5.0"
   },
   "require-dev": {
