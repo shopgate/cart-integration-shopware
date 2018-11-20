@@ -5,13 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Changed
+- uses Shopgate Cart Integration SDK 2.9.78
+
+### Fixed
+- loading the mobile redirect script failed due to wrong URL
 
 ## [2.9.83] - 2018-11-08
 ### Added
 - support for custom attributes based on new database columns
 - support for the new Shopware PayPal Plus Plugin
+
 ### Changed
 - Uses Shopgate Cart Integration SDK 2.9.77
+
 ### Fixed
 - catch Shopware basket errors when validating items during check_stock
 
