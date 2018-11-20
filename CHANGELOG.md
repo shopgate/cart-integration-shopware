@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 - loading the mobile redirect script failed due to wrong URL
+- error during order import, in case the customer was not found
 
 ## [2.9.83] - 2018-11-08
 ### Added
