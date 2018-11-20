@@ -26,7 +26,7 @@ jobs:
     script:
     - curl -L https://github.com/Rekhyt/php-dependency-checker/releases/download/0.2-beta.1/php-dependency-checker.phar -o php-dependency-checker
     - chmod +x ./php-dependency-checker
-    - ./php-dependency-checker --exclude-from=package-exclusions composer.lock
+    - ./php-dependency-checker --exclude-from=dependency-check-exclusions composer.lock
     - rm php-dependency-checker
   - stage: Unit Test + Code Style Fixing
     php: 5.6
