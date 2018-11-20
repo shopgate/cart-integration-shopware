@@ -3386,7 +3386,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $oShopgateOrder->getExternalCustomerId()
         );
 
-        return $customer->getEmail() === $oShopgateOrder->getMail();
+        return $customer !== null && $customer->getEmail() === $oShopgateOrder->getMail();
     }
 
     /**
