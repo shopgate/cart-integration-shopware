@@ -169,7 +169,7 @@
                                 {/if}
                             {rdelim}
                         )
-                        {rdelim}
+                    {rdelim}
                 </script>
             {/if}
             {if $sgActionName === 'finish'}
