@@ -136,25 +136,25 @@
                             false,
                             {ldelim}'sessionId': '{$sgSessionId}'{rdelim},
                             function (err, serial, output) {ldelim}
-                                window.SGAppConnector.sendPipelineRequest(
-                                    'shopgate.user.loginUser.v1',
-                                    true,
-                                    {ldelim}'strategy': 'auth_code', 'parameters': {ldelim}'email': '{$sgEmail}', 'hash': '{$sgHash}'{rdelim}{rdelim},
-                                    function (err, serial, output) {ldelim}
-                                        var commands = [
-                                            {ldelim}
-                                                'c': 'broadcastEvent',
-                                                'p': {ldelim}
-                                                    'event': 'userLoggedIn'
+                                {if !$sgAccountView }
+                                    window.SGAppConnector.sendPipelineRequest(
+                                        'shopgate.user.loginUser.v1',
+                                        true,
+                                        {ldelim}'strategy': 'auth_code', 'parameters': {ldelim}'email': '{$sgEmail}', 'hash': '{$sgHash}'{rdelim}{rdelim},
+                                        function (err, serial, output) {ldelim}
+                                            var commands = [
+                                                {ldelim}
+                                                    'c': 'broadcastEvent',
+                                                    'p': {ldelim}
+                                                        'event': 'userLoggedIn'
+                                                        {rdelim}
+                                                    {rdelim},
+                                                {ldelim}
+                                                    'c': 'broadcastEvent',
+                                                    'p': {ldelim}
+                                                        'event': 'closeNotification'
                                                     {rdelim}
                                                 {rdelim},
-                                            {ldelim}
-                                                'c': 'broadcastEvent',
-                                                'p': {ldelim}
-                                                    'event': 'closeNotification'
-                                                {rdelim}
-                                            {rdelim},
-                                            {if !$sgAccountView }
                                                 {ldelim}
                                                     'c': 'broadcastEvent',
                                                     'p': {ldelim}
@@ -162,12 +162,12 @@
                                                         'parameters': [{ldelim}'redirectTo': '/'{rdelim}]
                                                     {rdelim}
                                                 {rdelim}
-                                            {/if}
-                                        ]
-                                        window.SGAppConnector.sendAppCommands(commands)
+                                            ]
+                                            window.SGAppConnector.sendAppCommands(commands)
                                         {rdelim}
-                                )
-                                {rdelim}
+                                    )
+                                {/if}
+                            {rdelim}
                         )
                         {rdelim}
                 </script>
