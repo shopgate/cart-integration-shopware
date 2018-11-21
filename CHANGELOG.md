@@ -6,12 +6,22 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [2.9.84] - 2018-11-20
+### Changed
+- uses Shopgate Cart Integration SDK 2.9.78
+
+### Fixed
+- loading the mobile redirect script failed due to wrong URL
+- error during order import, in case the customer was not found
+
 ## [2.9.83] - 2018-11-08
 ### Added
 - support for custom attributes based on new database columns
 - support for the new Shopware PayPal Plus Plugin
+
 ### Changed
 - Uses Shopgate Cart Integration SDK 2.9.77
+
 ### Fixed
 - catch Shopware basket errors when validating items during check_stock
 
@@ -760,6 +770,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - use doctrine models
 
 [Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.83...HEAD
+[2.9.84]: https://github.com/shopgate/interface-shopware/compare/2.9.83...2.9.84
 [2.9.83]: https://github.com/shopgate/interface-shopware/compare/2.9.82...2.9.83
 [2.9.82]: https://github.com/shopgate/interface-shopware/compare/2.9.81...2.9.82
 [2.9.81]: https://github.com/shopgate/interface-shopware/compare/2.9.80...2.9.81
