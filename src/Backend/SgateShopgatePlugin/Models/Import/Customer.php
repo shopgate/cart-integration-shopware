@@ -574,6 +574,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
             $customerData[$prefix]['stateID']    = $state
                 ? $state->getId()
                 : 0;
+            $customerData[$prefix]['state']      = $customerData[$prefix]['stateID'];
             $customerData[$prefix]['phone']      = $this->getPhoneNumber($customer, $shopgateCustomerAddress);
         }
 

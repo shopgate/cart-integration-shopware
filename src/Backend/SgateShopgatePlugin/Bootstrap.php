@@ -86,6 +86,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
         $this->installCache();
 
+        $this->updateCache();
+
         return true;
     }
 
@@ -96,6 +98,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $this->sqlUpdate($oldVersion);
 
         $this->updateEvents();
+
+        $this->updateCache($oldVersion);
 
         return true;
     }
@@ -142,7 +146,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
     public function getVersion()
     {
-        return "2.9.81";
+        return "2.9.83";
     }
 
     public function getLabel()
@@ -168,6 +172,17 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         foreach ($dirs as $dir) {
             $path = $cacheDir . $dir;
             @mkdir($path, 0777, true);
+        }
+    }
+
+    private function updateCache($oldVersion = '1.0.0')
+    {
+        if (version_compare($oldVersion, "2.9.84", "<=")) {
+            $shopgateCacheDir = Shopware()->DocPath() . DS . 'cache' . DS . 'shopgate' . DS;
+            $shopgateSdkDir   = __DIR__ . DS . 'vendor' . DS . 'shopgate' . DS . 'cart-integration-sdk' . DS;
+
+            @copy($shopgateSdkDir . '.htaccess', $shopgateCacheDir . '.htaccess');
+            @unlink($shopgateCacheDir . 'log' . DS . 'shopgate_access.log');
         }
     }
 

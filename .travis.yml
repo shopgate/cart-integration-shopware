@@ -1,35 +1,22 @@
-dist: precise
-sudo: false
+dist: trusty
 language: php
 
 before_script:
 - phpenv config-rm xdebug.ini || return 0
 - composer install
 
-script:
-- src/Backend/SgateShopgatePlugin/vendor/bin/phpunit
+php:
+  - 5.6
+  - 7.1
 
+script:
+  - curl -L http://files.shopgate.com/travis-ci/php-cs-fixer.phar -o php-cs-fixer
+  - chmod a+x php-cs-fixer
+  - ./php-cs-fixer fix --config=.php-cs.dist --cache-file=.php-cs.cache --diff --dry-run --verbose .
+  - rm php-cs-fixer
+  - src/Backend/SgateShopgatePlugin/vendor/bin/phpunit
 jobs:
   include:
-  - stage: Unit Test + Code Style Fixing
-    php: 5.3
-  - stage: Unit Test + Code Style Fixing
-    php: 5.4
-  - stage: Unit Test + Code Style Fixing
-    php: 5.5
-  - stage: Unit Test + Code Style Fixing
-    php: 7.0
-  - stage: Unit Test + Code Style Fixing
-    php: 7.1
-  - stage: Unit Test + Code Style Fixing
-    php: 5.6
-    script:
-    - curl -L http://files.shopgate.com/travis-ci/php-cs-fixer.phar -o php-cs-fixer
-    - chmod a+x php-cs-fixer
-    - git checkout $TRAVIS_BRANCH
-    - ./php-cs-fixer fix --config=.php-cs.dist --cache-file=.php-cs.cache --diff --dry-run --verbose .
-    - rm php-cs-fixer
-    - src/Backend/SgateShopgatePlugin/vendor/bin/phpunit
   - stage: deploy
     php: 5.6
     before_script: skip
@@ -43,10 +30,3 @@ jobs:
       skip_cleanup: true
       on:
         tags: true
-
-notifications:
-  slack:
-    rooms:
-      secure: tpn286pV227q0ULUOZD5p6WgXyA6zFWGdgDBK7BDq2yKC6TIsyFDT7tWPetBW9FsOt2mUtZnCgjutUSnB5w6r15DBb7EIYpmz4KHdZh6jhkza6IEZvTAFt8F6TKcehLj2sETjCxuHZWc/b7rhzHVorWnOF7Ew5daXCxxeIQt9e8BTwiD3Egki5iBdAXhjCyleLFyV6Jcq8HCSghXSVFlG1EQuc+cGjzvVwuQABZ/T70SJyM45YNksl+/fqBDCG22K3jfJjGEkSWjzGu6jJkpy73FBjQKRJJ+/VMmBUZ4shEXga3dUsRMdfaS/iavKgK0vfKIy0gIK9DVIvr7abrLHK3CgV7tKp3xzWW2FhFSn8iQlpb0wuhoE1m9afCKAU5dnuA2XLwffsRW7741LxF8ssBinps+E4hpNnvjNg3C/u/OJi5MHfO2zsgkbMMYFf8nz3MGG5rXWgG5d/AXZTMsjpz2JqBPC2sf2otOsS7j9v/p0RVDGKqFuClghBeJipifcC+kdughUl8WInB0enmtdmoDIclmV5vpnqRvEKUKZdmAggYnABKspyUKqI9cv5Ecd6epw+TTr/L8Uze/DRzDR0TNmlrEHN/aksq+7A3G8YyIv5YkftEz5dNiBZyr+aUemu7bFltRWngyGFjm74sWQnT3vlKujNV++e/88gXi5aI=
-    on_success: change
-    on_failure: always

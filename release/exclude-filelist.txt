@@ -7,3 +7,5 @@
 build_release_package.sh
 release/
 shopgate-shopware-integration.zip
+*.DS_Store
+__MACOSX
