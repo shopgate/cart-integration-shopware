@@ -461,6 +461,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             ));
         }
 
+        $basket = $this->basket->sGetBasket();
+
         $token = $this->Request()->getParam('token');
         if (isset($token)) {
             $key = trim($this->getConfig()->getApikey());
@@ -482,6 +484,15 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
             if (isset($checkUser['sErrorFlag'])) {
                 throw new Exception($checkUser['sErrorMessages'][0] , 400);
+            }
+
+            $this->basket->sRefreshBasket();
+            if (!empty($basket['content'])) {
+                $this->basket->clearBasket();
+
+                foreach ($basket['content'] as $basketItem) {
+                    $this->basket->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
+                }
             }
         }
 
@@ -506,6 +517,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             ));
         }
 
+        $basket = $this->basket->sGetBasket();
+
         $token = $this->Request()->getParam('token');
         if (isset($token)) {
             $key = trim($this->getConfig()->getApikey());
@@ -527,6 +540,15 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
             if (isset($checkUser['sErrorFlag'])) {
                 throw new Exception($checkUser['sErrorMessages'][0] , 400);
+            }
+
+            $this->basket->sRefreshBasket();
+            if (!empty($basket['content'])) {
+                $this->basket->clearBasket();
+
+                foreach ($basket['content'] as $basketItem) {
+                    $this->basket->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
+                }
             }
         }
 
