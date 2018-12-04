@@ -80,11 +80,11 @@
                     ;(function () {
                         document.addEventListener('DOMContentLoaded', function () {
                             var $registrationButton = document.getElementById('new-customer-action');
-                            if (!$registrationButton.classList.contains('is--active')) {
-                                setTimeout(function(){
-                                    $registrationButton.click();
-                                }, 1000);
-                            }
+                            setTimeout(function(){
+                                if (!$registrationButton.classList.contains('is--active') && !$registrationButton.classList.contains('is--collapsed')) {
+                                        $registrationButton.click();
+                                }
+                            }, 1000);
                         });
                         var targetLink = null;
                         Array.from(document.getElementsByTagName('a')).forEach(function (link) {
