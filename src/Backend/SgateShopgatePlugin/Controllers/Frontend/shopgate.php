@@ -382,6 +382,15 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     }
 
     /**
+     * Custom function for password reset
+     */
+    public function passwordAction()
+    {
+        $this->session->offsetSet('sgWebView', true);
+        $this->redirect('account/password');
+    }
+
+    /**
      * Custom function to get the cart
      */
     public function getCartAction()
