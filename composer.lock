@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f0029d5f95228ee8129e0cde33401270",
+    "content-hash": "1f1599e9885d4f3303fa34336425ed25",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -54,16 +54,16 @@
         },
         {
             "name": "shopgate/cart-integration-sdk",
-            "version": "2.9.77",
+            "version": "2.9.78",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shopgate/cart-integration-sdk.git",
-                "reference": "ac01022f987ba9d1a7cfa1223f1a4f99790cc7cb"
+                "reference": "f56f53d9bb6d94250f883a1a15eb864a68550424"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shopgate/cart-integration-sdk/zipball/ac01022f987ba9d1a7cfa1223f1a4f99790cc7cb",
-                "reference": "ac01022f987ba9d1a7cfa1223f1a4f99790cc7cb",
+                "url": "https://api.github.com/repos/shopgate/cart-integration-sdk/zipball/f56f53d9bb6d94250f883a1a15eb864a68550424",
+                "reference": "f56f53d9bb6d94250f883a1a15eb864a68550424",
                 "shasum": ""
             },
             "require": {
@@ -169,7 +169,7 @@
             ],
             "description": "A PHP framework supporting the implementation of the Shopgate Plugin API and abstracting access to the Shopgate Merchant API.",
             "homepage": "https://github.com/shopgate/cart-integration-sdk",
-            "time": "2018-11-08T11:41:28+00:00"
+            "time": "2018-11-19T13:59:04+00:00"
         },
         {
             "name": "zendframework/zend-json",
