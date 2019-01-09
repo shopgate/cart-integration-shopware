@@ -406,6 +406,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             );
 
             $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatch_Frontend_Address',
+                'onFrontendAddress'
+            );
+
+            $this->subscribeEvent(
                 'Enlight_Controller_Action_PostDispatch_Frontend_Custom',
                 'onFrontendCustom'
             );
@@ -1291,6 +1296,25 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgWebCheckout', $this->isInWebView($args));
         $view->assign('sgAccountView', false);
         $view->assign('sgFrontendRegister', true);
+        $view->assign('sgForgotPassword', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgActionName', false);
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
+    }
+
+    /**
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function onFrontendAddress(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir(__DIR__ . '/Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgAccountView', false);
+        $view->assign('sgFrontendRegister', false);
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendAccount', false);
         $view->assign('sgActionName', false);
