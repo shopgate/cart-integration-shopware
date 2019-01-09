@@ -2,6 +2,9 @@ dist: precise
 sudo: false
 language: php
 
+git:
+  depth: false
+
 before_script:
 - phpenv config-rm xdebug.ini || return 0
 - composer install
@@ -11,15 +14,15 @@ script:
 
 jobs:
   include:
-  - stage: Unit Test + Code Style Fixing
+  - stage: Unit Test
     php: 5.3
-  - stage: Unit Test + Code Style Fixing
+  - stage: Unit Test
     php: 5.4
-  - stage: Unit Test + Code Style Fixing
+  - stage: Unit Test
     php: 5.5
-  - stage: Unit Test + Code Style Fixing
+  - stage: Unit Test
     php: 7.0
-  - stage: Unit Test + Code Style Fixing
+  - stage: Unit Test
     php: 7.1
   - stage: Dependency Checking
     php: 7.2
