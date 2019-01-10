@@ -3107,7 +3107,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function isPaypalUnifiedOrder(ShopgateOrder $shopgateOrder)
     {
-        return in_array($shopgateOrder->getPaymentMethod(), [ShopgateOrder::PAYPAL, ShopgateOrder::PPAL_PLUS])
+        return in_array($shopgateOrder->getPaymentMethod(), array(ShopgateOrder::PAYPAL, ShopgateOrder::PPAL_PLUS))
             && $this->config->isModuleEnabled('SwagPaymentPayPalUnified');
     }
 
