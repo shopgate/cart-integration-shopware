@@ -3107,7 +3107,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function isPaypalUnifiedOrder(ShopgateOrder $shopgateOrder)
     {
-        return $shopgateOrder->getPaymentMethod() == ShopgateOrder::PPAL_PLUS
+        return in_array($shopgateOrder->getPaymentMethod(), [ShopgateOrder::PAYPAL, ShopgateOrder::PPAL_PLUS])
             && $this->config->isModuleEnabled('SwagPaymentPayPalUnified');
     }
 
@@ -4075,6 +4075,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
             case ShopgateOrder::INVOICE:
                 return "invoice";
             case ShopgateOrder::PAYPAL:
+                if ($this->config->isModuleEnabled('SwagPaymentPayPalUnified')) {
+                    return "SwagPaymentPayPalUnified";
+                }
                 return $this->config->isModuleEnabled('SwagPaymentPaypal')
                     ? "paypal"
                     : $fallbackPaymentMethodName;
