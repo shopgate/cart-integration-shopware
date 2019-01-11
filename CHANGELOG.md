@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - support for the new Shopware PayPal Plugin
 
+### Fixed
+- potential security issue in redirect
+
 ## [2.9.84] - 2018-11-20
 ### Changed
 - uses Shopgate Cart Integration SDK 2.9.78
