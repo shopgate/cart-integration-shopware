@@ -744,16 +744,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
 
         /* @var $art \Shopware\Models\Article\Article */
         foreach ($article->getRelated()->getIterator() as $art) {
-            if ($art->getConfiguratorSet() && !$this->getIsChild()) {
-                $itemNumber = $art->getId();
-            } else {
-                if (!is_object($art->getMainDetail())) {
-                    continue;
-                } else {
-                    $itemNumber = $art->getId() . "-" . $art->getMaindetail()->getNumber();
-                }
-            }
-            $relatedArticles[] = $itemNumber;
+            $relatedArticles[] = $art->getId();
         }
 
         return $relatedArticles;
@@ -772,17 +763,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
 
         /* @var $art \Shopware\Models\Article\Article */
         foreach ($article->getSimilar()->getIterator() as $art) {
-            if ($art->getConfiguratorSet() && !$this->getIsChild()) {
-                $itemNumber = $art->getId();
-            } else {
-                if (!is_object($art->getMainDetail())) {
-                    continue;
-                } else {
-                    $itemNumber = $art->getId() . "-" . $art->getMaindetail()->getNumber();
-                }
-            }
-
-            $similarArticles[] = $itemNumber;
+            $similarArticles[] = $art->getId();
         }
 
         return $similarArticles;
