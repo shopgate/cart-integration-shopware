@@ -44,6 +44,7 @@ use Shopware\Models\Dispatch\Dispatch;
 use Shopware\Models\Order\Status;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config as ShopwareShopgatePluginConfig;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -423,6 +424,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $this->subscribeEvent(
                 'Shopgate_Frontend_Custom_Event',
                 'onCustomEvent'
+            );
+
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PreDispatch_Frontend',
+                'onPayPalEvent'
+            );
+
+            $this->subscribeEvent(
+                'Theme_Compiler_Collect_Plugin_Javascript',
+                'onCollectJavascriptFiles'
             );
         }
     }
@@ -1203,6 +1214,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgCustomCss', $customCss);
     }
 
+    public function onPayPalEvent(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir(__DIR__ . '/Views/');
+    }
+
     /**
      * Modifies the checkout view when the user agent is the shopgate app's web view
      *
@@ -1508,6 +1525,18 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         }
 
         return $attributesStore;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function onCollectJavascriptFiles()
+    {
+        $jsDir = __DIR__ . '/Views/frontend/_resources/js/';
+
+        return new ArrayCollection(array(
+            $jsDir . 'jquery.shopgate.js',
+        ));
     }
 
     /**

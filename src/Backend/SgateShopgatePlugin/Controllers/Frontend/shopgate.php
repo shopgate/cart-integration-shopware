@@ -567,6 +567,60 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->redirect('account/orders');
     }
 
+    public function payPalExpressAction()
+    {
+        $sessionId = $this->Request()->getParam('sessionId');
+
+        if (isset($sessionId)) {
+            session_write_close();
+            session_id($sessionId);
+            session_start(array(
+                'sessionId' => $sessionId
+            ));
+        }
+
+        $basket = $this->basket->sGetBasket();
+
+        $token = $this->Request()->getParam('token');
+        if (isset($token)) {
+            $key = trim($this->getConfig()->getApikey());
+            JWT::$leeway = 60;
+            $decoded = JWT::decode($token, $key, array('HS256'));
+            $decoded = json_decode(json_encode($decoded), true);
+            $customerId = $decoded['customer_id'];
+
+            $promotionVouchers = $decoded['promotion_vouchers'];
+
+            if (isset($promotionVouchers)) {
+                $this->session->offsetSet('promotionVouchers', $promotionVouchers);
+            }
+
+            $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
+            $password = Shopware()->Db()->fetchCol($sql, array($customerId));
+
+            $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
+            $email = Shopware()->Db()->fetchCol($sql, array($customerId));
+
+            $this->Request()->setPost('email', $email[0]);
+            $this->Request()->setPost('passwordMD5', $password[0]);
+
+            $checkUser = $this->admin->sLogin(true);
+
+            if (isset($checkUser['sErrorFlag'])) {
+                throw new Exception($checkUser['sErrorMessages'][0] , 400);
+            }
+
+            $this->basket->sRefreshBasket();
+            if (!empty($basket['content'])) {
+                $this->basket->clearBasket();
+
+                foreach ($basket['content'] as $basketItem) {
+                    $this->basket->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
+                }
+            }
+        }
+    }
+
     /**
      * Custom action to login user and redirect to checkout
      */
@@ -686,7 +740,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        exit();
+        //exit();
     }
 
     /**
