@@ -396,9 +396,14 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     public function getCartAction()
     {
         $sessionId = $this->Request()->getCookie('sg_session');
+        $promotionVouchers = json_decode($this->Request()->getCookie('sg_promotion'), true);
 
         $this->session->offsetSet('sessionId', $sessionId);
         session_id($sessionId);
+
+        if (isset($promotionVouchers)) {
+            $this->session->offsetSet('promotionVouchers', $promotionVouchers);
+        }
 
         $basket = $this->basket->sGetBasket();
 
@@ -645,6 +650,11 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $decoded = JWT::decode($token, $key, array('HS256'));
             $decoded = json_decode(json_encode($decoded), true);
             $customerId = $decoded['customer_id'];
+            $promotionVouchers = json_decode($decoded['promotion_vouchers'], true);
+
+            if (isset($promotionVouchers)) {
+                $this->session->offsetSet('promotionVouchers', $promotionVouchers);
+            }
 
             $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
             $password = Shopware()->Db()->fetchCol($sql, array($customerId));
@@ -701,6 +711,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             session_id($sessionId);
         }
 
+        if (isset($promotionVouchers)) {
+            $this->session->offsetSet('promotionVouchers', $promotionVouchers);
+        }
+
         $response = $this->addArticlesToCart($articles, $sessionId);
         if ($response) {
             $this->Response()->setHttpResponseCode(401);
@@ -729,13 +743,19 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         $code = $params['couponCode'];
         $sessionId = $params['sessionId'];
+        $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
         }
 
-        $response = $this->basket->sAddVoucher($code);
+        if (isset($promotionVouchers)) {
+            $this->session->offsetSet('promotionVouchers', $promotionVouchers);
+        }
+
+        $response['addVoucher'] = $this->basket->sAddVoucher($code);
+        $response['promotionVouchers'] = $this->session->get('promotionVouchers');
 
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
@@ -757,13 +777,19 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         $articleId = $params['articleId'];
         $sessionId = $params['sessionId'];
+        $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
         }
 
-        $response = $this->basket->sDeleteArticle($articleId);
+        if (isset($promotionVouchers)) {
+            $this->session->offsetSet('promotionVouchers', $promotionVouchers);
+        }
+
+        $response['deleteArticle'] = $this->basket->sDeleteArticle($articleId);
+        $response['promotionVouchers'] = $this->session->get('promotionVouchers');
 
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
