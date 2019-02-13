@@ -57,7 +57,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
                 $jsHeader = $oRedirect->buildScriptItem($uid);
             } elseif (isset($this->params['sSupplier'])) {
                 $sName    = Shopware()->Db()->fetchOne(
-                    "SELECT name FROM `s_articles_supplier` WHERE id={$this->params['sSupplier']}"
+                    "SELECT name FROM `s_articles_supplier` WHERE id= " . (int)$this->params['sSupplier']
                 );
                 $jsHeader = $oRedirect->buildScriptBrand($sName);
             } elseif (isset($this->params['sCategory'])) {
@@ -163,7 +163,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
 
         if ($this->params['sCategory']) {
             $blog = Shopware()->Db()->fetchOne(
-                "SELECT blog FROM `s_categories` WHERE id = {$this->params['sCategory']}"
+                "SELECT blog FROM `s_categories` WHERE id = " . (int)$this->params['sCategory']
             );
 
             if ($blog) {
@@ -174,7 +174,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
         if ($this->request->getControllerName() == 'detail') {
             if (!empty($this->params['sArticle'])) {
                 $row = Shopware()->Db()->fetchRow(
-                    "SELECT mode,id FROM `s_articles` WHERE id = {$this->params['sArticle']}"
+                    "SELECT mode,id FROM `s_articles` WHERE id = " . (int)$this->params['sArticle']
                 );
                 if (empty($row)
                     || $row['mode']
