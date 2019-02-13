@@ -33,15 +33,16 @@
                 {/literal}
             </script>
             <style type="text/css">
+                .is--act-cart {ldelim}display: none{rdelim}
                 {$sgCustomCss}
             </style>
-            {if $sgActionName === 'confirm' || $sgActionName === 'shippingPayment'}
+            {if $sgActionName === 'confirm' || $sgActionName === 'shippingPayment' ||  $sgActionName === 'cart'}
                 <script type="text/javascript">
                     function initPipelineCall () {ldelim}
                         window.SGAppConnector.sendPipelineRequest(
                             'onedot.checkout.updateSession.v1',
                             false,
-                            {ldelim}'sessionId': '{$sgSessionId}'{rdelim},
+                            {ldelim}'sessionId': '{$sgSessionId}', 'promotionVouchers': '{$sgPromotionVouchers}'{rdelim},
                             function (err, serial, output) {ldelim}
                                 {if $sgActionName === 'shippingPayment'}
                                     {if $sgIsNewCustomer && $sgEmail && $sgHash }
@@ -181,12 +182,13 @@
                                 'p': {ldelim}
                                     'event': 'closeInAppBrowser',
                                     'parameters': [{ldelim}'redirectTo': '/'{rdelim}]
-                                    {rdelim}
                                 {rdelim}
+                            {rdelim}
                         ];
                         window.SGAppConnector.sendAppCommands(commands);
-                        {rdelim};
+                    {rdelim};
                     function initPipelineCall() {ldelim}
+                        window.SGAppConnector.sendPipelineRequest('onedot.checkout.updateSession.v1', false, {ldelim}'sessionId': '{$sgSessionId}', 'promotionVouchers': '{$sgPromotionVouchers}'{rdelim}, function (err, serial, output) {ldelim}{rdelim});
                         disableCloseButton();
                         exchangeContinueShoppingButton();
                         var commands = [
@@ -209,18 +211,18 @@
                                 {rdelim}
                         ];
                         window.SGAppConnector.sendAppCommands(commands);
-                        {rdelim}
+                    {rdelim}
                     function disableCloseButton() {ldelim}
                         var setNavigationBarParams = {ldelim}
                             'c': 'setNavigationBarParams',
                             'p': {ldelim}
                                 'navigationBarParams': {ldelim}
                                     'rightButton': false
-                                    {rdelim}
                                 {rdelim}
                             {rdelim}
-                        window.SGAppConnector.sendAppCommand(setNavigationBarParams);
                         {rdelim}
+                        window.SGAppConnector.sendAppCommand(setNavigationBarParams);
+                    {rdelim}
                     function exchangeContinueShoppingButton() {ldelim}
                         if (document.getElementsByClassName('btn')) {ldelim}
                             var targetButton = null;
@@ -238,8 +240,8 @@
                                                     'p': {ldelim}
                                                         'event': 'closeInAppBrowser',
                                                         'parameters': [{ldelim}'redirectTo': '/'{rdelim}]
-                                                        {rdelim}
                                                     {rdelim}
+                                                {rdelim}
                                             ];
                                             window.SGAppConnector.sendAppCommands(commands);
                                             {rdelim})
@@ -247,10 +249,10 @@
                                     {rdelim}
                                 if (button.classList.contains('teaser--btn-print')) {ldelim}
                                     button.remove();
-                                    {rdelim}
-                                {rdelim});
-                            {rdelim}
+                                {rdelim}
+                            {rdelim});
                         {rdelim}
+                    {rdelim}
                 </script>
             {/if}
         {/if}

@@ -427,11 +427,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             );
 
             $this->subscribeEvent(
-                'Enlight_Controller_Action_PreDispatch_Frontend',
-                'onPayPalEvent'
-            );
-
-            $this->subscribeEvent(
                 'Theme_Compiler_Collect_Plugin_Javascript',
                 'onCollectJavascriptFiles'
             );
@@ -1214,12 +1209,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgCustomCss', $customCss);
     }
 
-    public function onPayPalEvent(\Enlight_Event_EventArgs $args)
-    {
-        $view = $args->getSubject()->View();
-        $view->addTemplateDir(__DIR__ . '/Views/');
-    }
-
     /**
      * Modifies the checkout view when the user agent is the shopgate app's web view
      *
@@ -1228,21 +1217,21 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     public function onFrontendCheckout(\Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
-        if ($args->getRequest()->getActionName() !== 'cart') {
-            $view->addTemplateDir(__DIR__ . '/Views/');
-            $view->assign('sgWebCheckout', $this->isInWebView($args));
-            $view->assign('sgActionName', $args->getRequest()->getActionName());
-            $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
-            $view->assign('sgAccountView', false);
-            $view->assign('sgIsNewCustomer', false);
-            $view->assign('sgFrontendAccount', false);
-            $view->assign('sgFrontendRegister', false);
-            $view->assign('sgHash', false);
-            $view->assign('sgEmail', false);
+        $view->addTemplateDir(__DIR__ . '/Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgActionName', $args->getRequest()->getActionName());
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+        $view->assign('sgPromotionVouchers', json_encode(Shopware()->Session()->offsetGet('promotionVouchers')));
+        $view->assign('sgAccountView', false);
+        $view->assign('sgIsNewCustomer', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgHash', false);
+        $view->assign('sgEmail', false);
 
-            $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
-            $view->assign('sgCustomCss', $customCss);
-        }
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
+
 
         if ($args->getRequest()->getActionName() === 'shippingPayment') {
             $user = Shopware()->Modules()->Admin()->sGetUserData();

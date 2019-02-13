@@ -624,6 +624,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 }
             }
         }
+
+        $this->session->offsetSet('sgWebView', true);
+
+        $this->redirect('checkout/cart');
     }
 
     /**
@@ -700,6 +704,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         $articles = $params['articles'];
         $sessionId = $params['sessionId'];
+        $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (!isset($articles)) {
             $this->Response()->setHttpResponseCode(401);
@@ -755,12 +760,12 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         }
 
         $response['addVoucher'] = $this->basket->sAddVoucher($code);
-        $response['promotionVouchers'] = $this->session->get('promotionVouchers');
+        $response['promotionVouchers'] = json_encode($this->session->get('promotionVouchers'));
 
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        //exit();
+        exit();
     }
 
     /**
@@ -789,7 +794,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         }
 
         $response['deleteArticle'] = $this->basket->sDeleteArticle($articleId);
-        $response['promotionVouchers'] = $this->session->get('promotionVouchers');
+        $response['promotionVouchers'] = json_encode($this->session->get('promotionVouchers'));
 
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
@@ -812,10 +817,15 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $basketId = $params['basketId'];
         $quantity = $params['quantity'];
         $sessionId = $params['sessionId'];
+        $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
+        }
+
+        if (isset($promotionVouchers)) {
+            $this->session->offsetSet('promotionVouchers', $promotionVouchers);
         }
 
         $this->Response()->setHeader('Content-Type', 'application/json');
