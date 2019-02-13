@@ -572,6 +572,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->redirect('account/orders');
     }
 
+    /**
+     * Custom action to login user and redirect to paypal express
+     */
     public function payPalExpressAction()
     {
         $sessionId = $this->Request()->getParam('sessionId');
