@@ -612,16 +612,11 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         $code = $params['couponCode'];
         $sessionId = $params['sessionId'];
-        $userId = $params['userId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
-        }
-
-        if(!empty($userId)) {
-            $this->session->offsetSet('sUserId', $userId);
         }
 
         if (isset($promotionVouchers)) {
