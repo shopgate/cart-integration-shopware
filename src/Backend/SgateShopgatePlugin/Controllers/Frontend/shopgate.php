@@ -613,6 +613,13 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $code = $params['couponCode'];
         $sessionId = $params['sessionId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
+        $customerId = $params['customerId'];
+
+        if (isset($customerId)) {
+            $sql = 'SELECT DISTINCT `id` FROM `s_user` WHERE customernumber=?';
+            $userId = Shopware()->Db()->fetchCol($sql, array($customerId));
+            $this->session->offsetSet('sUserId', $userId[0]);
+        }
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
@@ -623,8 +630,43 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $this->session->offsetSet('promotionVouchers', $promotionVouchers);
         }
 
-        $response['addVoucher'] = $this->basket->sAddVoucher($code);
-        $response['promotionVouchers'] = json_encode($this->session->get('promotionVouchers'));
+        $this->Response()->setHeader('Content-Type', 'application/json');
+
+        $voucher = $this->basket->sAddVoucher($code);
+        $response['addVoucher'] = $voucher;
+
+        if ($voucher) {
+            $response['promotionVouchers'] = json_encode($this->session->get('promotionVouchers'));
+
+            $this->Response()->setBody(json_encode($response));
+            $this->Response()->sendResponse();
+            exit();
+        }
+
+        $this->basket->sGetBasket();
+
+        $promotionVariables = $this->View()->getAssign();
+        $voucherPromotionId = $promotionVariables['voucherPromotionId'];
+        $promotionUsedTooOften = $promotionVariables['promotionsUsedTooOften'];
+        $promotions = $this->session->get('promotionVouchers');
+
+        foreach ($promotionUsedTooOften as $promotionUsed) {
+            if ($promotionUsed->id == $voucherPromotionId) {
+                $response['addVoucher']['sErrorFlag'] = true;
+                $text = Shopware()->Snippets()->getNamespace('frontend/swag_promotion/main')->get('usedPromotions');
+                $text = str_replace('{$promotionUsedTooOften->name}', $promotionUsed->name, $text);
+                $text = str_replace('{$promotionUsedTooOften->maxUsage}', $promotionUsed->maxUsage, $text);
+                $response['addVoucher']['sErrorMessages'][0] = $text;
+
+                foreach ($promotions as $key => $promotion) {
+                    if ($promotion['promotionId'] == $voucherPromotionId) {
+                        unset($promotions[$key]);
+                    }
+                }
+            }
+        }
+
+        $response['promotionVouchers'] = json_encode($promotions);
 
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
