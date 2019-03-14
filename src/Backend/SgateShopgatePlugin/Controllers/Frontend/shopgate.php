@@ -638,7 +638,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         if ($voucher) {
             $response['promotionVouchers'] = json_encode($this->session->get('promotionVouchers'));
 
-            $this->Response()->setBody(json_encode($response));
+            $this->Response()->setBody(html_entity_decode(json_encode($response)));
             $this->Response()->sendResponse();
             exit();
         }
@@ -669,7 +669,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $response['promotionVouchers'] = json_encode($promotions);
 
         $this->Response()->setHeader('Content-Type', 'application/json');
-        $this->Response()->setBody(json_encode($response));
+        $this->Response()->setBody(html_entity_decode(json_encode($response)));
         $this->Response()->sendResponse();
         exit();
     }
