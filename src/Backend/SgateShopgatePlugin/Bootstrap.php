@@ -1232,6 +1232,13 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
         $view->assign('sgCustomCss', $customCss);
 
+        if ($this->isInWebView($args)) {
+            $referer = array(
+                'type'=> 'shopgate-webcheckout',
+                "user-agent" => $_SERVER['HTTP_USER_AGENT']
+            );
+            Shopware()->Session()->offsetSet('sReferer', json_encode($referer));
+        }
 
         if ($args->getRequest()->getActionName() === 'shippingPayment') {
             $user = Shopware()->Modules()->Admin()->sGetUserData();
