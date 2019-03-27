@@ -774,7 +774,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     protected function loginAppUser($token)
     {
         $basket = $this->basket->sGetBasket();
-        $voucher = $this->basket->sGetVoucher();
+        $voucher = $this->getVoucher();
 
         if (isset($token)) {
             $key = trim($this->getConfig()->getApikey());
@@ -817,6 +817,34 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 }
             }
         }
+    }
+
+    /**
+     * Returns the current basket voucher or false
+     *
+     * @return array|false
+     */
+    protected function getVoucher()
+    {
+        $voucher = $this->db->fetchRow(
+            'SELECT id basketID, ordernumber, articleID as voucherID
+                FROM s_order_basket
+                WHERE modus = 2 AND sessionID = ?',
+            array($this->session->get('sessionId'))
+        );
+        if (!empty($voucher)) {
+            $voucher['code'] = $this->db->fetchOne(
+                'SELECT vouchercode FROM s_emarketing_vouchers WHERE ordercode = ?',
+                array($voucher['ordernumber'])
+            );
+            if (empty($voucher['code'])) {
+                $voucher['code'] = $this->db->fetchOne(
+                    'SELECT code FROM s_emarketing_voucher_codes WHERE id = ?',
+                    array($voucher['voucherID'])
+                );
+            }
+        }
+        return $voucher;
     }
 
     /**
