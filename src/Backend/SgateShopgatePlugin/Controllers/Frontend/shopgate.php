@@ -804,9 +804,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             }
 
             $this->basket->sRefreshBasket();
+            $this->basket->clearBasket();
 
             if (!empty($basket['content'])) {
-                $this->basket->clearBasket();
 
                 foreach ($basket['content'] as $basketItem) {
                     $this->basket->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
