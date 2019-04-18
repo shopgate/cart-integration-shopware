@@ -21,19 +21,18 @@ jobs:
   - stage: Unit Test
     php: 5.5
   - stage: Unit Test
+    php: 5.6
+  - stage: Unit Test
     php: 7.0
   - stage: Unit Test
     php: 7.1
-  - stage: Dependency Checking
+  - stage: Dependency Checking + Unit Test + Code Style Fixing
     php: 7.2
     script:
     - curl -L https://github.com/Rekhyt/php-dependency-checker/releases/download/1.0.0/php-dependency-checker.phar -o php-dependency-checker
     - chmod +x ./php-dependency-checker
     - ./php-dependency-checker --exclude-from=dependency-check-exclusions composer.lock
     - rm php-dependency-checker
-  - stage: Unit Test + Code Style Fixing
-    php: 5.6
-    script:
     - curl -L http://files.shopgate.com/travis-ci/php-cs-fixer.phar -o php-cs-fixer
     - chmod a+x php-cs-fixer
     - git checkout $TRAVIS_BRANCH
