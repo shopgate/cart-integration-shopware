@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - export of related and similar items
+- version handling in product export
 
 ## [2.9.85] - 2019-01-11
 ### Added
