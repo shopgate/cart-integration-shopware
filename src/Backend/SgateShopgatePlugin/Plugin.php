@@ -396,14 +396,14 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
     protected function _loadShopwareVersion($aInfos)
     {
-        $aInfos["version"] = Shopware::VERSION;
+        $aInfos["version"] = Shopware()->Config()->version;
 
         return $aInfos;
     }
 
     protected function _loadShopwareRevision($aInfos)
     {
-        $aInfos["revision"] = Shopware::REVISION;
+        $aInfos["revision"] = Shopware()->Config()->revision;
 
         return $aInfos;
     }

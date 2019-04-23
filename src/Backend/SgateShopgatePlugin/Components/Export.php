@@ -231,22 +231,20 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         if (empty($this->exportCache[$cacheKey])) {
             ShopgateLogger::getInstance()->log("Start creating Cache {$cacheKey}", ShopgateLogger::LOGTYPE_DEBUG);
 
-            if (version_compare(Shopware::VERSION, '5.0.0', '<')) {
-                $articles = $this->getAllArticlesByCategoryIdOld($categoryId);
-
-                $i       = 0;
-                $maxSort = count($articles) + 1;
-
-                foreach ($articles as $article) {
-                    $this->exportCache[$cacheKey][$article['articleID']] = ($maxSort - $i++);
-                }
-            } else {
+            $version = new Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Version();
+            if ($version->assertMinimum('5.0.0')) {
                 $articles = $this->getAllArticlesByCategoryIdNew($categoryId);
-
-                $i       = 0;
-                $maxSort = count($articles) + 1;
+                $i        = 0;
+                $maxSort  = count($articles) + 1;
                 foreach ($articles as $article) {
                     $this->exportCache[$cacheKey][$article] = ($maxSort - $i++);
+                }
+            } else {
+                $articles = $this->getAllArticlesByCategoryIdOld($categoryId);
+                $i        = 0;
+                $maxSort  = count($articles) + 1;
+                foreach ($articles as $article) {
+                    $this->exportCache[$cacheKey][$article['articleID']] = ($maxSort - $i++);
                 }
             }
 
@@ -409,10 +407,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $addFilterSQL   = "";
         $addFilterWhere = "";
 
+        $version                 = new Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Version();
         $articlesCategoriesTable =
-            version_compare(Shopware::VERSION, '4.1.0', '<')
-                ? "s_articles_categories"
-                : "s_articles_categories_ro";
+            $version->assertMinimum('4.1.0') ? "s_articles_categories_ro" : "s_articles_categories";
 
         $markNew              = (int)$this->system->sCONFIG['sMARKASNEW'];
         $topSeller            = (int)$this->system->sCONFIG['sMARKASTOPSELLER'];
