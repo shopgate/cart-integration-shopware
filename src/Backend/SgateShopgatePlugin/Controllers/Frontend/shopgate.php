@@ -691,26 +691,28 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $voucher = $params['voucher'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
+        $response['oldPromotionVouchers'] = $promotionVouchers;
+
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
         }
 
         if (isset($promotionVouchers) && $voucher) {
-            $this->session->offsetSet('promotionVouchers', $promotionVouchers);
             $sql = 'SELECT DISTINCT `ordernumber` FROM `s_order_basket` WHERE id=?';
             $orderNumber = Shopware()->Db()->fetchCol($sql, array($articleId));
 
             $sql = 'SELECT 1 FROM `s_plugin_promotion` LIMIT 1';
             $test = Shopware()->Db()->fetchCol($sql);
-            $response['test'] = $test;
             if ($test) {
-
                 $sql = 'SELECT DISTINCT `id` FROM `s_plugin_promotion` WHERE number=?';
                 $voucherId = Shopware()->Db()->fetchCol($sql, $orderNumber);
 
+                $response['voucherId'] = $voucherId;
+
                 if ($voucherId) {
                     $this->session->offsetSet('promotionVouchers', $promotionVouchers[$voucherId]);
+                    $response['newPromotionVouchers'] = $promotionVouchers[$voucherId];
                 }
             }
         }
