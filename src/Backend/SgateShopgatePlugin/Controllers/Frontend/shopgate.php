@@ -135,7 +135,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             'updateCartItem',
             'addCouponsCode',
             'account',
-            'accountOrders'
+            'accountOrders',
+            'updateUserPassword',
+            'updateUserEmail',
+            'updateUser'
         );
     }
 
@@ -1029,43 +1032,184 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function getUserAction()
     {
-        $token = $this->Request()->getCookie('token');
+        try {
+            $decoded = $this->getJWT($this->Request()->getCookie('token'));
+            $customerId = $decoded['customer_id'];
 
-        $key = trim($this->getConfig()->getApikey());
-        JWT::$leeway = 60;
-        $decoded = JWT::decode($token, $key, array('HS256'));
-        $decoded = json_decode(json_encode($decoded), true);
-        $customerId = $decoded['customer_id'];
+            $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
+            $password = Shopware()->Db()->fetchCol($sql, array($customerId));
 
-        $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
-        $password = Shopware()->Db()->fetchCol($sql, array($customerId));
+            $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
+            $email = Shopware()->Db()->fetchCol($sql, array($customerId));
 
-        $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
-        $email = Shopware()->Db()->fetchCol($sql, array($customerId));
+            $this->Request()->setPost('email', $email[0]);
+            $this->Request()->setPost('passwordMD5', $password[0]);
 
-        $this->Request()->setPost('email', $email[0]);
-        $this->Request()->setPost('passwordMD5', $password[0]);
+            $checkUser = $this->admin->sLogin(true);
 
-        $checkUser = $this->admin->sLogin(true);
+            if (isset($checkUser['sErrorFlag'])) {
+                throw new Exception($checkUser['sErrorMessages'][0], 400);
+            }
 
-        if (isset($checkUser['sErrorFlag'])) {
-            throw new Exception($checkUser['sErrorMessages'][0] , 400);
+            $this->basket->sRefreshBasket();
+
+            $user = $this->admin->sGetUserData();
+            $user = $user['additional']['user'];
+
+            $this->Response()->setBody(json_encode(array(
+                'id' => $user['customernumber'],
+                'mail' => $user['email'],
+                'firstName' => $user['firstname'],
+                'lastName' => $user['lastname'],
+                'birthday' => $user['birthday'],
+                'customerGroups' => $user['customergroup'],
+                'addresses' => array()
+            )));
+            $this->Response()->sendResponse();
+            exit();
+        } catch (Exception $error) {
+            $this->Response()->setHeader('Content-Type', 'application/json');
+            $this->Response()->setBody(json_encode($error->getMessage()));
+
+            $this->Response()->sendResponse();
+            exit();
+        }
+    }
+
+    /**
+     * Custom action to update user data
+     */
+    public function updateUserAction()
+    {
+        $this->Response()->setHeader('Content-Type', 'application/json');
+
+        $response = array(
+            'success' => true,
+            'message' => ''
+        );
+
+        try {
+            $params = $this->getJsonParams();
+            $decoded = $this->getJWT($params['token']);
+
+            $customer = $this->getCustomer($decoded['customer_id']);
+            $customer->setFirstname($decoded['first_name']);
+            $customer->setLastname($decoded['last_name']);
+            $customer->setAttribute($decoded['custom_attributes']);
+
+            Shopware()->Models()->persist($customer);
+            Shopware()->Models()->flush();
+
+            $response['success'] = true;
+            $response['message'] = $decoded['email'];
+
+        } catch (Exception $error) {
+            $response['message'] = $error->getMessage();
         }
 
-        $this->basket->sRefreshBasket();
+        $this->Response()->setBody(json_encode($response));
+        $this->Response()->sendResponse();
+        exit();
+    }
 
-        $user = $this->admin->sGetUserData();
-        $user = $user['additional']['user'];
+    /**
+     * Custom action to update user email
+     */
+    public function updateUserEmailAction()
+    {
+        if (!$this->Request()->isPut()) {
+            return;
+        }
 
-        $this->Response()->setBody(json_encode(array(
-            'id' => $user['customernumber'],
-            'mail' => $user['email'],
-            'firstName' => $user['firstname'],
-            'lastName' => $user['lastname'],
-            'birthday' => $user['birthday'],
-            'customerGroups' => $user['customergroup'],
-            'addresses' => array()
-        )));
+        $this->Response()->setHeader('Content-Type', 'application/json');
+
+        $response = array(
+            'success' => false,
+            'message' => ''
+        );
+
+        try {
+            $params = $this->getJsonParams();
+            $decoded = $this->getJWT($params['token']);
+
+            $customer = $this->getCustomer($decoded['customer_id']);
+
+            $form = $this->createForm("Shopware\\Bundle\\AccountBundle\\Form\Account\\EmailUpdateFormType", $customer);
+            $emailData = array(
+                'email' => $decoded['email'],
+                'emailConfirmation' => $decoded['email']
+            );
+            $form->submit($emailData, false);
+
+            if ($form->isValid()) {
+                $customerService = Shopware()->Container()->get('shopware_account.customer_service');
+                $customerService->update($customer);
+                $response['success'] = true;
+            } else {
+                $errors = $form->getErrors(true);
+                $string = '';
+                foreach ($errors as $error) {
+                    $string .= $error->getMessage()."\n";
+                }
+                $response['message'] = $string;
+            }
+
+        } catch (Exception $error) {
+            $response['message'] = $error->getMessage();
+        }
+
+        $this->Response()->setBody(json_encode($response));
+
+        $this->Response()->sendResponse();
+        exit();
+    }
+
+    /**
+     * Custom action to update user password
+     */
+    public function updateUserPasswordAction()
+    {
+        if (!$this->Request()->isPut()) {
+            return;
+        }
+
+        $this->Response()->setHeader('Content-Type', 'application/json');
+
+        $response = array(
+            'success' => false,
+            'message' => ''
+        );
+
+        $params = $this->getJsonParams();
+        $decoded = $this->getJWT($params['token']);
+
+        $customer = $this->getCustomer($decoded['customer_id']);
+
+        $this->get('session')->offsetSet('sUserPassword', $customer->getPassword());
+
+        $form = $this->createForm("Shopware\\Bundle\\AccountBundle\\Form\Account\\PasswordUpdateFormType", $customer);
+        $passwordData = array(
+            'password' => $decoded['password'],
+            'passwordConfirmation' => $decoded['password'],
+            'currentPassword' => $decoded['old_password']
+        );
+        $form->submit($passwordData);
+
+        if ($form->isValid()) {
+            $customerService = Shopware()->Container()->get('shopware_account.customer_service');
+            $customerService->update($customer);
+            $response['success'] = true;
+        } else {
+            $errors = $form->getErrors(true);
+            $string = '';
+            foreach ($errors as $error) {
+                $string .= $error->getMessage()."\n";
+            }
+            $response['message'] = $string;
+        }
+
+        $this->Response()->setBody(json_encode($response));
+
         $this->Response()->sendResponse();
         exit();
     }
@@ -1099,6 +1243,31 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         } else {
             $this->redirect('account#show-registration');
         }
+    }
+
+    /**
+     * @param $customerId
+     * @return Shopware\\Models\\Customer\\Customer $customer
+     */
+    protected function getCustomer($customerId) {
+        $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+
+        $userId = $this->db->fetchRow($sql, array($customerId)) ?: array();
+        $this->session->offsetSet('sUserId', $userId['id']);
+
+        return Shopware()->Models()->find("Shopware\\Models\\Customer\\Customer", $userId['id']);
+    }
+
+    /**
+     * @param $token
+     * @return array
+     */
+    protected function getJWT($token) {
+        $key = trim($this->getConfig()->getApikey());
+        JWT::$leeway = 60;
+        $decoded = JWT::decode($token, $key, array('HS256'));
+
+        return json_decode(json_encode($decoded), true);
     }
 
     /**
