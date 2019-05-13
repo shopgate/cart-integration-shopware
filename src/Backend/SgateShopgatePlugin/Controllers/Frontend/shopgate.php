@@ -21,6 +21,7 @@
 
 use Shopware\Components\CSRFWhitelistAware;
 use \Firebase\JWT\JWT;
+use SwagAdvancedCart\Models\Cart\Cart;
 
 class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action implements CSRFWhitelistAware
 {
@@ -138,7 +139,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             'accountOrders',
             'updateUserPassword',
             'updateUserEmail',
-            'updateUser'
+            'updateUser',
+            'addToFavoriteList',
+            'deleteFromFavoriteList'
         );
     }
 
@@ -1243,6 +1246,437 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         } else {
             $this->redirect('account#show-registration');
         }
+    }
+
+    /**
+     * Custom action to get the address data of an user
+     */
+    public function getAddressesAction()
+    {
+        $decoded = $this->getJWT($this->Request()->getCookie('token'));
+        $customer = $this->getCustomer($decoded['customer_id']);
+
+        $defaultBillingAddress = $customer->getDefaultBillingAddress();
+        $defaultShippingAddress = $customer->getDefaultShippingAddress();
+
+        $addressRepository = Shopware()->Models()->getRepository("Shopware\\Models\\Customer\\Address");
+
+        $addresses = $addressRepository->getListArray($customer->getId());
+
+        // Create a list of ids of occurring countries and states
+        $countryIds = array_unique(array_filter(array_column($addresses, 'countryId')));
+        $stateIds = array_unique(array_filter(array_column($addresses, 'stateId')));
+
+        $countryRepository = $this->container->get('shopware_storefront.country_gateway');
+        $context = $this->container->get('shopware_storefront.context_service')->getShopContext();
+
+        $countries = $countryRepository->getCountries($countryIds, $context);
+        $states = $countryRepository->getStates($stateIds, $context);
+
+        // Apply translations for countries and states to address array, converting them from structs to arrays in the process
+        foreach ($addresses as &$address) {
+            if (array_key_exists($address['countryId'], $countries)) {
+                $address['country'] = json_decode(json_encode($countries[$address['countryId']]), true);
+            }
+            if (array_key_exists($address['stateId'], $states)) {
+                $address['state'] = json_decode(json_encode($states[$address['stateId']]), true);
+            }
+
+            $test = $addressRepository->getOneByUser($address['id'], $customer->getId());
+            $address['additional'] = $test->getAdditional();
+            $address['defaultBillingAddress'] = $defaultBillingAddress->getId() === $address['id'];
+            $address['defaultShippingAddress'] = $defaultShippingAddress->getId() === $address['id'];
+        }
+        unset($address);
+
+        $this->Response()->setHeader('Content-Type', 'application/json');
+        $this->Response()->setBody(json_encode($addresses));
+
+        $this->Response()->sendResponse();
+        exit();
+    }
+
+    /**
+     * Custom favorite action to get the favorite list of an user
+     */
+    public function getFavoritesAction()
+    {
+        $decoded = $this->getJWT($this->Request()->getCookie('token'));
+        $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+
+        $userId = $this->db->fetchRow($sql, array($decoded['customer_id'])) ?: array();
+        $this->session->offsetSet('sUserId', $userId['id']);
+
+        $nodes = Shopware()->Modules()->Basket()->sGetNotes();
+
+        if ($this->isWishList()) {
+            $builder = $this->getModelManager()->createQueryBuilder();
+            $builder->select(array('cart', 'items', 'details'))
+                ->from('SwagAdvancedCart\Models\Cart\Cart', 'cart')
+                ->leftJoin('cart.customer', 'customer')
+                ->leftJoin('cart.cartItems', 'items')
+                ->leftJoin('items.details', 'details')
+                ->where('customer.id = :customerId')
+                ->andWhere('cart.shopId = :shopId')
+                ->andWhere('LENGTH(cart.name) > 0')
+                ->orderBy('items.id', 'DESC')
+                ->setParameter('customerId', $userId['id'])
+                ->setParameter('shopId', $this->get('shop')->getId());
+
+            $carts = $builder->getQuery()->getResult();
+            $nodes = $this->prepareCartItems($carts[0]);
+        }
+
+        $this->Response()->setHeader('Content-Type', 'application/json');
+        $this->Response()->setBody(json_encode($nodes));
+        $this->Response()->sendResponse();
+        exit();
+    }
+
+    /**
+     * Custom favorite action to add a product to the favorite list of an user
+     */
+    public function addToFavoriteListAction()
+    {
+        $this->Response()->setHeader('Content-Type', 'application/json');
+
+        if (!$this->Request()->isPost()) {
+            $this->Response()->setBody(json_encode(array('success' => false)));
+            $this->Response()->sendResponse();
+            exit();
+        }
+
+        // @Below code: Standard Shopware function to get JSON data from the POST array don't work
+        $params = $this->getJsonParams();
+
+        $decoded = $this->getJWT($params['token']);
+
+        $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ?: array();
+        $this->session->offsetSet('sUserId', $userId['id']);
+
+        if ($this->addArticleToWishList($decoded['articles'], $userId['id'])) {
+            $this->Response()->setBody(json_encode(array('success' => true)));
+            $this->Response()->sendResponse();
+            exit();
+        }
+
+        $this->Response()->setBody(json_encode(array('success' => false)));
+        $this->Response()->sendResponse();
+        exit();
+    }
+
+    /**
+     * Custom favorite action to delete a product from the favorite list of an user
+     */
+    public function deleteFromFavoriteListAction()
+    {
+        $this->Response()->setHeader('Content-Type', 'application/json');
+
+        if (!$this->Request()->isDelete()) {
+            $this->Response()->setBody(json_encode(array('success' => false)));
+            $this->Response()->sendResponse();
+            exit();
+        }
+
+        // @Below code: Standard Shopware function to get JSON data from the POST array don't work
+        $params = $this->getJsonParams();
+
+        $decoded = $this->getJWT($params['token']);
+
+        $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ?: array();
+        $this->session->offsetSet('sUserId', $userId['id']);
+
+        if ($this->removeProductFromWishList($decoded['articles'], $userId['id'])) {
+            $this->Response()->setBody(json_encode(array('success' => true)));
+            $this->Response()->sendResponse();
+            exit();
+        }
+
+        $this->Response()->setBody(json_encode(array('success' => false)));
+        $this->Response()->sendResponse();
+        exit();
+    }
+
+    /**
+     * A helper function that to delete articles from wish list or note list
+     *
+     * @param $articles
+     * @param $userId
+     * @return bool
+     */
+    protected function removeProductFromWishList($articles, $userId)
+    {
+        foreach ($articles as $article) {
+            $articleId = trim($article['product_id']);
+            $orderNumber = trim($article['variant_id']);
+
+            $product = Shopware()->Modules()->Articles()->sGetArticleById($articleId);
+
+            if ($product) {
+                if ($orderNumber === "") {
+                    $orderNumber = $product['ordernumber'];
+                }
+
+                if ($this->isWishList()) {
+                    $builder = $this->getModelManager()->createQueryBuilder();
+                    $builder->select(array('cart', 'items', 'details'))
+                        ->from('SwagAdvancedCart\Models\Cart\Cart', 'cart')
+                        ->leftJoin('cart.customer', 'customer')
+                        ->leftJoin('cart.cartItems', 'items')
+                        ->leftJoin('items.details', 'details')
+                        ->where('customer.id = :customerId')
+                        ->andWhere('cart.shopId = :shopId')
+                        ->andWhere('LENGTH(cart.name) > 0')
+                        ->orderBy('items.id', 'DESC')
+                        ->setParameter('customerId', $userId)
+                        ->setParameter('shopId', $this->get('shop')->getId());
+
+                    $carts = $builder->getQuery()->getResult();
+                    $cart = $carts[0];
+                    $cartId = $cart->getId();
+
+                    if (empty($cartId)) {
+                        return false;
+                    }
+
+                    $builder = $this->getModelManager()->createQueryBuilder();
+                    $builder->select('item')
+                        ->from('SwagAdvancedCart\Models\Cart\CartItem', 'item')
+                        ->where('item.productOrderNumber = :itemId')
+                        ->andWhere('item.basket_id = :basketId')
+                        ->innerJoin('item.cart', 'cart')
+                        ->innerJoin('cart.customer', 'customer')
+                        ->andWhere('customer.id = :userId')
+                        ->setParameter('itemId', $orderNumber)
+                        ->setParameter('basketId', $cartId)
+                        ->setParameter('userId', $userId);
+
+                    $cartItem = $builder->getQuery()->getOneOrNullResult();
+
+                    if (empty($cartItem)) {
+                        return false;
+                    }
+
+                    $cart->setModified(date('Y-m-d H:i:s'));
+
+                    $modelManager = $this->getModelManager();
+                    $modelManager->remove($cartItem);
+                    $modelManager->flush();
+
+                } else {
+                    $delete = Shopware()->Db()->query(
+                        'DELETE FROM s_order_notes 
+                        WHERE userID = ? AND ordernumber = ?',
+                        array((int)$userId, $orderNumber)
+                    );
+
+                    if (!$delete) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * A helper function that to add articles to wish list or note
+     *
+     * @param $articles
+     * @param $userId
+     * @return bool
+     */
+    protected function addArticleToWishList($articles, $userId)
+    {
+        foreach ($articles as $article) {
+            $articleId = trim($article['product_id']);
+            $orderNumber = trim($article['variant_id']);
+
+            $product = Shopware()->Modules()->Articles()->sGetArticleById($articleId);
+
+            if ($product) {
+                if ($orderNumber === "") {
+                    $orderNumber = $product['ordernumber'];
+                }
+
+                if ($this->isWishList()) {
+
+                    $builder = $this->getModelManager()->createQueryBuilder();
+                    $builder->select(array('cart', 'items', 'details'))
+                        ->from('SwagAdvancedCart\Models\Cart\Cart', 'cart')
+                        ->leftJoin('cart.customer', 'customer')
+                        ->leftJoin('cart.cartItems', 'items')
+                        ->leftJoin('items.details', 'details')
+                        ->where('customer.id = :customerId')
+                        ->andWhere('cart.shopId = :shopId')
+                        ->andWhere('LENGTH(cart.name) > 0')
+                        ->orderBy('items.id', 'DESC')
+                        ->setParameter('customerId', $userId)
+                        ->setParameter('shopId', $this->get('shop')->getId());
+
+                    $carts = $builder->getQuery()->getResult();
+
+                    if (empty($carts)) {
+                        $this->Request()->setPost('newlist', 'App');
+                    } else {
+                        $this->Request()->setPost('lists', array($carts[0]->getId()));
+                    }
+
+                    $this->Request()->setPost('ordernumber', $orderNumber);
+                    $this->container->get('swag_advanced_cart.cart_handler')->addToList($this->Request()->getPost());
+                } else {
+                    $productId = Shopware()->Modules()->Articles()->sGetArticleIdByOrderNumber($orderNumber);
+                    $productName = Shopware()->Modules()->Articles()->sGetArticleNameByOrderNumber($orderNumber);
+
+                    if (empty($productId)) {
+                        return false;
+                    }
+
+                    Shopware()->Modules()->Basket()->sAddNote($productId, $productName, $orderNumber);
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * A helper function to check if the wish list from the advanced cart plugin is active
+     *
+     * @return bool
+     */
+    private function isWishList()
+    {
+        $pluginManager  = $this->container->get('shopware_plugininstaller.plugin_manager');
+        $plugin = $pluginManager->getPluginByName('SwagAdvancedCart');
+        $config = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('SwagAdvancedCart');
+
+        if ($plugin->getInstalled() && $plugin->getActive() && $config['replaceNote']) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * A helper function that prepares a single cart
+     *
+     * @param Cart $cart
+     *
+     * @return null|array
+     */
+    private function prepareCartItems($cart)
+    {
+        $items = array();
+
+        /** @var CartItem $cartItem */
+        foreach ($cart->getCartItems() as $cartItem) {
+            if (!$cartItem->getDetail() || !$cartItem->getDetail()->getActive()) {
+                continue;
+            }
+            $orderNumber = $cartItem->getProductOrderNumber();
+            $product = $this->prepareArticle($orderNumber, $cartItem);
+
+            if ($product) {
+                $items[] = $product;
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * A helper function that returns a prepared product object ready to be displayed in the frontend
+     *
+     * @param int      $orderNumber
+     * @param CartItem $cartItem
+     *
+     * @return null|array
+     */
+    private function prepareArticle($orderNumber, $cartItem)
+    {
+        if (!$orderNumber) {
+            return null;
+        }
+
+        //Gets the product by the order number
+        $productId = $this->get('modules')->Articles()->sGetArticleIdByOrderNumber($orderNumber);
+
+        if (!$productId) {
+            return null;
+        }
+
+        try {
+            $product = $this->get('modules')->Articles()->sGetArticleById($productId, null, $orderNumber);
+        } catch (\RuntimeException $e) {
+            // if product is not found the ProductNumberService will throw an exception
+            return null;
+        }
+
+        if (!$product || !$this->existsInMainCategory($productId)) {
+            return null;
+        }
+
+        $sql = 'SELECT active FROM s_articles_details WHERE ordernumber = :orderNumber;';
+        $isVariantActive = $this->get('db')->fetchOne($sql, array('orderNumber' => $orderNumber));
+
+        if (!$isVariantActive) {
+            $message = $this->get('snippets')->getNamespace('frontend/plugins/swag_advanced_cart/plugin')->get('ArticleNotAvailable');
+            $items[] = array(
+                'id' => $cartItem->getId(),
+                'ordernumber' => $cartItem->getProductOrderNumber(),
+                'quantity' => $cartItem->getQuantity(),
+                'name' => $message,
+                'article' => array(
+                    'articleName' => $message,
+                    'articlename' => $message,
+                ),
+            );
+
+            return null;
+        }
+
+        $product['price'] = str_replace(',', '.', $product['price']) * $cartItem->getQuantity();
+
+        //For compatibility issues
+        $product['articlename'] = $product['articleName'];
+
+        if ($product['sConfigurator']) {
+            if ($product['additionaltext']) {
+                $product['articlename'] .= ' ' . $product['additionaltext'];
+                $product['articleName'] .= ' ' . $product['additionaltext'];
+            } else {
+                $productName = $this->get('modules')->Articles()->sGetArticleNameByOrderNumber($orderNumber);
+                $product['articlename'] = $productName;
+                $product['articleName'] = $productName;
+            }
+        }
+
+        $product['img'] = $product['image']['src'][0];
+
+        return $product;
+    }
+
+    /**
+     * check for product exists in active category
+     *
+     * @param $productId
+     *
+     * @return mixed
+     */
+    private function existsInMainCategory($productId)
+    {
+        $categoryId = $this->get('shop')->getCategory()->getId();
+
+        $exist = $this->get('db')->fetchRow(
+            'SELECT * FROM s_articles_categories_ro WHERE categoryID = ? AND articleID = ?',
+            array($categoryId, $productId)
+        );
+
+        return $exist;
     }
 
     /**
