@@ -141,7 +141,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             'updateUserEmail',
             'updateUser',
             'addToFavoriteList',
-            'deleteFromFavoriteList'
+            'deleteFromFavoriteList',
+            'addAddress',
+            'deleteAddress',
+            'updateAddress'
         );
     }
 
@@ -1282,8 +1285,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                 $address['state'] = json_decode(json_encode($states[$address['stateId']]), true);
             }
 
-            $test = $addressRepository->getOneByUser($address['id'], $customer->getId());
-            $address['additional'] = $test->getAdditional();
+            $customerAddress = $addressRepository->getOneByUser($address['id'], $customer->getId());
+            $address['additional'] = $customerAddress->getAdditional();
             $address['defaultBillingAddress'] = $defaultBillingAddress->getId() === $address['id'];
             $address['defaultShippingAddress'] = $defaultShippingAddress->getId() === $address['id'];
         }
@@ -1292,6 +1295,180 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($addresses));
 
+        $this->Response()->sendResponse();
+        exit();
+    }
+
+    public function addAddressAction()
+    {
+        if (!$this->Request()->isPost()) {
+            return;
+        }
+
+        $params = $this->getJsonParams();
+        $data = $this->getJWT($params['token']);
+        $customer = $this->getCustomer($data['customer_id']);
+
+        $this->Response()->setHeader('Content-Type', 'application/json');
+
+        if (!empty($data['address']['country'])) {
+            $query = Shopware()->Models()->getConnection()->createQueryBuilder();
+            $query->select('id')
+                ->from('s_core_countries', 'country')
+                ->where('country.countryiso = :iso')
+                ->setParameter('iso', $data['address']['country']);
+
+            $countryId = $query->execute()->fetch();
+            $data['address']['country'] = $countryId['id'];
+        }
+
+        if (!empty($data['address']['state'])) {
+            $query = Shopware()->Models()->getConnection()->createQueryBuilder();
+            $query->select('id')
+                ->from('s_core_countries_states', 'state')
+                ->where('state.countryID = :id')
+                ->andwhere('state.shortcode = :code')
+                ->setParameter('id', $countryId['id'])
+                ->setParameter('code', $data['address']['state']);
+
+            $stateId = $query->execute()->fetch();
+            $data['address']['state'] = $stateId['id'];
+        }
+
+        $address = new \Shopware\Models\Customer\Address();
+        $form = $this->createForm('Shopware\\Bundle\\AccountBundle\\Form\\Account\\AddressFormType', $address);
+
+        $form->submit($data['address']);
+
+        if ($form->isValid()) {
+            $addressService = Shopware()->Container()->get('shopware_account.address_service');
+            $addressService->create($address, $customer);
+
+            $additional = $address->getAdditional();
+
+            if (!empty($additional['setDefaultBillingAddress'])) {
+                $addressService->setDefaultBillingAddress($address);
+            }
+
+            if ($this->isValidShippingAddress($address) && !empty($additional['setDefaultShippingAddress'])) {
+                $addressService->setDefaultShippingAddress($address);
+            }
+            $this->Response()->setBody(json_encode(array('success' => true)));
+        } else {
+
+            $errors = $form->getErrors(true);
+            $string = '';
+            foreach ($errors as $error) {
+                $string .= $error->getOrigin()->getName().$error->getMessage()."\n";
+            }
+
+            $this->Response()->setBody(json_encode(array(
+                'success' => false,
+                'message' => $string
+            )));
+        }
+
+        $this->Response()->sendResponse();
+        exit();
+    }
+
+    public function updateAddressAction()
+    {
+        if (!$this->Request()->isPut()) {
+            return;
+        }
+
+        $this->Response()->setHeader('Content-Type', 'application/json');
+
+        $params = $this->getJsonParams();
+        $data = $this->getJWT($params['token']);
+        $customer = $this->getCustomer($data['customer_id']);
+
+        if (!empty($data['address']['country'])) {
+            $query = Shopware()->Models()->getConnection()->createQueryBuilder();
+            $query->select('id')
+                ->from('s_core_countries', 'country')
+                ->where('country.countryiso = :iso')
+                ->setParameter('iso', $data['address']['country']);
+
+            $countryId = $query->execute()->fetch();
+            $data['address']['country'] = $countryId['id'];
+        }
+
+        if (!empty($data['address']['state'])) {
+            $query = Shopware()->Models()->getConnection()->createQueryBuilder();
+            $query->select('id')
+                ->from('s_core_countries_states', 'state')
+                ->where('state.countryID = :id')
+                ->andwhere('state.shortcode = :code')
+                ->setParameter('id', $countryId['id'])
+                ->setParameter('code', $data['address']['state']);
+
+            $stateId = $query->execute()->fetch();
+            $data['address']['state'] = $stateId['id'];
+        }
+
+        $addressRepository = Shopware()->Models()->getRepository("Shopware\\Models\\Customer\\Address");
+        $address = $addressRepository->getOneByUser((int)$data['address']['id'], $customer->getId());
+
+        $form = $this->createForm('Shopware\\Bundle\\AccountBundle\\Form\\Account\\AddressFormType', $address);
+        $form->submit($data['address']);
+
+        if ($form->isValid()) {
+            $addressService = Shopware()->Container()->get('shopware_account.address_service');
+            $addressService->create($address, $customer);
+
+            $additional = $address->getAdditional();
+
+            if (!empty($additional['setDefaultBillingAddress'])) {
+                $addressService->setDefaultBillingAddress($address);
+            }
+
+            if ($this->isValidShippingAddress($address) && !empty($additional['setDefaultShippingAddress'])) {
+                $addressService->setDefaultShippingAddress($address);
+            }
+            $this->Response()->setBody(json_encode(array('success' => true)));
+        } else {
+
+            $errors = $form->getErrors(true);
+            $string = '';
+            foreach ($errors as $error) {
+                $string .= $error->getOrigin()->getName().$error->getMessage()."\n";
+            }
+
+            $this->Response()->setBody(json_encode(array(
+                'success' => false,
+                'message' => $string
+            )));
+        }
+
+        $this->Response()->sendResponse();
+        exit();
+    }
+
+    /**
+     * Custom address action to get delete an address
+     */
+    public function deleteAddressAction()
+    {
+        if (!$this->Request()->isDelete()) {
+            return;
+        }
+
+        $params = $this->getJsonParams();
+        $data = $this->getJWT($params['token']);
+        $customer = $this->getCustomer($data['customer_id']);
+        $addressService = Shopware()->Container()->get('shopware_account.address_service');
+        $addressRepository = Shopware()->Models()->getRepository("Shopware\\Models\\Customer\\Address");
+
+        $this->Response()->setHeader('Content-Type', 'application/json');
+
+        foreach ($data['addressIds'] as $addressId) {
+            $address = $addressRepository->getOneByUser((int)$addressId, $customer->getId());
+            $addressService->delete($address);
+        }
+
+        $this->Response()->setBody(json_encode(array('success' => true)));
         $this->Response()->sendResponse();
         exit();
     }
@@ -1397,6 +1574,24 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setBody(json_encode(array('success' => false)));
         $this->Response()->sendResponse();
         exit();
+    }
+
+    /**
+     * @param \Shopware\Models\Customer\Address $address
+     * @return bool
+     */
+    private function isValidShippingAddress(\Shopware\Models\Customer\Address $address)
+    {
+        $additional = $address->getAdditional();
+
+        if (empty($additional['setDefaultShippingAddress']) && $address->getId() !== $address->getCustomer()->getDefaultShippingAddress()->getId()) {
+            return true;
+        }
+
+        $context = Shopware()->Container()->get('shopware_storefront.context_service')->getContext();
+        $country = Shopware()->Container()->get('shopware_storefront.country_gateway')->getCountry($address->getCountry()->getId(), $context);
+
+        return $country->allowShipping();
     }
 
     /**
