@@ -485,12 +485,14 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         }
 
         $token = $this->Request()->getParam('token');
-        $this->loginAppUser($token);
-
         $this->session->offsetSet('sgWebView', true);
-        $this->session->offsetSet('sgAccountView', true);
 
-        $this->redirect('account');
+        if ($this->loginAppUser($token)) {
+            $this->session->offsetSet('sgAccountView', true);
+            $this->redirect('account');
+        } else {
+            $this->redirect('shopgate/error');
+        }
     }
 
     /**
@@ -509,12 +511,14 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         }
 
         $token = $this->Request()->getParam('token');
-        $this->loginAppUser($token);
-
         $this->session->offsetSet('sgWebView', true);
-        $this->session->offsetSet('sgAccountView', true);
 
-        $this->redirect('account/orders');
+        if ($this->loginAppUser($token)) {
+            $this->session->offsetSet('sgAccountView', true);
+            $this->redirect('account/orders');
+        } else {
+            $this->redirect('shopgate/error');
+        }
     }
 
     /**
@@ -533,11 +537,13 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         }
 
         $token = $this->Request()->getParam('token');
-        $this->loginAppUser($token);
-
         $this->session->offsetSet('sgWebView', true);
 
-        $this->redirect('checkout/cart');
+        if ($this->loginAppUser($token)) {
+            $this->redirect('checkout/cart');
+        } else {
+            $this->redirect('shopgate/error');
+        }
     }
 
     /**
@@ -556,11 +562,13 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         }
 
         $token = $this->Request()->getParam('token');
-        $this->loginAppUser($token);
-
         $this->session->offsetSet('sgWebView', true);
 
-        $this->redirect('checkout/confirm');
+        if ($this->loginAppUser($token)) {
+            $this->redirect('checkout/confirm');
+        } else {
+            $this->redirect('shopgate/error');
+        }
     }
 
     /**
@@ -778,9 +786,24 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     }
 
     /**
+     * Controller action for login error message in frontend
+     */
+    public function errorAction()
+    {
+        Shopware()->Events()->notify(
+            'Shopgate_Frontend_Custom_Event',
+            array(
+                'request' => $this->Request(),
+                'subject' => $this
+            )
+        );
+    }
+
+    /**
      * Login app user from JWT token
      *
      * @param $token
+     * @return bool
      */
     protected function loginAppUser($token)
     {
@@ -805,6 +828,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
             $email = Shopware()->Db()->fetchCol($sql, array($customerId));
 
+            if (count($password) > 1 || count($email) > 1) {
+                return false;
+            }
+
             $this->Request()->setPost('email', $email[0]);
             $this->Request()->setPost('passwordMD5', $password[0]);
 
@@ -827,7 +854,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                     $this->basket->sAddVoucher($voucher['code']);
                 }
             }
+            return true;
         }
+
+        return false;
     }
 
     /**
