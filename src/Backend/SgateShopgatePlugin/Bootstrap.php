@@ -26,6 +26,7 @@ require_once __DIR__ . '/Helpers/FormElementSelect.php';
 require_once __DIR__ . '/Helpers/FormElementCheckbox.php';
 require_once __DIR__ . '/Helpers/FormElementText.php';
 require_once __DIR__ . '/Helpers/FormElementTextfield.php';
+require_once __DIR__ . '/Helpers/WebCheckout.php';
 require_once dirname(__FILE__) . '/Plugin.php';
 
 use Shopgate\Helpers\Attribute as AttributeHelper;
