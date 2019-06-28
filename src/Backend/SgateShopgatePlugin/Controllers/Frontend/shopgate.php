@@ -20,7 +20,6 @@
  */
 
 use Shopware\Components\CSRFWhitelistAware;
-use SwagAdvancedCart\Models\Cart\Cart;
 use Shopgate\Helpers\WebCheckout;
 
 class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action implements CSRFWhitelistAware
@@ -79,12 +78,12 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     private $contextService;
 
     /**
-     * @var Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Cart
+     * @var \Shopgate\Components\Cart
      */
     private $webCheckoutCartService;
 
     /**
-     * @var Shopware_Plugins_Backend_SgateShopgatePlugin_Components_User
+     * @var Shopgate\Components\User
      */
     private $webCheckoutUserService;
 
@@ -107,8 +106,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->session = Shopware()->Session();
         $this->db = Shopware()->Db();
         $this->passwordEncoder = Shopware()->PasswordEncoder();
-        $this->webCheckoutCartService = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Cart();
-        $this->webCheckoutUserService = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_User();
+        $this->webCheckoutCartService = new Shopgate\Components\Cart();
+        $this->webCheckoutUserService = new Shopgate\Components\User();
         $this->webCheckoutHelper = new WebCheckout();
 
         $this->contextService = $container->get('shopware_storefront.context_service');
@@ -688,7 +687,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function addressAction()
     {
-        $address = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Address();
+        $address = new Shopgate\Components\Address();
 
         if ($this->Request()->isPost() || $this->Request()->isPut()) {
             $response = $address->addAddressAction($this->Request());
@@ -709,7 +708,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function favoritesAction()
     {
-        $favoritesService = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Favorites();
+        $favoritesService = new Shopgate\Components\Favorites();
 
         if ($this->Request()->isPost()) {
             $response = $favoritesService->addToFavoriteList($this->Request());

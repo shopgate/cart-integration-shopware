@@ -19,9 +19,11 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
+namespace Shopgate\Components;
+
 use Shopgate\Helpers\WebCheckout;
 
-class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_User
+class User
 {
     /**
      * @var WebCheckout
@@ -43,12 +45,20 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_User
     protected $admin;
 
     /**
-     * Shopware_Plugins_Backend_SgateShopgatePlugin_Components_User constructor.
+     * Reference to Shopware container object (Shopware()->Container)
+     *
+     * @var Container
+     */
+    protected $container;
+
+    /**
+     * User constructor.
      */
     public function __construct(){
         $this->webCheckoutHelper = new WebCheckout();
         $this->basket = Shopware()->Modules()->Basket();
         $this->admin = Shopware()->Modules()->Admin();
+        $this->container = Shopware()->Container();
     }
 
     /**

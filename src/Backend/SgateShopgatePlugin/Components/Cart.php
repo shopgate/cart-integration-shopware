@@ -19,9 +19,11 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
+namespace Shopgate\Components;
+
 use Shopgate\Helpers\WebCheckout;
 
-class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Cart extends Enlight_Controller_Action
+class Cart
 {
     /**
      * Reference to sBasket object (core/class/sBasket.php)
@@ -50,7 +52,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Cart extends Enlig
     protected $session;
 
     /**
-     * Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Cart constructor.
+     * Cart constructor.
      */
     public function __construct(){
         $this->webCheckoutHelper = new WebCheckout();

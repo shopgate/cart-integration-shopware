@@ -19,9 +19,11 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
+namespace Shopgate\Components;
+
 use Shopgate\Helpers\WebCheckout;
 
-class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Favorites
+class Favorites
 {
     /**
      * @var WebCheckout
@@ -50,7 +52,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Favorites
     protected $session;
 
     /**
-     * Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Favorites constructor.
+     * Favorites constructor.
      */
     public function __construct(){
         $this->webCheckoutHelper = new WebCheckout();

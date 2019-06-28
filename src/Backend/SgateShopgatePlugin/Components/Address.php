@@ -19,9 +19,11 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
+namespace Shopgate\Components;
+
 use Shopgate\Helpers\WebCheckout;
 
-class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Address
+class Address
 {
     /**
      * @var WebCheckout
@@ -43,7 +45,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Address
     protected $container;
 
     /**
-     * Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Address constructor.
+     * Address constructor.
      */
     public function __construct(){
         $this->webCheckoutHelper = new WebCheckout();

@@ -20,6 +20,10 @@
  */
 
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
+require_once __DIR__ . '/Components/Address.php';
+require_once __DIR__ . '/Components/Cart.php';
+require_once __DIR__ . '/Components/Favorites.php';
+require_once __DIR__ . '/Components/User.php';
 require_once __DIR__ . '/Helpers/Attribute.php';
 require_once __DIR__ . '/Helpers/Cart.php';
 require_once __DIR__ . '/Helpers/FormElementSelect.php';
