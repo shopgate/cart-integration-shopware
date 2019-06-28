@@ -522,7 +522,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function getCartAction()
     {
-        $this->webCheckoutCartService->getCart($this->Request(), $this->Response());
+        $this->webCheckoutCartService->getCart($this->Request(), $this->Response(), $this->View());
     }
 
     /**

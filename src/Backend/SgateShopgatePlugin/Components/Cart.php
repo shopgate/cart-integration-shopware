@@ -66,8 +66,9 @@ class Cart
      *
      * @param Enlight_Controller_Request_Request $request
      * @param Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param Enlight_View_Default $view
      */
-    public function getCart($request, $httpResponse)
+    public function getCart($request, $httpResponse, $view)
     {
         $sessionId = $request->getCookie('sg_session');
         $promotionVouchers = json_decode($request->getCookie('sg_promotion'), true);
@@ -89,7 +90,7 @@ class Cart
             exit();
         }
 
-        $shippingcosts = $this->getShippingCosts($request);
+        $shippingcosts = $this->getShippingCosts($request, $view);
 
         $currency = Shopware()->Shop()->getCurrency();
 
@@ -446,12 +447,13 @@ class Cart
      * Get shipping costs as an array (brutto / netto) depending on selected country / payment
      *
      * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_View_Default $view
      * @return array
      */
-    private function getShippingCosts($request)
+    private function getShippingCosts($request, $view)
     {
-        $country = $this->getSelectedCountry();
-        $payment = $this->getSelectedPayment($request);
+        $country = $this->getSelectedCountry($view);
+        $payment = $this->getSelectedPayment($request, $view);
         if (empty($country) || empty($payment)) {
             return array('brutto' => 0, 'netto' => 0);
         }
@@ -464,15 +466,16 @@ class Cart
      * Get current selected country - if no country is selected, choose first one from list
      * of available countries
      *
+     * @param Enlight_View_Default $view
      * @return array with country information
      */
-    private function getSelectedCountry()
+    private function getSelectedCountry($view)
     {
-        if (!empty($this->View()->sUserData['additional']['countryShipping'])) {
-            $this->session['sCountry'] = (int) $this->View()->sUserData['additional']['countryShipping']['id'];
-            $this->session['sArea'] = (int) $this->View()->sUserData['additional']['countryShipping']['areaID'];
+        if (!empty($view->sUserData['additional']['countryShipping'])) {
+            $this->session['sCountry'] = (int) $view->sUserData['additional']['countryShipping']['id'];
+            $this->session['sArea'] = (int) $view->sUserData['additional']['countryShipping']['areaID'];
 
-            return $this->View()->sUserData['additional']['countryShipping'];
+            return $view->sUserData['additional']['countryShipping'];
         }
         $countries = $this->getCountryList();
         if (empty($countries)) {
@@ -483,7 +486,7 @@ class Cart
         $country = reset($countries);
         $this->session['sCountry'] = (int) $country['id'];
         $this->session['sArea'] = (int) $country['areaID'];
-        $this->View()->sUserData['additional']['countryShipping'] = $country;
+        $view->sUserData['additional']['countryShipping'] = $country;
 
         return $country;
     }
@@ -492,16 +495,17 @@ class Cart
      * Get selected payment or do payment mean selection automatically
      *
      * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_View_Default $view
      * @return array
      */
-    private function getSelectedPayment($request)
+    private function getSelectedPayment($request, $view)
     {
         $paymentMethods = $this->getPayments();
 
-        if (!empty($this->View()->sUserData['additional']['payment'])) {
-            $payment = $this->View()->sUserData['additional']['payment'];
+        if (!empty($view->sUserData['additional']['payment'])) {
+            $payment = $view->sUserData['additional']['payment'];
         } elseif (!empty($this->session['sPaymentID'])) {
-            $payment = $this->admin->sGetPaymentMeanById($this->session['sPaymentID'], $this->View()->sUserData);
+            $payment = $this->admin->sGetPaymentMeanById($this->session['sPaymentID'], $view->sUserData);
         }
 
         if ($payment && !$this->checkPaymentAvailability($payment, $paymentMethods)) {
