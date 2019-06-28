@@ -137,12 +137,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         return array(
             'version'     => $this->getVersion(),
-            'autor'       => 'Shopgate GmbH',
+            'author'       => 'Shopgate GmbH',
             'copyright'   => 'Copyright @ ' . date('Y') . ' Shopgate GmbH',
             'label'       => $this->getLabel(),
             'source'      => '',
             'description' => 'Shopgate Schnittstelle - Shopware 4 & 5',
-            'licence'     => 'free',
+            'licence'     => 'Apache-2.0',
             'support'     => 'technik@shopgate.com',
             'link'        => 'https://www.shopgate.com',
             'changes'     => '-',
