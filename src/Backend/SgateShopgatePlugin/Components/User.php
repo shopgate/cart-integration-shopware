@@ -54,7 +54,8 @@ class User
     /**
      * User constructor.
      */
-    public function __construct(){
+    public function __construct()
+    {
         $this->webCheckoutHelper = new WebCheckout();
         $this->basket = Shopware()->Modules()->Basket();
         $this->admin = Shopware()->Modules()->Admin();
@@ -212,7 +213,6 @@ class User
 
             $response['success'] = true;
             $response['message'] = $decoded['email'];
-
         } catch (Exception $error) {
             $response['message'] = $error->getMessage();
         }
@@ -257,7 +257,6 @@ class User
                 }
                 $response['message'] = $string;
             }
-
         } catch (Exception $error) {
             $response['message'] = $error->getMessage();
         }

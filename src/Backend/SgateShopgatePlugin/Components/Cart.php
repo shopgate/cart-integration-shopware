@@ -54,7 +54,8 @@ class Cart
     /**
      * Cart constructor.
      */
-    public function __construct(){
+    public function __construct()
+    {
         $this->webCheckoutHelper = new WebCheckout();
         $this->session = Shopware()->Session();
         $this->basket = Shopware()->Modules()->Basket();

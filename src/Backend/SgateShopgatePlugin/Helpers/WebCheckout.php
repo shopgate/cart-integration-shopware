@@ -73,7 +73,6 @@ class WebCheckout
             Shopware()->Modules()->Basket()->clearBasket();
 
             if (!empty($basket['content'])) {
-
                 foreach ($basket['content'] as $basketItem) {
                     Shopware()->Modules()->Basket()->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
                 }
@@ -137,7 +136,8 @@ class WebCheckout
      * @param $token
      * @return array
      */
-    public function getJWT($token) {
+    public function getJWT($token)
+    {
         $key = trim($this->getConfig()->getApikey());
         JWT::$leeway = 60;
         $decoded = JWT::decode($token, $key, array('HS256'));
@@ -164,7 +164,8 @@ class WebCheckout
      * @param $customerId
      * @return Shopware\\Models\\Customer\\Customer $customer
      */
-    public function getCustomer($customerId) {
+    public function getCustomer($customerId)
+    {
         $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
 
         $userId = Shopware()->Db()->fetchRow($sql, array($customerId)) ?: array();

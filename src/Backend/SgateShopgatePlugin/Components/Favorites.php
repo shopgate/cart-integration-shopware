@@ -54,7 +54,8 @@ class Favorites
     /**
      * Favorites constructor.
      */
-    public function __construct(){
+    public function __construct()
+    {
         $this->webCheckoutHelper = new WebCheckout();
         $this->session = Shopware()->Session();
         $this->db = Shopware()->Db();
@@ -371,7 +372,6 @@ class Favorites
                     $modelManager = $this->container->get('Models');
                     $modelManager->remove($cartItem);
                     $modelManager->flush();
-
                 } else {
                     $delete = Shopware()->Db()->query(
                         'DELETE FROM s_order_notes 
