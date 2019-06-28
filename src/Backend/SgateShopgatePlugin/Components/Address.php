@@ -47,8 +47,7 @@ class Address
     /**
      * Address constructor.
      */
-    public function __construct()
-    {
+    public function __construct(){
         $this->webCheckoutHelper = new WebCheckout();
         $this->models = Shopware()->Models();
         $this->container = Shopware()->Container();
