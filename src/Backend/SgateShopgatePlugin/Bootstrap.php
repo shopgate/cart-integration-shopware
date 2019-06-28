@@ -20,12 +20,17 @@
  */
 
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
+require_once __DIR__ . '/Components/Address.php';
+require_once __DIR__ . '/Components/Cart.php';
+require_once __DIR__ . '/Components/Favorites.php';
+require_once __DIR__ . '/Components/User.php';
 require_once __DIR__ . '/Helpers/Attribute.php';
 require_once __DIR__ . '/Helpers/Cart.php';
 require_once __DIR__ . '/Helpers/FormElementSelect.php';
 require_once __DIR__ . '/Helpers/FormElementCheckbox.php';
 require_once __DIR__ . '/Helpers/FormElementText.php';
 require_once __DIR__ . '/Helpers/FormElementTextfield.php';
+require_once __DIR__ . '/Helpers/WebCheckout.php';
 require_once dirname(__FILE__) . '/Plugin.php';
 
 use Shopgate\Helpers\Attribute as AttributeHelper;
@@ -44,6 +49,7 @@ use Shopware\Models\Dispatch\Dispatch;
 use Shopware\Models\Order\Status;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config as ShopwareShopgatePluginConfig;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -423,6 +429,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $this->subscribeEvent(
                 'Shopgate_Frontend_Custom_Event',
                 'onCustomEvent'
+            );
+
+            $this->subscribeEvent(
+                'Theme_Compiler_Collect_Plugin_Javascript',
+                'onCollectJavascriptFiles'
             );
         }
     }
@@ -1211,20 +1222,27 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     public function onFrontendCheckout(\Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
-        if ($args->getRequest()->getActionName() !== 'cart') {
-            $view->addTemplateDir(__DIR__ . '/Views/');
-            $view->assign('sgWebCheckout', $this->isInWebView($args));
-            $view->assign('sgActionName', $args->getRequest()->getActionName());
-            $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
-            $view->assign('sgAccountView', false);
-            $view->assign('sgIsNewCustomer', false);
-            $view->assign('sgFrontendAccount', false);
-            $view->assign('sgFrontendRegister', false);
-            $view->assign('sgHash', false);
-            $view->assign('sgEmail', false);
+        $view->addTemplateDir(__DIR__ . '/Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgActionName', $args->getRequest()->getActionName());
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+        $view->assign('sgPromotionVouchers', json_encode(Shopware()->Session()->offsetGet('promotionVouchers')));
+        $view->assign('sgAccountView', false);
+        $view->assign('sgIsNewCustomer', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgHash', false);
+        $view->assign('sgEmail', false);
 
-            $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
-            $view->assign('sgCustomCss', $customCss);
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
+
+        if ($this->isInWebView($args)) {
+            $referer = array(
+                'type'=> 'shopgate-webcheckout',
+                "user-agent" => $_SERVER['HTTP_USER_AGENT']
+            );
+            Shopware()->Session()->offsetSet('sReferer', json_encode($referer));
         }
 
         if ($args->getRequest()->getActionName() === 'shippingPayment') {
@@ -1508,6 +1526,18 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         }
 
         return $attributesStore;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function onCollectJavascriptFiles()
+    {
+        $jsDir = __DIR__ . '/Views/frontend/_resources/js/';
+
+        return new ArrayCollection(array(
+            $jsDir . 'jquery.shopgate.js',
+        ));
     }
 
     /**
