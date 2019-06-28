@@ -479,7 +479,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Order
             if ($detail->getMode() != 2) {
                 /** @var \Shopware\Models\Order\Detail $detail */
                 $shopgateItem = new ShopgateExternalOrderItem();
-                $shopgateItem->setItemNumber($detail->getArticleId() . "-" . $detail->getArticleNumber());
+                $shopgateItem->setItemNumber($detail->getArticleId());
                 $shopgateItem->setItemNumberPublic($detail->getArticleNumber());
                 $shopgateItem->setQuantity((int)$detail->getQuantity());
                 $shopgateItem->setname($detail->getArticleName());

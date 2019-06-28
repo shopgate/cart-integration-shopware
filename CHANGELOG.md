@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- export right item number for order items
+
+## [2.9.87] - 2019-05-21
+### Fixed
+- export correct item number for order items
 
 ## [2.9.86] - 2019-04-23
 ### Fixed
@@ -781,7 +787,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.86...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.87...HEAD
+[2.9.87]: https://github.com/shopgate/interface-shopware/compare/2.9.86...2.9.87
 [2.9.86]: https://github.com/shopgate/interface-shopware/compare/2.9.85...2.9.86
 [2.9.85]: https://github.com/shopgate/interface-shopware/compare/2.9.84...2.9.85
 [2.9.84]: https://github.com/shopgate/interface-shopware/compare/2.9.83...2.9.84
