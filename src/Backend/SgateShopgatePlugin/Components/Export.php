@@ -31,6 +31,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     const CACHE_KEY_CUSTOMERGROUPS = 'customer_groups_ids';
     const CACHE_KEY_CATEGORY_PRODUCT_SORTING = 'categories_product_sort_';
     const CACHE_KEY_STREAM_CATEGORY_PRODUCT_SORTING = 'stream_categories_product_sort_';
+    const CACHE_TIME_IN_SECONDS = 28800;
+    const CACHE_FILE = 'shopgate_job_cache.json';
 
     /** @var \Shopware\Models\Shop\Shop */
     protected $shop;
@@ -55,6 +57,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
 
     /** @var AttributeHelper */
     protected $attributeHelper;
+
+    /** @var Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config */
+    protected $shopgateConfig;
 
     /**
      * cache that can be used during export processes
@@ -96,8 +101,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $this->locale           = $this->shop->getLocale();
         $this->system           = Shopware()->System();
         $this->attributeHelper  = new AttributeHelper();
+        $this->shopgateConfig = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
         $this->initLanguageCategoryList();
         $this->initLanguageCompleteCategoryList();
+        $this->handleCacheFile();
 
         $this->logger->log(
             "languageCategorylist entries: " . count($this->languageCategoryList)
@@ -219,6 +226,72 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     }
 
     /**
+     * handle the cache file
+     */
+    protected function handleCacheFile()
+    {
+        $cacheFile = $this->getCacheFile();
+        if (is_file($cacheFile)) {
+            $fileTime = filemtime($cacheFile);
+            if (time() - $fileTime > self::CACHE_TIME_IN_SECONDS) {
+                try {
+                    unlink($cacheFile);
+                } catch (Exception $exception) {
+                    ShopgateLogger::getInstance()->log($exception->getMessage(), ShopgateLogger::LOGTYPE_DEBUG);
+                }
+            }
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCacheFile()
+    {
+        return $this->shopgateConfig->getCacheFolderPath() . self::CACHE_FILE;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     */
+    protected function setExportCache($key, $value)
+    {
+        $data = json_decode(file_get_contents($this->getCacheFile()), true);
+        if (!is_array($data)) {
+            $data = array();
+        }
+        if ($data[$key] && is_array($data[$key]) && is_array($value)) {
+            $currentValue              = $data[$key];
+            $currentValue[key($value)] = $value[key($value)];
+            $data[$key]                = $currentValue;
+        } else {
+            $data[$key] = $value;
+        }
+
+        file_put_contents($this->getCacheFile(), json_encode($data));
+    }
+
+    /**
+     * @param string        $key
+     * @param null | string $subKey
+     *
+     * @return mixed|null
+     */
+    protected function getExportCache($key, $subKey = null)
+    {
+        $data = json_decode(file_get_contents($this->getCacheFile()), true);
+
+        if (!$data) {
+            return null;
+        }
+
+        return $subKey
+            ? isset($data[$key][$subKey]) ? $data[$key][$subKey] : null
+            : isset($data[$key]) ? $data[$key] : null;
+    }
+
+    /**
      * @param $articleId
      * @param $categoryId
      *
@@ -227,8 +300,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     public function getArticleOrderIndex($articleId, $categoryId)
     {
         $cacheKey = self::CACHE_KEY_CATEGORY_PRODUCT_SORTING . $categoryId;
-
-        if (empty($this->exportCache[$cacheKey])) {
+        $cache = $this->getExportCache($cacheKey);
+        if (empty($cache)) {
             ShopgateLogger::getInstance()->log("Start creating Cache {$cacheKey}", ShopgateLogger::LOGTYPE_DEBUG);
 
             $version = new Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Version();
@@ -237,14 +310,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
                 $i        = 0;
                 $maxSort  = count($articles) + 1;
                 foreach ($articles as $article) {
-                    $this->exportCache[$cacheKey][$article] = ($maxSort - $i++);
+                    $this->setExportCache($cacheKey, array($article => $maxSort - $i++));
                 }
             } else {
                 $articles = $this->getAllArticlesByCategoryIdOld($categoryId);
                 $i        = 0;
                 $maxSort  = count($articles) + 1;
                 foreach ($articles as $article) {
-                    $this->exportCache[$cacheKey][$article['articleID']] = ($maxSort - $i++);
+                    $this->setExportCache($cacheKey, array($article['articleID'] => ($maxSort - $i++)));
                 }
             }
 
@@ -255,8 +328,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             );
         }
 
-        return !empty($this->exportCache[$cacheKey][$articleId])
-            ? $this->exportCache[$cacheKey][$articleId]
+        $cache = $this->getExportCache($cacheKey, $articleId);
+        return !empty($cache)
+            ? $cache
             : null;
     }
 
@@ -270,17 +344,19 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     public function getCustomerGroupIdByKey($customerGroupKey)
     {
         $cacheKey = self::CACHE_KEY_CUSTOMERGROUPS;
-        if (!isset($this->exportCache[$cacheKey][$customerGroupKey])) {
+        $cache = $this->getExportCache($cacheKey, $customerGroupKey);
+        if (!isset($cache)) {
             $groupRepository = Shopware()->Models()->getRepository('Shopware\Models\Customer\Group');
             $customerGroup   = $groupRepository->findOneBy(array('key' => $customerGroupKey));
 
             if ($customerGroup instanceof \Shopware\Models\Customer\Group) {
-                $this->exportCache[$cacheKey][$customerGroupKey] = $customerGroup->getId();
+                $this->setExportCache($cacheKey, array($customerGroupKey = $customerGroup->getId()));
             }
         }
 
-        return !empty($this->exportCache[$cacheKey][$customerGroupKey])
-            ? $this->exportCache[$cacheKey][$customerGroupKey]
+        $cache = $this->getExportCache($cacheKey, $customerGroupKey);
+        return !empty($cache)
+            ? $cache
             : null;
     }
 
@@ -609,8 +685,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         }
 
         $cacheKey = self::CACHE_KEY_STREAM_CATEGORY_PRODUCT_SORTING . $categoryId;
+        $cache = $this->getExportCache($cacheKey);
 
-        if (empty($this->exportCache[$cacheKey])) {
+        if (empty($cache)) {
             ShopgateLogger::getInstance()->log("## getStreamProducts: {$categoryId}", ShopgateLogger::LOGTYPE_DEBUG);
 
             /** @var Shopware\Components\ProductStream\Repository $streamRepo */
@@ -643,14 +720,15 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             $index      = 0;
             $totalCount = $result->getTotalCount();
             foreach ($result->getProducts() as $product) {
-                $this->exportCache[$cacheKey][$product->getId()] = $totalCount - $index--;
+                $this->setExportCache($cacheKey, array($product->getId() => $totalCount - $index--));
             }
 
             ShopgateLogger::getInstance()->log("## Product Count: {$totalCount}", ShopgateLogger::LOGTYPE_DEBUG);
         }
 
-        return !empty($this->exportCache[$cacheKey])
-            ? $this->exportCache[$cacheKey]
+        $cache = $this->getExportCache($cacheKey);
+        return !empty($cache)
+            ? $cache
             : array();
     }
 }
