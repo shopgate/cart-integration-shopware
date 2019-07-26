@@ -101,7 +101,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $this->locale           = $this->shop->getLocale();
         $this->system           = Shopware()->System();
         $this->attributeHelper  = new AttributeHelper();
-        $this->shopgateConfig = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
+        $this->shopgateConfig   = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
         $this->initLanguageCategoryList();
         $this->initLanguageCompleteCategoryList();
         $this->handleCacheFile();
