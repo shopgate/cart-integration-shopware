@@ -891,10 +891,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                     ->setPosition($position++)
             );
 
-
-        $formElementCheckbox = new FormElementCheckbox();
+        $formElementCheckbox                 = new FormElementCheckbox();
         $formElementOptionsContainerCheckbox = new FormElementOptionsContainerCheckbox();
-        $formElements[] = $formElementCheckbox
+        $formElements[]                      = $formElementCheckbox
             ->setKey('SGATE_EXPORT_OUT_OF_STOCK_ITEMS')
             ->setOptions(
                 $formElementOptionsContainerCheckbox
@@ -913,7 +912,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                     ->setDescription('Dieses Feld nur mit Rücksprache eines Technikers von Shopgate ändern!')
                     ->setPosition($position++)
             );
-
 
         $formElementTextfield                 = new FormElementTextfield();
         $formElementOptionsContainerTextfield = new FormElementOptionsContainerTextfield;
