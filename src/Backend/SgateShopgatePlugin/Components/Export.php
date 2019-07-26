@@ -25,14 +25,13 @@ use Shopware\Bundle\SearchBundle\Condition\CustomerGroupCondition;
 use Shopware\Bundle\SearchBundle\Criteria;
 use Shopware\Bundle\StoreFrontBundle\Service\Core\ContextService;
 use Shopware\Bundle\StoreFrontBundle\Struct\ProductContext;
+use phpFastCache\CacheManager;
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
 {
     const CACHE_KEY_CUSTOMERGROUPS = 'customer_groups_ids';
     const CACHE_KEY_CATEGORY_PRODUCT_SORTING = 'categories_product_sort_';
     const CACHE_KEY_STREAM_CATEGORY_PRODUCT_SORTING = 'stream_categories_product_sort_';
-    const CACHE_TIME_IN_SECONDS = 28800;
-    const CACHE_FILE = 'shopgate_job_cache.json';
 
     /** @var \Shopware\Models\Shop\Shop */
     protected $shop;
@@ -58,9 +57,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     /** @var AttributeHelper */
     protected $attributeHelper;
 
-    /** @var Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config */
-    protected $shopgateConfig;
-
     /**
      * cache that can be used during export processes
      *
@@ -76,6 +72,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     protected $elements = array();
 
     /**
+     * @var array
+     */
+    protected $requestParams = array();
+
+    /**
      * Id of the root category for the shopgate plugin
      *
      * @var array
@@ -86,14 +87,17 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
      * @param Shopgate_Helper_Logging_Strategy_LoggingInterface                         $logger
      * @param Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_ArticleInterface $articleSortModel
      * @param int                                                                       $rootCategoryId
+     * @param array                                                                     $requestParams
      */
     public function __construct(
         Shopgate_Helper_Logging_Strategy_LoggingInterface $logger,
         Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_ArticleInterface $articleSortModel,
-        $rootCategoryId = null
+        $rootCategoryId = null,
+        $requestParams = array()
     ) {
         $this->logger           = $logger;
         $this->articleSortModel = $articleSortModel;
+        $this->requestParams    = $requestParams;
         $this->shop             = Shopware()->Models()->find("Shopware\Models\Shop\Shop", Shopware()->Shop()->getId());
         $this->rootCategoryId   = is_null($rootCategoryId)
             ? $this->shop->getCategory()->getId()
@@ -101,10 +105,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $this->locale           = $this->shop->getLocale();
         $this->system           = Shopware()->System();
         $this->attributeHelper  = new AttributeHelper();
-        $this->shopgateConfig   = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
         $this->initLanguageCategoryList();
         $this->initLanguageCompleteCategoryList();
-        $this->handleCacheFile();
+        $this->handleCache();
 
         $this->logger->log(
             "languageCategorylist entries: " . count($this->languageCategoryList)
@@ -226,69 +229,63 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     }
 
     /**
-     * handle the cache file
+     * @return phpFastCache\Core\DriverAbstract
      */
-    protected function handleCacheFile()
+    protected function getCacheInstance()
     {
-        $cacheFile = $this->getCacheFile();
-        if (is_file($cacheFile)) {
-            $fileTime = filemtime($cacheFile);
-            if (time() - $fileTime > self::CACHE_TIME_IN_SECONDS) {
-                try {
-                    unlink($cacheFile);
-                } catch (Exception $exception) {
-                    ShopgateLogger::getInstance()->log($exception->getMessage(), ShopgateLogger::LOGTYPE_DEBUG);
-                }
-            }
-        }
+        return CacheManager::getInstance('files');
     }
 
     /**
-     * @return string
+     * handle the cache
      */
-    protected function getCacheFile()
+    protected function handleCache()
     {
-        return $this->shopgateConfig->getCacheFolderPath() . self::CACHE_FILE;
+        if (!isset($this->requestParams['offset']) || $this->requestParams['offset'] == 0) {
+            $this->getCacheInstance()->clean();
+        }
     }
 
     /**
      * @param string $key
-     * @param mixed  $value
+     * @param string $value
      */
     protected function setExportCache($key, $value)
     {
-        $data = json_decode(file_get_contents($this->getCacheFile()), true);
-        if (!is_array($data)) {
-            $data = array();
-        }
-        if ($data[$key] && is_array($data[$key]) && is_array($value)) {
-            $currentValue              = $data[$key];
-            $currentValue[key($value)] = $value[key($value)];
-            $data[$key]                = $currentValue;
+        $instance   = $this->getCacheInstance();
+        $cachedData = $instance->get($key);
+
+        if ($cachedData && is_array($value)) {
+            $cachedData[key($value)] =  $value[key($value)];
         } else {
-            $data[$key] = $value;
+            $cachedData = $value;
         }
 
-        file_put_contents($this->getCacheFile(), json_encode($data));
+        $instance->set($key, $cachedData);
     }
 
     /**
      * @param string        $key
-     * @param null | string $subKey
+     * @param string | null $subKey
      *
      * @return mixed|null
      */
     protected function getExportCache($key, $subKey = null)
     {
-        $data = json_decode(file_get_contents($this->getCacheFile()), true);
+        $instance   = $this->getCacheInstance();
+        $cachedData = $instance->get($key);
 
-        if (!$data) {
-            return null;
+        if ($cachedData) {
+            return $subKey
+                ? isset($cacheData[$key][$subKey])
+                    ? $cachedData[$key][$subKey]
+                    : null
+                : isset($cacheData[$key])
+                    ? $cachedData[$key]
+                    : null;
         }
 
-        return $subKey
-            ? isset($data[$key][$subKey]) ? $data[$key][$subKey] : null
-            : isset($data[$key]) ? $data[$key] : null;
+        return null;
     }
 
     /**
