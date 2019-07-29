@@ -57,6 +57,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     /** @var AttributeHelper */
     protected $attributeHelper;
 
+
+    /** @var null|phpFastCache\Core\DriverAbstract */
+    protected $cacheInstance = null;
+
     /**
      * cache that can be used during export processes
      *
@@ -277,12 +281,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
 
         if ($cachedData) {
             return $subKey
-                ? isset($cacheData[$key][$subKey])
-                    ? $cachedData[$key][$subKey]
+                ? isset($cachedData[$subKey])
+                    ? $cachedData[$subKey]
                     : null
-                : isset($cacheData[$key])
-                    ? $cachedData[$key]
-                    : null;
+                : $cachedData;
         }
 
         return null;
@@ -298,7 +300,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     {
         $cacheKey = self::CACHE_KEY_CATEGORY_PRODUCT_SORTING . $categoryId;
         $cache = $this->getExportCache($cacheKey);
-        if (empty($cache)) {
+        if (is_null($cache)) {
             ShopgateLogger::getInstance()->log("Start creating Cache {$cacheKey}", ShopgateLogger::LOGTYPE_DEBUG);
 
             $version = new Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Version();
@@ -325,10 +327,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             );
         }
 
-        $cache = $this->getExportCache($cacheKey, $articleId);
-        return !empty($cache)
-            ? $cache
-            : null;
+        return $this->getExportCache($cacheKey, $articleId);
     }
 
     /**
@@ -342,7 +341,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     {
         $cacheKey = self::CACHE_KEY_CUSTOMERGROUPS;
         $cache = $this->getExportCache($cacheKey, $customerGroupKey);
-        if (!isset($cache)) {
+        if (is_null($cache)) {
             $groupRepository = Shopware()->Models()->getRepository('Shopware\Models\Customer\Group');
             $customerGroup   = $groupRepository->findOneBy(array('key' => $customerGroupKey));
 
@@ -351,10 +350,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             }
         }
 
-        $cache = $this->getExportCache($cacheKey, $customerGroupKey);
-        return !empty($cache)
-            ? $cache
-            : null;
+        return $this->getExportCache($cacheKey, $customerGroupKey);
     }
 
     /**
@@ -684,7 +680,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $cacheKey = self::CACHE_KEY_STREAM_CATEGORY_PRODUCT_SORTING . $categoryId;
         $cache = $this->getExportCache($cacheKey);
 
-        if (empty($cache)) {
+        if (is_null($cache)) {
             ShopgateLogger::getInstance()->log("## getStreamProducts: {$categoryId}", ShopgateLogger::LOGTYPE_DEBUG);
 
             /** @var Shopware\Components\ProductStream\Repository $streamRepo */
@@ -723,9 +719,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             ShopgateLogger::getInstance()->log("## Product Count: {$totalCount}", ShopgateLogger::LOGTYPE_DEBUG);
         }
 
-        $cache = $this->getExportCache($cacheKey);
-        return !empty($cache)
-            ? $cache
-            : array();
+        return $this->getExportCache($cacheKey);
     }
 }
