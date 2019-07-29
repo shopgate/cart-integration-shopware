@@ -237,7 +237,15 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
      */
     protected function getCacheInstance()
     {
-        return CacheManager::getInstance('files');
+        if (!$this->cacheInstance) {
+            $this->cacheInstance = CacheManager::getInstance(
+                'files', array(
+                'path' => rtrim(
+                        Shopware()->DocPath(), DS) . DS . 'web' . DS . 'cache' . DS
+            ));
+        }
+
+        return $this->cacheInstance;
     }
 
     /**
