@@ -218,7 +218,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
             new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export(
                 ShopgateLogger::getInstance()->getLoggingStrategy(),
                 $articleSortModel,
-                $this->config->getRootCategory()
+                $this->config->getRootCategory(),
+                $this->params
             );
 
         $this->cartHelper = new CartHelper();
