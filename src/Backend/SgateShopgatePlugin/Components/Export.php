@@ -308,7 +308,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     {
         $cacheKey = self::CACHE_KEY_CATEGORY_PRODUCT_SORTING . $categoryId;
         $cache = $this->getExportCache($cacheKey);
-        if (is_null($cache)) {
+        if ($cache === null) {
+            $cache = array();
             ShopgateLogger::getInstance()->log("Start creating Cache {$cacheKey}", ShopgateLogger::LOGTYPE_DEBUG);
 
             $version = new Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Version();
@@ -317,14 +318,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
                 $i        = 0;
                 $maxSort  = count($articles) + 1;
                 foreach ($articles as $article) {
-                    $this->setExportCache($cacheKey, array($article => $maxSort - $i++));
+                    $cache[$article] = $maxSort - $i++;
                 }
             } else {
                 $articles = $this->getAllArticlesByCategoryIdOld($categoryId);
                 $i        = 0;
                 $maxSort  = count($articles) + 1;
                 foreach ($articles as $article) {
-                    $this->setExportCache($cacheKey, array($article['articleID'] => ($maxSort - $i++)));
+                    $cache[$cacheKey][$article['articleID']] = ($maxSort - $i++);
                 }
             }
 
@@ -333,9 +334,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
                 count($this->exportCache[$cacheKey]) . " entries",
                 ShopgateLogger::LOGTYPE_DEBUG
             );
+
+            $this->setExportCache($cacheKey, $cache);
         }
 
-        return $this->getExportCache($cacheKey, $articleId);
+        return isset($cache[$articleId]) ? $cache[$articleId] : null;
     }
 
     /**
@@ -349,16 +352,19 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     {
         $cacheKey = self::CACHE_KEY_CUSTOMERGROUPS;
         $cache = $this->getExportCache($cacheKey, $customerGroupKey);
-        if (is_null($cache)) {
+        if ($cache === null) {
+            $cache = array();
             $groupRepository = Shopware()->Models()->getRepository('Shopware\Models\Customer\Group');
             $customerGroup   = $groupRepository->findOneBy(array('key' => $customerGroupKey));
 
             if ($customerGroup instanceof \Shopware\Models\Customer\Group) {
-                $this->setExportCache($cacheKey, array($customerGroupKey = $customerGroup->getId()));
+                $cache[$customerGroupKey] = $customerGroup->getId();
             }
+
+            $this->setExportCache($cacheKey, $cache);
         }
 
-        return $this->getExportCache($cacheKey, $customerGroupKey);
+        return isset($cache[$cacheKey][$customerGroupKey]) ? $cache[$cacheKey][$customerGroupKey] : null;
     }
 
     /**
@@ -688,7 +694,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $cacheKey = self::CACHE_KEY_STREAM_CATEGORY_PRODUCT_SORTING . $categoryId;
         $cache = $this->getExportCache($cacheKey);
 
-        if (is_null($cache)) {
+        if ($cache === null) {
+            $cache = array();
             ShopgateLogger::getInstance()->log("## getStreamProducts: {$categoryId}", ShopgateLogger::LOGTYPE_DEBUG);
 
             /** @var Shopware\Components\ProductStream\Repository $streamRepo */
@@ -721,12 +728,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             $index      = 0;
             $totalCount = $result->getTotalCount();
             foreach ($result->getProducts() as $product) {
-                $this->setExportCache($cacheKey, array($product->getId() => $totalCount - $index--));
+                $cache[$product->getId()] =  ($totalCount - $index--);
             }
 
             ShopgateLogger::getInstance()->log("## Product Count: {$totalCount}", ShopgateLogger::LOGTYPE_DEBUG);
+
+            $this->setExportCache($cacheKey, $cache);
         }
 
-        return $this->getExportCache($cacheKey);
+        return isset($cache) ? $cache : null;
     }
 }
