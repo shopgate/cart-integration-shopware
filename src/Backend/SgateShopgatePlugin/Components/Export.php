@@ -331,7 +331,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
 
             ShopgateLogger::getInstance()->log(
                 "Created Cache {$cacheKey} with " .
-                count($this->exportCache[$cacheKey]) . " entries",
+                count($cache[$cacheKey]) . " entries",
                 ShopgateLogger::LOGTYPE_DEBUG
             );
 
