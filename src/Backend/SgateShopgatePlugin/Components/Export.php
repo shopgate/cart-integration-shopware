@@ -110,7 +110,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $this->attributeHelper  = new AttributeHelper();
         $this->initLanguageCategoryList();
         $this->initLanguageCompleteCategoryList();
-        $this->handleCache();
+        $this->initCache();
 
         $this->logger->log(
             "languageCategorylist entries: " . count($this->languageCategoryList)
@@ -250,7 +250,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     /**
      * handles cache persistence for one catalog export
      */
-    protected function handleCache()
+    protected function initCache()
     {
         if (!isset($this->requestParams['offset']) || $this->requestParams['offset'] == 0) {
             $this->getCacheInstance()->clean();

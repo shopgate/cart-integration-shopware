@@ -897,7 +897,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             ->setKey('SGATE_EXPORT_OUT_OF_STOCK_ITEMS')
             ->setOptions(
                 $formElementOptionsContainerCheckbox
-                    ->setLabel('Produkte die nicht auf Lager sind exportieren ?')
+                    ->setLabel('Produkte die nicht auf Lager sind exportieren')
                     ->setValue(true)
                     ->setPosition($position++)
             );

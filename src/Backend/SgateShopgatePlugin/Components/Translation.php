@@ -170,6 +170,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Translation
                     'label'       => 'Products downloads export',
                     'description' => 'Determines if and where product downloads are exported',
                 ),
+                'SGATE_EXPORT_OUT_OF_STOCK_ITEMS'    => array(
+                    'label'       => 'Export out of stock items',
+                    'description' => '',
+                ),
             ),
         );
     }
