@@ -57,7 +57,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     /** @var AttributeHelper */
     protected $attributeHelper;
 
-
     /** @var null|phpFastCache\Core\DriverAbstract */
     protected $cacheInstance = null;
 
