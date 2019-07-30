@@ -248,7 +248,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     }
 
     /**
-     * handle the cache
+     * handles cache persistence for one catalog export
      */
     protected function handleCache()
     {
