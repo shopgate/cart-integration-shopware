@@ -537,11 +537,6 @@ class Cart
         $request->setPost('sPayment', (int) $payment['id']);
         $this->admin->sUpdatePayment();
 
-        //if customer logged in and payment switched to fallback, display cart notice. Otherwise anonymous customers will see the message too
-        if (Shopware()->Session()->sUserId) {
-            $this->flagPaymentBlocked();
-        }
-
         return $payment;
     }
 
