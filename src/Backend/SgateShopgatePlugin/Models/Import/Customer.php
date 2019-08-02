@@ -570,7 +570,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
             $customerData[$prefix]['street']     = $shopgateCustomerAddress->getStreet1();
             $customerData[$prefix]['city']       = $shopgateCustomerAddress->getCity();
             $customerData[$prefix]['zipcode']    = $shopgateCustomerAddress->getZipcode();
-            $customerData[$prefix]['country']    = $country->getId();
+            $customerData[$prefix]['country']    = $country ? $country->getId() : 0;
             $customerData[$prefix]['stateID']    = $state
                 ? $state->getId()
                 : 0;
