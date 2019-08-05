@@ -137,24 +137,30 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         return array(
             'version'     => $this->getVersion(),
-            'autor'       => 'Shopgate GmbH',
-            'copyright'   => 'Copyright @ 2017, Shopgate GmbH',
+            'author'       => 'Shopgate GmbH',
+            'copyright'   => 'Copyright @ ' . date('Y') . ' Shopgate GmbH',
             'label'       => $this->getLabel(),
             'source'      => '',
             'description' => 'Shopgate Schnittstelle - Shopware 4 & 5',
-            'licence'     => 'free',
+            'licence'     => 'Apache-2.0',
             'support'     => 'technik@shopgate.com',
-            'link'        => 'http://www.shopgate.com',
+            'link'        => 'https://www.shopgate.com',
             'changes'     => '-',
             'revision'    => '-',
         );
     }
 
+    /**
+     * @return string
+     */
     public function getVersion()
     {
-        return "2.9.86";
+        return '2.9.88';
     }
 
+    /**
+     * @return string
+     */
     public function getLabel()
     {
         return 'Shopgate - Mobile Shopping';

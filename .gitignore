@@ -7,3 +7,4 @@
 /.idea
 /src/Backend/SgateShopgatePlugin/vendor/
 /release/package
+composer.lock

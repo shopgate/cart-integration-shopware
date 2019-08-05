@@ -15,7 +15,7 @@ script:
 jobs:
   include:
   - stage: Dependency Checking + Unit Test + Code Style Fixing
-    php: 7.0
+    php: '7.0'
     script:
     - curl -L https://github.com/Rekhyt/php-dependency-checker/releases/download/1.0.0/php-dependency-checker.phar -o php-dependency-checker
     - chmod +x ./php-dependency-checker
@@ -23,24 +23,23 @@ jobs:
     - rm php-dependency-checker
     - curl -L http://files.shopgate.com/travis-ci/php-cs-fixer.phar -o php-cs-fixer
     - chmod a+x php-cs-fixer
-    - git checkout $TRAVIS_BRANCH
     - ./php-cs-fixer fix --config=.php-cs.dist --cache-file=.php-cs.cache --diff --dry-run --verbose .
     - rm php-cs-fixer
     - src/Backend/SgateShopgatePlugin/vendor/bin/phpunit
   - stage: Unit Test
-    php: 5.3
+    php: '5.3'
   - stage: Unit Test
-    php: 5.4
+    php: '5.4'
   - stage: Unit Test
-    php: 5.5
+    php: '5.5'
   - stage: Unit Test
-    php: 5.6
+    php: '5.6'
   - stage: Unit Test
-    php: 7.1
+    php: '7.1'
   - stage: Unit Test
-    php: 7.2
+    php: '7.2'
   - stage: deploy
-    php: 5.6
+    php: '5.6'
     before_script: skip
     script:
     - if [[ "$TRAVIS_TAG" ]]; then ./release/build_release_package.sh ; fi
@@ -52,10 +51,13 @@ jobs:
       skip_cleanup: true
       on:
         tags: true
+cache:
+  directories:
+    - $HOME/.composer/cache/files
 
 notifications:
   slack:
     rooms:
-      secure: tpn286pV227q0ULUOZD5p6WgXyA6zFWGdgDBK7BDq2yKC6TIsyFDT7tWPetBW9FsOt2mUtZnCgjutUSnB5w6r15DBb7EIYpmz4KHdZh6jhkza6IEZvTAFt8F6TKcehLj2sETjCxuHZWc/b7rhzHVorWnOF7Ew5daXCxxeIQt9e8BTwiD3Egki5iBdAXhjCyleLFyV6Jcq8HCSghXSVFlG1EQuc+cGjzvVwuQABZ/T70SJyM45YNksl+/fqBDCG22K3jfJjGEkSWjzGu6jJkpy73FBjQKRJJ+/VMmBUZ4shEXga3dUsRMdfaS/iavKgK0vfKIy0gIK9DVIvr7abrLHK3CgV7tKp3xzWW2FhFSn8iQlpb0wuhoE1m9afCKAU5dnuA2XLwffsRW7741LxF8ssBinps+E4hpNnvjNg3C/u/OJi5MHfO2zsgkbMMYFf8nz3MGG5rXWgG5d/AXZTMsjpz2JqBPC2sf2otOsS7j9v/p0RVDGKqFuClghBeJipifcC+kdughUl8WInB0enmtdmoDIclmV5vpnqRvEKUKZdmAggYnABKspyUKqI9cv5Ecd6epw+TTr/L8Uze/DRzDR0TNmlrEHN/aksq+7A3G8YyIv5YkftEz5dNiBZyr+aUemu7bFltRWngyGFjm74sWQnT3vlKujNV++e/88gXi5aI=
+      secure: "QRxuG9jIXclepLu6d7MwvDw7ACQMZ1pCa0j0wATATfwpD0eOdj7z7SorD0G9C32EJ43c1xJEU1jedi/WOnIckXzxlQeGuK996bDo3kcjJlwW/GRD218WPJumo6yL9cx2bOuiq/v2xaKnoZ6k99VyQiNVfj+Vuj+NNsJsR3rBu400RNDUIHwVy+m/OeRQqwqoKR0aACPTN2LxEpB3sXzWKQmVifZyykf49l4A8N/Hfu8KuJl7/sGhqEPg9IYYpZ7BQ0UOcofPwCB4RY4SLR11dI+ez4iZOOrv7pnxb9sYDoMsAbR1IF4Hxg+3Y5LUyAHOZjJ1esfG0aunnmsgwgs2rGHp8/F2bNQVsc7kYAQu/kbTFuSfewLCfPlRm0zw1Qk/6JXuNwsK9Rgp8S+ajiO+2NmX6R4yZi73ZaFR/OquXcSHCmlRIsQFBUDcdHecJHBCydOAbtu/7O8IrPSfI/y2i6qP0a4/rwy0l6sT1ZaXbCQd7bnli6nd7Pr+5+gSgyBhRPpt/cTIZd8MlqnrduuTv6x4JQfSknxi5mEABbKGXBUGU2WAycFHBNexlJJQwTGJ59tJIsrFiwOQal8jLWvNhlRGzXbmgpvkRql4EEczXjNspwZNi2xW1GEmyqc/6XZqW8qwXwZqNPNeNm9pgeHOZ1jl+cOA4lQmhjHZY++ueS4="
     on_success: change
     on_failure: always

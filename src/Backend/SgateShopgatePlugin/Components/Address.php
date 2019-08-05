@@ -47,7 +47,8 @@ class Address
     /**
      * Address constructor.
      */
-    public function __construct(){
+    public function __construct()
+    {
         $this->webCheckoutHelper = new WebCheckout();
         $this->models = Shopware()->Models();
         $this->container = Shopware()->Container();
@@ -205,7 +206,6 @@ class Address
             }
             return array('success' => true);
         } else {
-
             $errors = $form->getErrors(true);
             $string = '';
             foreach ($errors as $error) {

@@ -691,7 +691,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         if ($this->Request()->isPost() || $this->Request()->isPut()) {
             $response = $address->addAddressAction($this->Request());
-        } else if ($this->Request()->isDelete()) {
+        } elseif ($this->Request()->isDelete()) {
             $response = $address->deleteAddressAction($this->Request());
         } else {
             $response = $address->getAddressesAction($this->Request());
@@ -712,7 +712,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
         if ($this->Request()->isPost()) {
             $response = $favoritesService->addToFavoriteList($this->Request());
-        } else if ($this->Request()->isDelete()) {
+        } elseif ($this->Request()->isDelete()) {
             $response = $favoritesService->deleteFromFavoriteList($this->Request());
         } else {
             $response = $favoritesService->getFavorites($this->Request());
