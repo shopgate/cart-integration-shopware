@@ -510,8 +510,8 @@ class Cart
             return array('brutto' => 0, 'netto' => 0);
         }
 
-        $this->session['sState'] = (int) $view->sUserData['additional']['stateShipping']['id'];
-        $dispatches = $this->admin->sGetPremiumDispatches($country->id, null, $this->session['sState']);
+        $this->session['sState'] = $view->sUserData['additional']['stateShipping']['id']? (int) $view->sUserData['additional']['stateShipping']['id'] : null;
+        $dispatches = $this->admin->sGetPremiumDispatches($country['id'], null, $this->session['sState']);
         if (empty($dispatches)) {
             unset($this->session['sDispatch']);
         } else {
@@ -538,65 +538,20 @@ class Cart
             $this->session['sArea'] = (int) $view->sUserData['additional']['countryShipping']['areaID'];
 
             return $view->sUserData['additional']['countryShipping'];
-        }
-        $countries = $this->getCountryList();
-        if (empty($countries)) {
-            unset($this->session['sCountry']);
+        } else {
+            $countries = $this->getCountryList();
+            if (empty($countries)) {
+                unset($this->session['sCountry']);
 
-            return false;
-        }
-        $country = reset($countries);
-        $this->session['sCountry'] = (int) $country['id'];
-        $this->session['sArea'] = (int) $country['areaID'];
-        $view->sUserData['additional']['countryShipping'] = $country;
-
-        return $country;
-    }
-
-    /**
-     * Get current selected country - if no country is selected, choose first one from list
-     * of available countries
-     *
-     * @return array with country information
-     */
-    private function getSelectedState($view)
-    {
-        if (!empty($view->sUserData['additional']['stateShipping'])) {
-            $this->session['sState'] = (int) $view->sUserData['additional']['stateShipping']['id'];
-
-            return $view->sUserData['additional']['stateShipping'];
-        }
-
-        return array('id' => $this->session['sState']);
-    }
-
-    /**
-     * Get selected dispatch or select a default dispatch
-     *
-     * @return bool|array
-     */
-    private function getSelectedDispatch()
-    {
-        if (empty($this->session['sCountry'])) {
-            return false;
-        }
-
-        $dispatches = $this->admin->sGetPremiumDispatches($this->session['sCountry'], null, $this->session['sState']);
-        if (empty($dispatches)) {
-            unset($this->session['sDispatch']);
-
-            return false;
-        }
-
-        foreach ($dispatches as $dispatch) {
-            if ($dispatch['id'] == $this->session['sDispatch']) {
-                return $dispatch;
+                return false;
             }
-        }
-        $dispatch = reset($dispatches);
-        $this->session['sDispatch'] = (int) $dispatch['id'];
+            $country = reset($countries);
+            $this->session['sCountry'] = (int) $country['id'];
+            $this->session['sArea'] = (int) $country['areaID'];
 
-        return $dispatch;
+            return $country;
+        }
+
     }
 
     /**
