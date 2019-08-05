@@ -552,7 +552,6 @@ class Cart
 
             return $country;
         }
-
     }
 
     /**
