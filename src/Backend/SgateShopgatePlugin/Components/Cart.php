@@ -66,7 +66,7 @@ class Cart
         $this->session = Shopware()->Session();
         $this->basket = Shopware()->Modules()->Basket();
         $this->admin = Shopware()->Modules()->Admin();
-        $this->contextService =  Shopware()->Container()->get('shopware_storefront.context_service');
+        $this->contextService = Shopware()->Container()->get('shopware_storefront.context_service');
     }
 
     /**
