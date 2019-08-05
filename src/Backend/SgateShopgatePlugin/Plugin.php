@@ -4425,7 +4425,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 ->getCurrentPaymentDataQueryBuilder($userId, 'sepa')->getQuery()
                 ->getOneOrNullResult();
 
-            $paymentMean = Shopware()->Models()->getRepository('\Shopware\Models\Payment\Payment')->getPaymentsQuery(
+            $paymentMean = Shopware()->Models()->getRepository('\Shopware\Models\Payment\Payment')->getActivePaymentsQuery(
                 array('name' => 'Sepa')
             )->getOneOrNullResult();
 
