@@ -659,7 +659,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     public function getStreamCategories($articleId)
     {
         $catIds            = array();
-        $categoryComponent = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category();
+        $categoryComponent = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category(
+            $this->getCacheInstance()
+        );
         $streamCategories  = $categoryComponent->getStreamCategories($catIds, $this->rootCategoryId);
 
         foreach ($streamCategories as $categoryId => $productStreamId) {
