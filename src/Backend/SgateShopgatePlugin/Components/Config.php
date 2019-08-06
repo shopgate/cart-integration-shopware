@@ -62,10 +62,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     protected $export_dimension_unit;
 
     protected $root_category;
-    /**
-     * @var bool
-     */
-    protected $export_out_of_stock_items;
 
     /**
      * not allowed settings identifiers
@@ -467,7 +463,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
             'export_product_description'       => 'SGATE_EXPORT_PRODUCT_DESCRIPTION',
             'export_product_downloads'         => 'SGATE_EXPORT_PRODUCT_DOWNLOADS',
             'root_category'                    => 'SGATE_ROOT_CATEGORY',
-            'export_out_of_stock_items'        => 'SGATE_EXPORT_OUT_OF_STOCK_ITEMS',
         );
     }
 
@@ -625,22 +620,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
         return is_object($value)
             ? $value->toArray()
             : $value;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getExportOutOfStockItems()
-    {
-        return $this->export_out_of_stock_items;
-    }
-
-    /**
-     * @param $value bool
-     */
-    public function setExportOutOfStockItems($value)
-    {
-        $this->export_out_of_stock_items = $value;
     }
 
     /**

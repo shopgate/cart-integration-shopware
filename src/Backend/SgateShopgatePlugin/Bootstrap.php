@@ -891,17 +891,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                     ->setPosition($position++)
             );
 
-        $formElementCheckbox                 = new FormElementCheckbox();
-        $formElementOptionsContainerCheckbox = new FormElementOptionsContainerCheckbox();
-        $formElements[]                      = $formElementCheckbox
-            ->setKey('SGATE_EXPORT_OUT_OF_STOCK_ITEMS')
-            ->setOptions(
-                $formElementOptionsContainerCheckbox
-                    ->setLabel('Produkte die nicht auf Lager sind exportieren')
-                    ->setValue(true)
-                    ->setPosition($position++)
-            );
-
         $formElementText                 = new FormElementText();
         $formElementOptionsContainerText = new FormElementOptionsContainerText;
         $formElements[]                  = $formElementText
@@ -1045,7 +1034,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                         if (empty($data) || empty($data['id'])) {
                             continue;
                         }
-                        
+
                         $orderId = $data['id'];
                         if ($orderId) {
                             self::cancelOrder($orderId);

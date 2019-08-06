@@ -5337,11 +5337,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         $builder->where('article.active = 1');
 
-        // Export only items are in stock
-        if (!$this->config->getExportOutOfStockItems()) {
-            $builder->andWhere('(article.lastStock = 0 AND (mainDetail.inStock - mainDetail.stockMin) > 0)');
-        }
-
         // Currently we can only export stacking products which have minPurchase quantity to be a multiple of the purchaseSteps
         $builder->andWhere(
             '(mainDetail.purchaseSteps IS NULL OR mainDetail.purchaseSteps IN (0, 1) OR mainDetail.purchaseSteps IS NOT NULL AND MOD(mainDetail.minPurchase , mainDetail.purchaseSteps)  = 0 )'
