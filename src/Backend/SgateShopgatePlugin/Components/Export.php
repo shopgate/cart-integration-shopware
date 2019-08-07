@@ -87,6 +87,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     protected $rootCategoryId;
 
     /**
+     * @var Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config
+     */
+    protected $config;
+
+    /**
      * @param Shopgate_Helper_Logging_Strategy_LoggingInterface                         $logger
      * @param Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_ArticleInterface $articleSortModel
      * @param int                                                                       $rootCategoryId
@@ -108,6 +113,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $this->locale           = $this->shop->getLocale();
         $this->system           = Shopware()->System();
         $this->attributeHelper  = new AttributeHelper();
+        $this->config           = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
         $this->initLanguageCategoryList();
         $this->initLanguageCompleteCategoryList();
         $this->initCache();
@@ -239,9 +245,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         if (!$this->cacheInstance) {
             $this->cacheInstance = CacheManager::getInstance(
                 'files', array(
-                'path' => rtrim(
-                        Shopware()->DocPath(), DS) . DS . 'web' . DS . 'cache' . DS
-            ));
+                'path' => rtrim($this->config->getCacheFolderPath())
+            );
         }
 
         return $this->cacheInstance;
