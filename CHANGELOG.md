@@ -19,14 +19,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - getter of checkout URL for web checkout
 - synchronization of favorite list items
 - synchronization of user data and addresses
+- persist import cache
 
 ### Fixed
 - export right item number for order items
 - order debit payment method for SW >= 5.0
 - error during customer import with invalid countries
-
-## Added
-- persist import cache
 
 ## [2.9.87] - 2019-05-21
 ### Fixed
