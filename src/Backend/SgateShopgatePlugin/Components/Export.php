@@ -245,7 +245,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         if (!$this->cacheInstance) {
             $this->cacheInstance = CacheManager::getInstance(
                 'files', array(
-                'path' => rtrim($this->config->getCacheFolderPath())
+                    'path' => rtrim($this->config->getCacheFolderPath())
+                )
             );
         }
 
