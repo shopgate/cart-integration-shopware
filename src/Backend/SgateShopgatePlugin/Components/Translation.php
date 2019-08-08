@@ -170,6 +170,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Translation
                     'label'       => 'Products downloads export',
                     'description' => 'Determines if and where product downloads are exported',
                 ),
+                'SGATE_CUSTOM_CSS'                  => array(
+                    'label'       => 'Custom css',
+                    'description' => 'Here you can save CSS customizations for the webcheckout of your Shopgate app',
+                )
             ),
         );
     }

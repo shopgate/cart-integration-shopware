@@ -1,9 +1,10 @@
 /.buildpath
 /.project
 /*.zip
-/.php-cs.cache
+/.php_cs.cache
 /nbproject
 /.settings
 /.idea
 /src/Backend/SgateShopgatePlugin/vendor/
 /release/package
+composer.lock
