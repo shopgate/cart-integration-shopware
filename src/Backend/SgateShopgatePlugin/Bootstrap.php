@@ -1034,7 +1034,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                         if (empty($data) || empty($data['id'])) {
                             continue;
                         }
-                        
+
                         $orderId = $data['id'];
                         if ($orderId) {
                             self::cancelOrder($orderId);
