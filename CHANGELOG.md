@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - getter of checkout URL for web checkout
 - synchronization of favorite list items
 - synchronization of user data and addresses
+- persist import cache
 
 ### Fixed
 - export right item number for order items

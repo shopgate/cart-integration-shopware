@@ -21,6 +21,26 @@
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
 {
+    const CACHE_KEY_STREAM_CATEGORY_ = 'stream_categories_children_';
+    const CACHE_KEY_CATEGORY_ = 'categories_children_';
+
+    /** @var null|\phpFastCache\Core\DriverAbstract */
+    private $cacheInstance = null;
+
+    /** @param \phpFastCache\Core\DriverAbstract $cacheInstance */
+    public function __construct($cacheInstance = null)
+    {
+        $this->cacheInstance = $cacheInstance;
+    }
+
+    /**
+     * @return null|\phpFastCache\Core\DriverAbstract
+     */
+    private function getCacheInstace()
+    {
+        return $this->cacheInstance;
+    }
+
     /**
      * Select all child categories by id
      *
@@ -31,6 +51,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
      */
     public function getCategories($categories = array(), $parentID = 1)
     {
+        $cacheKey = self::CACHE_KEY_CATEGORY_ . $parentID;
+
+        if ($this->getCacheInstace() !== null && $this->getCacheInstace()->get($cacheKey)) {
+            return $this->getCacheInstace()->get($cacheKey);
+        }
+
         $sql = "
             SELECT DISTINCT id as categoryID, parent as parentID, s_categories.*
             FROM s_categories
@@ -47,6 +73,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
             );
         }
 
+        if ($this->getCacheInstace()) {
+            $this->getCacheInstace()->set($cacheKey, $categories);
+        }
+
         return $categories;
     }
 
@@ -60,6 +90,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
      */
     public function getStreamCategories($categories = array(), $parentID = 1)
     {
+        $cacheKey = self::CACHE_KEY_STREAM_CATEGORY_ . $parentID;
+
+        if ($this->getCacheInstace() !== null && $this->getCacheInstace()->get($cacheKey)) {
+            return $this->getCacheInstace()->get($cacheKey);
+        }
+
         $sql = "
             SELECT DISTINCT id, stream_id
             FROM s_categories
@@ -72,6 +108,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
                 $categories[$row['id']] = $row['stream_id'];
             }
             $categories = $this->getStreamCategories($categories, $row['id']);
+        }
+
+        if ($this->getCacheInstace()) {
+            $this->getCacheInstace()->set($cacheKey, $categories);
         }
 
         return $categories;
