@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - export right item number for order items
 - order debit payment method for SW >= 5.0
 - error during customer import with invalid countries
+- customer group specific prices in cart
 
 ## [2.9.87] - 2019-05-21
 ### Fixed
