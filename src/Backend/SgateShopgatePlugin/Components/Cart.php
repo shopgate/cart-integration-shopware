@@ -22,9 +22,15 @@
 namespace Shopgate\Components;
 
 use Shopgate\Helpers\WebCheckout;
+use Shopware\Bundle\StoreFrontBundle\Service\ContextServiceInterface;
 
 class Cart
 {
+    /**
+     * @var ContextServiceInterface
+     */
+    private $contextService;
+
     /**
      * Reference to sBasket object (core/class/sBasket.php)
      *
@@ -60,6 +66,7 @@ class Cart
         $this->session = Shopware()->Session();
         $this->basket = Shopware()->Modules()->Basket();
         $this->admin = Shopware()->Modules()->Admin();
+        $this->contextService = Shopware()->Container()->get('shopware_storefront.context_service');
     }
 
     /**
@@ -72,6 +79,7 @@ class Cart
     public function getCart($request, $httpResponse, $view)
     {
         $sessionId = $request->getCookie('sg_session');
+        $customerId = $request->getCookie('customer_id');
         $promotionVouchers = json_decode($request->getCookie('sg_promotion'), true);
 
         $this->session->offsetSet('sessionId', $sessionId);
@@ -79,6 +87,14 @@ class Cart
 
         if (isset($promotionVouchers)) {
             $this->session->offsetSet('promotionVouchers', $promotionVouchers);
+        }
+
+        if (!empty($customerId) && $customerId !== "null") {
+            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sUserMail', $customer->getEmail());
+            $this->session->offsetSet('sUserPassword', $customer->getPassword());
+            $this->session->offsetSet('sUserId', $customer->getId());
+            $this->admin->sCheckUser();
         }
 
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
@@ -96,6 +112,7 @@ class Cart
         $currency = Shopware()->Shop()->getCurrency();
 
         // Below code comes from the getBasket function in the Checkout Controller
+        $basket['priceGroup'] = $this->session->offsetGet('sUserGroup');
         $basket['sCurrencyId'] = $currency->getId();
         $basket['sCurrencyName'] = $currency->getCurrency();
         $basket['sCurrencyFactor'] = $currency->getFactor();
@@ -348,6 +365,41 @@ class Cart
     }
 
     /**
+     * Get complete user-data as an array to use in view
+     *
+     * @return array
+     */
+    private function getUserData()
+    {
+        $system = Shopware()->System();
+        $userData = $this->admin->sGetUserData();
+        if (!empty($userData['additional']['countryShipping'])) {
+            $system->sUSERGROUPDATA = Shopware()->Db()->fetchRow('
+                SELECT * FROM s_core_customergroups
+                WHERE groupkey = ?
+            ', array($system->sUSERGROUP));
+
+            $taxFree = $this->isTaxFreeDelivery($userData);
+            $this->session->offsetSet('taxFree', $taxFree);
+
+            if ($taxFree) {
+                $system->sUSERGROUPDATA['tax'] = 0;
+                $system->sCONFIG['sARTICLESOUTPUTNETTO'] = 1; //Old template
+                Shopware()->Session()->sUserGroupData = $system->sUSERGROUPDATA;
+                $userData['additional']['charge_vat'] = false;
+                $userData['additional']['show_net'] = false;
+                Shopware()->Session()->sOutputNet = true;
+            } else {
+                $userData['additional']['charge_vat'] = true;
+                $userData['additional']['show_net'] = !empty($system->sUSERGROUPDATA['tax']);
+                Shopware()->Session()->sOutputNet = empty($system->sUSERGROUPDATA['tax']);
+            }
+        }
+
+        return $userData;
+    }
+
+    /**
      * Adds an array of articles to the cart based on an array of article IDs
      *
      * @param array $articles
@@ -458,6 +510,16 @@ class Cart
         if (empty($country) || empty($payment)) {
             return array('brutto' => 0, 'netto' => 0);
         }
+
+        $this->session['sState'] = $view->sUserData['additional']['stateShipping']['id']? (int) $view->sUserData['additional']['stateShipping']['id'] : null;
+        $dispatches = $this->admin->sGetPremiumDispatches($country['id'], null, $this->session['sState']);
+        if (empty($dispatches)) {
+            unset($this->session['sDispatch']);
+        } else {
+            $dispatch = reset($dispatches);
+            $this->session['sDispatch'] = (int) $dispatch['id'];
+        }
+
         $shippingcosts = $this->admin->sGetPremiumShippingcosts($country);
 
         return empty($shippingcosts) ? array('brutto' => 0, 'netto' => 0) : $shippingcosts;
@@ -477,19 +539,19 @@ class Cart
             $this->session['sArea'] = (int) $view->sUserData['additional']['countryShipping']['areaID'];
 
             return $view->sUserData['additional']['countryShipping'];
-        }
-        $countries = $this->getCountryList();
-        if (empty($countries)) {
-            unset($this->session['sCountry']);
+        } else {
+            $countries = $this->getCountryList();
+            if (empty($countries)) {
+                unset($this->session['sCountry']);
 
-            return false;
-        }
-        $country = reset($countries);
-        $this->session['sCountry'] = (int) $country['id'];
-        $this->session['sArea'] = (int) $country['areaID'];
-        $view->sUserData['additional']['countryShipping'] = $country;
+                return false;
+            }
+            $country = reset($countries);
+            $this->session['sCountry'] = (int) $country['id'];
+            $this->session['sArea'] = (int) $country['areaID'];
 
-        return $country;
+            return $country;
+        }
     }
 
     /**
@@ -537,11 +599,6 @@ class Cart
         $this->session['sPaymentID'] = (int) $payment['id'];
         $request->setPost('sPayment', (int) $payment['id']);
         $this->admin->sUpdatePayment();
-
-        //if customer logged in and payment switched to fallback, display cart notice. Otherwise anonymous customers will see the message too
-        if (Shopware()->Session()->sUserId) {
-            $this->flagPaymentBlocked();
-        }
 
         return $payment;
     }

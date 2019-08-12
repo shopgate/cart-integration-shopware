@@ -26,6 +26,13 @@ use Shopgate\Helpers\WebCheckout;
 class User
 {
     /**
+     * Reference to Shopware session object (Shopware()->Session)
+     *
+     * @var Enlight_Components_Session_Namespace
+     */
+    protected $session;
+
+    /**
      * @var WebCheckout
      */
     protected $webCheckoutHelper;
@@ -59,6 +66,7 @@ class User
         $this->webCheckoutHelper = new WebCheckout();
         $this->basket = Shopware()->Modules()->Basket();
         $this->admin = Shopware()->Modules()->Admin();
+        $this->session = Shopware()->Session();
         $this->container = Shopware()->Container();
     }
 
