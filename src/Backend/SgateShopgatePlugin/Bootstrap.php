@@ -1274,7 +1274,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
             $params = array(
                 'order' => array(
-                    'number' => $orderNumber,
+                    'number' => (string)$orderNumber,
                     'currency' => $basket['sCurrencyName'],
                     'totals' => array(
                         array(
