@@ -218,7 +218,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
             new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export(
                 ShopgateLogger::getInstance()->getLoggingStrategy(),
                 $articleSortModel,
-                $this->config->getRootCategory()
+                $this->config->getRootCategory(),
+                $this->params
             );
 
         $this->cartHelper = new CartHelper();
@@ -4425,7 +4426,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 ->getCurrentPaymentDataQueryBuilder($userId, 'sepa')->getQuery()
                 ->getOneOrNullResult();
 
-            $paymentMean = Shopware()->Models()->getRepository('\Shopware\Models\Payment\Payment')->getPaymentsQuery(
+            $paymentMean = Shopware()->Models()->getRepository('\Shopware\Models\Payment\Payment')->getActivePaymentsQuery(
                 array('name' => 'Sepa')
             )->getOneOrNullResult();
 
