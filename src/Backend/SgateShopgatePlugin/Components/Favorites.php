@@ -141,11 +141,15 @@ class Favorites
      */
     private function isWishList()
     {
-        $pluginManager  = $this->container->get('shopware_plugininstaller.plugin_manager');
-        $plugin = $pluginManager->getPluginByName('SwagAdvancedCart');
-        $config = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('SwagAdvancedCart');
+        try {
+            $pluginManager  = $this->container->get('shopware_plugininstaller.plugin_manager');
+            $plugin = $pluginManager->getPluginByName('SwagAdvancedCart');
+            $config = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('SwagAdvancedCart');
 
-        return $plugin->getInstalled() && $plugin->getActive() && $config['replaceNote'];
+            return $plugin->getInstalled() && $plugin->getActive() && $config['replaceNote'];
+        } catch (\Exception $error) {
+            return false;
+        }
     }
 
     /**
