@@ -201,7 +201,7 @@ class Address
                 $addressService->setDefaultBillingAddress($address);
             }
 
-            if ($this->isValidShippingAddress($address) && !empty($additional['setDefaultShippingAddress'])) {
+            if (!empty($additional['setDefaultShippingAddress'])) {
                 $addressService->setDefaultShippingAddress($address);
             }
             return array('success' => true);
@@ -220,6 +220,8 @@ class Address
     }
 
     /**
+     * This helper function is only supported since shopware 5.5
+     *
      * @param \Shopware\Models\Customer\Address $address
      * @return bool
      */
