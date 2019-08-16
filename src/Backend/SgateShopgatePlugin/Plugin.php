@@ -2661,11 +2661,13 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function insertOrderPaymentCosts(sOrder $oOrder, ShopgateOrder $oShopgateOrder)
     {
+        $orderNumberPaymentFeeConfig = Shopware()->Config()->get('sPAYMENTSURCHARGEABSOLUTENUMBER');
+        $orderNumberPaymentFee       = !empty($orderNumberPaymentFeeConfig) ? $orderNumberPaymentFeeConfig : "sw-payment-absolute";
         if (floatval($oShopgateOrder->getAmountShopPayment()) > 0) {
             $aItem                 = array();
             $aItem['id']           = -1;
             $aItem['articleID']    = 0;
-            $aItem['ordernumber']  = "sw-payment-absolute";
+            $aItem['ordernumber']  = $orderNumberPaymentFee;
             $aItem['priceNumeric'] = $oShopgateOrder->getAmountShopPayment();
             $aItem['price']        = $oShopgateOrder->getAmountShopPayment();
             $aItem['quantity']     = 1;
@@ -2680,7 +2682,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $aItem                 = array();
             $aItem['id']           = -1;
             $aItem['articleID']    = 0;
-            $aItem['ordernumber']  = "sw-payment-absolute";
+            $aItem['ordernumber']  = $orderNumberPaymentFee;
             $aItem['priceNumeric'] = $oShopgateOrder->getAmountShopPayment();
             $aItem['price']        = $oShopgateOrder->getAmountShopPayment();
             $aItem['quantity']     = 1;
