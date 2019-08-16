@@ -2661,8 +2661,10 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function insertOrderPaymentCosts(sOrder $oOrder, ShopgateOrder $oShopgateOrder)
     {
-        $orderNumberPaymentFeeConfig = Shopware()->Config()->get('sPAYMENTSURCHARGEABSOLUTENUMBER');
-        $orderNumberPaymentFee       = !empty($orderNumberPaymentFeeConfig) ? $orderNumberPaymentFeeConfig : "sw-payment-absolute";
+        $orderNumberPaymentFeeConfig      = Shopware()->Config()->get('sPAYMENTSURCHARGEABSOLUTENUMBER');
+        $orderNumberPaymentFeeLabelConfig = Shopware()->Config()->get('sPAYMENTSURCHARGEABSOLUTE');
+        $orderNumberPaymentFeeLabel       = !empty($orderNumberPaymentFeeLabelConfig) ? $orderNumberPaymentFeeLabelConfig : "Zuschlag für Zahlungsart";
+        $orderNumberPaymentFee            = !empty($orderNumberPaymentFeeConfig) ? $orderNumberPaymentFeeConfig : "sw-payment-absolute";
         if (floatval($oShopgateOrder->getAmountShopPayment()) > 0) {
             $aItem                 = array();
             $aItem['id']           = -1;
@@ -2672,7 +2674,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $aItem['price']        = $oShopgateOrder->getAmountShopPayment();
             $aItem['quantity']     = 1;
             $aItem['amount']       = $aItem['price'] * $aItem['quantity'];
-            $aItem['articlename']  = "Zuschlag für Zahlungsart";
+            $aItem['articlename']  = $orderNumberPaymentFeeLabel;
             $aItem['modus']        = "4";
             $aItem['taxID']        = 0;
             $aItem['tax_rate']     = "19";

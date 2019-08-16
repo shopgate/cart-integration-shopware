@@ -9,9 +9,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - export right item number for order items
 - order debit payment method for SW >= 5.0
 - error during customer import with invalid countries
+- read payment fee ordernumber and label from configuration
 
 ## Added
-- persist import cache
+- persist import cache 
 
 ## [2.9.87] - 2019-05-21
 ### Fixed
