@@ -220,26 +220,6 @@ class Address
     }
 
     /**
-     * This helper function is only supported since shopware 5.5
-     *
-     * @param \Shopware\Models\Customer\Address $address
-     * @return bool
-     */
-    private function isValidShippingAddress(\Shopware\Models\Customer\Address $address)
-    {
-        $additional = $address->getAdditional();
-
-        if (empty($additional['setDefaultShippingAddress']) && $address->getId() !== $address->getCustomer()->getDefaultShippingAddress()->getId()) {
-            return true;
-        }
-
-        $context = $this->container->get('shopware_storefront.context_service')->getContext();
-        $country = $this->container->get('shopware_storefront.country_gateway')->getCountry($address->getCountry()->getId(), $context);
-
-        return $country->allowShipping();
-    }
-
-    /**
      * Creates and returns a Form instance from the type of the form.
      *
      * @param string $type    The fully qualified class name of the form type
