@@ -27,6 +27,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - error during customer import with invalid countries
 - customer group specific prices in cart
 
+## Added
+- persist import cache
+
 ## [2.9.87] - 2019-05-21
 ### Fixed
 - export correct item number for order items

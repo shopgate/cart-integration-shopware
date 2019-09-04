@@ -201,7 +201,7 @@ class Address
                 $addressService->setDefaultBillingAddress($address);
             }
 
-            if ($this->isValidShippingAddress($address) && !empty($additional['setDefaultShippingAddress'])) {
+            if (!empty($additional['setDefaultShippingAddress'])) {
                 $addressService->setDefaultShippingAddress($address);
             }
             return array('success' => true);
@@ -217,24 +217,6 @@ class Address
                 'message' => $string
             );
         }
-    }
-
-    /**
-     * @param \Shopware\Models\Customer\Address $address
-     * @return bool
-     */
-    private function isValidShippingAddress(\Shopware\Models\Customer\Address $address)
-    {
-        $additional = $address->getAdditional();
-
-        if (empty($additional['setDefaultShippingAddress']) && $address->getId() !== $address->getCustomer()->getDefaultShippingAddress()->getId()) {
-            return true;
-        }
-
-        $context = $this->container->get('shopware_storefront.context_service')->getContext();
-        $country = $this->container->get('shopware_storefront.country_gateway')->getCountry($address->getCountry()->getId(), $context);
-
-        return $country->allowShipping();
     }
 
     /**
