@@ -160,14 +160,11 @@ class User
             $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
             $customerId = $decoded['customer_id'];
 
-            $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
-            $password = Shopware()->Db()->fetchCol($sql, array($customerId));
+            $sql = ' SELECT password, email FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+            $user = Shopware()->Db()->fetchRow($sql, array($customerId)) ?: array();
 
-            $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
-            $email = Shopware()->Db()->fetchCol($sql, array($customerId));
-
-            $request->setPost('email', $email[0]);
-            $request->setPost('passwordMD5', $password[0]);
+            $request->setPost('email', $user["email"]);
+            $request->setPost('passwordMD5', $user["password"]);
 
             $checkUser = $this->admin->sLogin(true);
 

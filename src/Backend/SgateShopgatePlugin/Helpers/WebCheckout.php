@@ -50,18 +50,15 @@ class WebCheckout
                 Shopware()->Session()->offsetSet('promotionVouchers', $promotionVouchers);
             }
 
-            $sql = 'SELECT DISTINCT `password` FROM `s_user` WHERE customernumber=?';
-            $password = Shopware()->Db()->fetchCol($sql, array($customerId));
+            $sql = ' SELECT password, email FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+            $user = Shopware()->Db()->fetchAll($sql, array($customerId)) ?: array();
 
-            $sql = 'SELECT DISTINCT `email` FROM `s_user` WHERE customernumber=?';
-            $email = Shopware()->Db()->fetchCol($sql, array($customerId));
-
-            if (count($password) > 1 || count($email) > 1) {
+            if (count($user) > 1) {
                 return false;
             }
 
-            $request->setPost('email', $email[0]);
-            $request->setPost('passwordMD5', $password[0]);
+            $request->setPost('email', $user[0]["email"]);
+            $request->setPost('passwordMD5', $user[0]["password"]);
 
             $checkUser = Shopware()->Modules()->Admin()->sLogin(true);
 

@@ -596,7 +596,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function getUserAction()
     {
-        $response = $this->webCheckoutUserService->getUser($this->Request(), $this->Response());
+        $response = $this->webCheckoutUserService->getUser($this->Request());
 
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
