@@ -29,21 +29,22 @@ class WebCheckout
     /**
      * Login app user from JWT token
      *
-     * @param $token
+     * @param                                    $token
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return bool
      */
     public function loginAppUser($token, $request)
     {
-        $basket = Shopware()->Modules()->Basket()->sGetBasket();
+        $basket  = Shopware()->Modules()->Basket()->sGetBasket();
         $voucher = $this->getVoucher();
 
         if (isset($token)) {
-            $key = trim($this->getConfig()->getApikey());
-            JWT::$leeway = 60;
-            $decoded = JWT::decode($token, $key, array('HS256'));
-            $decoded = json_decode(json_encode($decoded), true);
-            $customerId = $decoded['customer_id'];
+            $key               = trim($this->getConfig()->getApikey());
+            JWT::$leeway       = 60;
+            $decoded           = JWT::decode($token, $key, array('HS256'));
+            $decoded           = json_decode(json_encode($decoded), true);
+            $customerId        = $decoded['customer_id'];
             $promotionVouchers = json_decode($decoded['promotion_vouchers'], true);
 
             if (isset($promotionVouchers)) {
@@ -51,7 +52,7 @@ class WebCheckout
             }
 
             $sql = ' SELECT password, email FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-            $user = Shopware()->Db()->fetchAll($sql, array($customerId)) ?: array();
+            $user = Shopware()->Db()->fetchAll($sql, array($customerId)) ? : array();
 
             if (count($user) > 1) {
                 return false;
@@ -63,7 +64,7 @@ class WebCheckout
             $checkUser = Shopware()->Modules()->Admin()->sLogin(true);
 
             if (isset($checkUser['sErrorFlag'])) {
-                throw new Exception($checkUser['sErrorMessages'][0] , 400);
+                throw new Exception($checkUser['sErrorMessages'][0], 400);
             }
 
             Shopware()->Modules()->Basket()->sRefreshBasket();
@@ -78,6 +79,7 @@ class WebCheckout
                     Shopware()->Modules()->Basket()->sAddVoucher($voucher['code']);
                 }
             }
+
             return true;
         }
 
@@ -109,6 +111,7 @@ class WebCheckout
                 );
             }
         }
+
         return $voucher;
     }
 
@@ -126,18 +129,20 @@ class WebCheckout
         }
 
         $content = trim(file_get_contents("php://input"));
+
         return json_decode($content, true);
     }
 
     /**
      * @param $token
+     *
      * @return array
      */
     public function getJWT($token)
     {
-        $key = trim($this->getConfig()->getApikey());
+        $key         = trim($this->getConfig()->getApikey());
         JWT::$leeway = 60;
-        $decoded = JWT::decode($token, $key, array('HS256'));
+        $decoded     = JWT::decode($token, $key, array('HS256'));
 
         return json_decode(json_encode($decoded), true);
     }
@@ -159,13 +164,14 @@ class WebCheckout
 
     /**
      * @param $customerId
+     *
      * @return Shopware\\Models\\Customer\\Customer $customer
      */
     public function getCustomer($customerId)
     {
         $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
 
-        $userId = Shopware()->Db()->fetchRow($sql, array($customerId)) ?: array();
+        $userId = Shopware()->Db()->fetchRow($sql, array($customerId)) ? : array();
         Shopware()->Session()->offsetSet('sUserId', $userId['id']);
 
         return Shopware()->Models()->find("Shopware\\Models\\Customer\\Customer", $userId['id']);

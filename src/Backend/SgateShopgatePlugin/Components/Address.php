@@ -50,22 +50,23 @@ class Address
     public function __construct()
     {
         $this->webCheckoutHelper = new WebCheckout();
-        $this->models = Shopware()->Models();
-        $this->container = Shopware()->Container();
+        $this->models            = Shopware()->Models();
+        $this->container         = Shopware()->Container();
     }
 
     /**
      * Custom action to get the address data of an user
      *
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return array
      */
     public function getAddressesAction($request)
     {
-        $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
+        $decoded  = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
         $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
 
-        $defaultBillingAddress = $customer->getDefaultBillingAddress();
+        $defaultBillingAddress  = $customer->getDefaultBillingAddress();
         $defaultShippingAddress = $customer->getDefaultShippingAddress();
 
         $addressRepository = $this->models->getRepository("Shopware\\Models\\Customer\\Address");
@@ -74,13 +75,13 @@ class Address
 
         // Create a list of ids of occurring countries and states
         $countryIds = array_unique(array_filter(array_column($addresses, 'countryId')));
-        $stateIds = array_unique(array_filter(array_column($addresses, 'stateId')));
+        $stateIds   = array_unique(array_filter(array_column($addresses, 'stateId')));
 
         $countryRepository = $this->container->get('shopware_storefront.country_gateway');
-        $context = $this->container->get('shopware_storefront.context_service')->getShopContext();
+        $context           = $this->container->get('shopware_storefront.context_service')->getShopContext();
 
         $countries = $countryRepository->getCountries($countryIds, $context);
-        $states = $countryRepository->getStates($stateIds, $context);
+        $states    = $countryRepository->getStates($stateIds, $context);
 
         // Apply translations for countries and states to address array, converting them from structs to arrays in the process
         foreach ($addresses as &$address) {
@@ -91,9 +92,9 @@ class Address
                 $address['state'] = json_decode(json_encode($states[$address['stateId']]), true);
             }
 
-            $customerAddress = $addressRepository->getOneByUser($address['id'], $customer->getId());
-            $address['additional'] = $customerAddress->getAdditional();
-            $address['defaultBillingAddress'] = $defaultBillingAddress->getId() === $address['id'];
+            $customerAddress                   = $addressRepository->getOneByUser($address['id'], $customer->getId());
+            $address['additional']             = $customerAddress->getAdditional();
+            $address['defaultBillingAddress']  = $defaultBillingAddress->getId() === $address['id'];
             $address['defaultShippingAddress'] = $defaultShippingAddress->getId() === $address['id'];
         }
         unset($address);
@@ -105,16 +106,17 @@ class Address
      * Custom action to add a new address
      *
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return array
      */
     public function addAddressAction($request)
     {
-        $data = $this->getAddressData($request);
+        $data     = $this->getAddressData($request);
         $customer = $this->webCheckoutHelper->getCustomer($data['customer_id']);
 
         if ($request->isPut()) {
             $addressRepository = $this->models->getRepository("Shopware\\Models\\Customer\\Address");
-            $address = $addressRepository->getOneByUser((int)$data['address']['id'], $customer->getId());
+            $address           = $addressRepository->getOneByUser((int)$data['address']['id'], $customer->getId());
         } else {
             $address = new \Shopware\Models\Customer\Address();
         }
@@ -129,14 +131,15 @@ class Address
      * Custom action to delete an address
      *
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return array
      */
     public function deleteAddressAction($request)
     {
-        $params = $this->webCheckoutHelper->getJsonParams($request);
-        $data = $this->webCheckoutHelper->getJWT($params['token']);
-        $customer = $this->webCheckoutHelper->getCustomer($data['customer_id']);
-        $addressService = $this->container->get('shopware_account.address_service');
+        $params            = $this->webCheckoutHelper->getJsonParams($request);
+        $data              = $this->webCheckoutHelper->getJWT($params['token']);
+        $customer          = $this->webCheckoutHelper->getCustomer($data['customer_id']);
+        $addressService    = $this->container->get('shopware_account.address_service');
         $addressRepository = $this->models->getRepository("Shopware\\Models\\Customer\\Address");
 
         foreach ($data['addressIds'] as $addressId) {
@@ -149,34 +152,35 @@ class Address
 
     /**
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return array
      */
     private function getAddressData($request)
     {
         $params = $this->webCheckoutHelper->getJsonParams($request);
-        $data = $this->webCheckoutHelper->getJWT($params['token']);
+        $data   = $this->webCheckoutHelper->getJWT($params['token']);
 
         if (!empty($data['address']['country'])) {
             $query = $this->models->getConnection()->createQueryBuilder();
             $query->select('id')
-                ->from('s_core_countries', 'country')
-                ->where('country.countryiso = :iso')
-                ->setParameter('iso', $data['address']['country']);
+                  ->from('s_core_countries', 'country')
+                  ->where('country.countryiso = :iso')
+                  ->setParameter('iso', $data['address']['country']);
 
-            $countryId = $query->execute()->fetch();
+            $countryId                  = $query->execute()->fetch();
             $data['address']['country'] = $countryId['id'];
         }
 
         if (!empty($data['address']['state'])) {
             $query = $this->models->getConnection()->createQueryBuilder();
             $query->select('id')
-                ->from('s_core_countries_states', 'state')
-                ->where('state.countryID = :id')
-                ->andwhere('state.shortcode = :code')
-                ->setParameter('id', $countryId['id'])
-                ->setParameter('code', $data['address']['state']);
+                  ->from('s_core_countries_states', 'state')
+                  ->where('state.countryID = :id')
+                  ->andwhere('state.shortcode = :code')
+                  ->setParameter('id', $countryId['id'])
+                  ->setParameter('code', $data['address']['state']);
 
-            $stateId = $query->execute()->fetch();
+            $stateId                  = $query->execute()->fetch();
             $data['address']['state'] = $stateId['id'];
         }
 
@@ -187,6 +191,7 @@ class Address
      * @param $form
      * @param $address
      * @param $customer
+     *
      * @return string
      */
     private function saveFormData($form, $address, $customer)
@@ -204,12 +209,13 @@ class Address
             if (!empty($additional['setDefaultShippingAddress'])) {
                 $addressService->setDefaultShippingAddress($address);
             }
+
             return array('success' => true);
         } else {
             $errors = $form->getErrors(true);
             $string = '';
             foreach ($errors as $error) {
-                $string .= $error->getOrigin()->getName().$error->getMessage()."\n";
+                $string .= $error->getOrigin()->getName() . $error->getMessage() . "\n";
             }
 
             return array(

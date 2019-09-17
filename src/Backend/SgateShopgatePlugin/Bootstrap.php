@@ -137,7 +137,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         return array(
             'version'     => $this->getVersion(),
-            'author'       => 'Shopgate GmbH',
+            'author'      => 'Shopgate GmbH',
             'copyright'   => 'Copyright @ ' . date('Y') . ' Shopgate GmbH',
             'label'       => $this->getLabel(),
             'source'      => '',
@@ -490,16 +490,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             if ($hiddenElement) {
                 // Update element data if it's already existing
                 $hiddenElement->setValue($formElement->getValue())
-                    ->setLabel($formElement->getLabel())
-                    ->setDescription($formElement->getDescription())
-                    ->setType($formElement->getType())
-                    ->setRequired($formElement->getRequired())
-                    ->setPosition(
-                        isset($position)
-                            ? $position
-                            : $formElement->getPosition()
-                    )
-                    ->setScope($formElement->getScope());
+                              ->setLabel($formElement->getLabel())
+                              ->setDescription($formElement->getDescription())
+                              ->setType($formElement->getType())
+                              ->setRequired($formElement->getRequired())
+                              ->setPosition(
+                                  isset($position)
+                                      ? $position
+                                      : $formElement->getPosition()
+                              )
+                              ->setScope($formElement->getScope());
 
                 // perform update
                 $this->Application()->Models()->persist($hiddenElement);
@@ -961,12 +961,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
         $formElementTextfield                 = new FormElementTextfield();
         $formElementOptionsContainerTextfield = new FormElementOptionsContainerTextfield();
-        $formElements[]                  = $formElementTextfield
+        $formElements[]                       = $formElementTextfield
             ->setKey('SGATE_CUSTOM_CSS')
             ->setOptions(
                 $formElementOptionsContainerTextfield
                     ->setLabel('CSS Anpassungen Webcheckout')
-                    ->setDescription('Hier können Sie CSS Anpassungen für den Webcheckout Ihrer Shopgate App hinterlegen')
+                    ->setDescription(
+                        'Hier können Sie CSS Anpassungen für den Webcheckout Ihrer Shopgate App hinterlegen'
+                    )
                     ->setPosition($position++)
             );
 
@@ -1095,7 +1097,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                 $orderId = $args["subject"]->Request()->getParam("orderId");
                 break;
             case "batchProcess":
-                $orders = $args["subject"]->Request()->getParam('orders', array(0 => $args["subject"]->Request()->getParams()));
+                $orders = $args["subject"]->Request()
+                                          ->getParam('orders', array(0 => $args["subject"]->Request()->getParams()));
 
                 if (!empty($orders)) {
                     foreach ($orders as $key => $data) {
@@ -1110,6 +1113,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                         }
                     }
                 }
+
                 return;
             default:
                 return;
@@ -1126,8 +1130,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         /* @var $order \Shopware\CustomModels\Shopgate\Order */
 
         $order = Shopware()->Models()
-            ->getRepository("\\Shopware\\CustomModels\\Shopgate\\Order")
-            ->findOneBy(array("orderId" => $orderId));
+                           ->getRepository("\\Shopware\\CustomModels\\Shopgate\\Order")
+                           ->findOneBy(array("orderId" => $orderId));
 
         if (empty($order)) {
             return;
@@ -1142,8 +1146,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         /* @var $order \Shopware\CustomModels\Shopgate\Order */
 
         $order = Shopware()->Models()
-            ->getRepository("\\Shopware\\CustomModels\\Shopgate\\Order")
-            ->findOneBy(array("orderId" => $orderId));
+                           ->getRepository("\\Shopware\\CustomModels\\Shopgate\\Order")
+                           ->findOneBy(array("orderId" => $orderId));
 
         if (empty($order)) {
             return;
@@ -1245,16 +1249,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
         if ($this->isInWebView($args)) {
             $referer = array(
-                'type'=> 'shopgate-webcheckout',
+                'type'       => 'shopgate-webcheckout',
                 "user-agent" => $_SERVER['HTTP_USER_AGENT']
             );
             Shopware()->Session()->offsetSet('sReferer', json_encode($referer));
         }
 
         if ($args->getRequest()->getActionName() === 'shippingPayment') {
-            $user = Shopware()->Modules()->Admin()->sGetUserData();
-            $user = $user['additional']['user'];
-            $hash = $user['password'];
+            $user  = Shopware()->Modules()->Admin()->sGetUserData();
+            $user  = $user['additional']['user'];
+            $hash  = $user['password'];
             $email = $user['email'];
 
             if ($user['accountmode'] === '0' && !Shopware()->Session()->offsetGet('registeredUser')) {
@@ -1269,24 +1273,24 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         }
 
         if ($args->getRequest()->getActionName() === 'finish') {
-            $basket = $view->getAssign('sBasket');
+            $basket      = $view->getAssign('sBasket');
             $orderNumber = $view->getAssign('sOrderNumber');
 
             $params = array(
                 'order' => array(
-                    'number' => (string)$orderNumber,
+                    'number'   => (string)$orderNumber,
                     'currency' => $basket['sCurrencyName'],
-                    'totals' => array(
+                    'totals'   => array(
                         array(
-                            'type' => 'shipping',
+                            'type'   => 'shipping',
                             'amount' => $basket['sShippingcosts'],
                         ),
                         array(
-                            'type' => 'tax',
+                            'type'   => 'tax',
                             'amount' => $basket['sAmountTax']
                         ),
                         array(
-                            'type' => 'grandTotal',
+                            'type'   => 'grandTotal',
                             'amount' => $basket['AmountNumeric']
                         )
                     ),
@@ -1296,12 +1300,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
             foreach ($basket['content'] as $item) {
                 $params['order']['products'][] = array(
-                    'id' => $item['id'],
-                    'name' => $item['articlename'],
+                    'id'       => $item['id'],
+                    'name'     => $item['articlename'],
                     'quantity' => $item['quantity'],
-                    'price' => array(
+                    'price'    => array(
                         'withTax' => floatval($item['priceNumeric']),
-                        'net' => floatval($item['netprice'])
+                        'net'     => floatval($item['netprice'])
                     )
                 );
             }
@@ -1354,7 +1358,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     public function onFrontendAccount(\Enlight_Event_EventArgs $args)
     {
         $sgCloudCallbackData = Shopware()->Session()->offsetGet('sgCloudCallbackData');
-        $sgAccountView = $this->isAccountView();
+        $sgAccountView       = $this->isAccountView();
 
         $view = $args->getSubject()->View();
         $view->addTemplateDir($this->Path() . 'Views/');
@@ -1369,9 +1373,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgFrontendRegister', false);
         $view->assign('sgActionName', false);
 
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
-        $user = $user['additional']['user'];
-        $hash = $user['password'];
+        $user  = Shopware()->Modules()->Admin()->sGetUserData();
+        $user  = $user['additional']['user'];
+        $hash  = $user['password'];
         $email = $user['email'];
 
         $view->assign('sgCloudCallbackData', $sgCloudCallbackData);
@@ -1541,9 +1545,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         $jsDir = __DIR__ . '/Views/frontend/_resources/js/';
 
-        return new ArrayCollection(array(
-            $jsDir . 'jquery.shopgate.js',
-        ));
+        return new ArrayCollection(
+            array(
+                $jsDir . 'jquery.shopgate.js',
+            )
+        );
     }
 
     /**
@@ -1562,7 +1568,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     protected function isInWebView($args)
     {
         $shopgateAppCookie = $args->getRequest()->getCookie('sgWebView');
-        $shopgateApp = Shopware()->Session()->offsetGet('sgWebView');
+        $shopgateApp       = Shopware()->Session()->offsetGet('sgWebView');
 
         if ((isset($shopgateApp) && $shopgateApp) || (isset($shopgateAppCookie) && $shopgateAppCookie)) {
             return true;

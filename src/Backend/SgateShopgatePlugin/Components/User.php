@@ -64,19 +64,19 @@ class User
     public function __construct()
     {
         $this->webCheckoutHelper = new WebCheckout();
-        $this->basket = Shopware()->Modules()->Basket();
-        $this->admin = Shopware()->Modules()->Admin();
-        $this->session = Shopware()->Session();
-        $this->container = Shopware()->Container();
+        $this->basket            = Shopware()->Modules()->Basket();
+        $this->admin             = Shopware()->Modules()->Admin();
+        $this->session           = Shopware()->Session();
+        $this->container         = Shopware()->Container();
     }
 
     /**
-     * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_Controller_Request_Request       $request
      * @param Enlight_Controller_Response_ResponseHttp $httpResponse
      */
     public function loginUser($request, $httpResponse)
     {
-        $hash = $request->getPost('passwordMD5');
+        $hash      = $request->getPost('passwordMD5');
         $sessionId = $request->getPost('sessionId');
 
         if (isset($sessionId)) {
@@ -91,7 +91,7 @@ class User
 
         if (isset($hash)) {
             $email = strtolower($this->Request()->getPost('email'));
-            $user = $this->verifyUser($email, $hash);
+            $user  = $this->verifyUser($email, $hash);
             if (!empty($user['sErrorMessages'])) {
                 $httpResponse->setHttpResponseCode(401);
                 $httpResponse->setBody(json_encode($user));
@@ -99,15 +99,19 @@ class User
                 exit();
             } else {
                 $httpResponse->setHttpResponseCode(200);
-                $httpResponse->setBody(json_encode(array(
-                    'id' => $user['customernumber'],
-                    'mail' => $user['email'],
-                    'first_name' => $user['firstname'],
-                    'last_name' => $user['lastname'],
-                    'birthday' => $user['birthday'],
-                    'customer_groups' => $user['customergroup'],
-                    'session_id' => $user['sessionID']
-                )));
+                $httpResponse->setBody(
+                    json_encode(
+                        array(
+                            'id'              => $user['customernumber'],
+                            'mail'            => $user['email'],
+                            'first_name'      => $user['firstname'],
+                            'last_name'       => $user['lastname'],
+                            'birthday'        => $user['birthday'],
+                            'customer_groups' => $user['customergroup'],
+                            'session_id'      => $user['sessionID']
+                        )
+                    )
+                );
                 $httpResponse->sendResponse();
                 exit();
             }
@@ -132,15 +136,19 @@ class User
             $user = $user['additional']['user'];
 
             $httpResponse->setHttpResponseCode(200);
-            $httpResponse->setBody(json_encode(array(
-                'id' => $user['customernumber'],
-                'mail' => $user['email'],
-                'first_name' => $user['firstname'],
-                'last_name' => $user['lastname'],
-                'birthday' => $user['birthday'],
-                'customer_groups' => $user['customergroup'],
-                'session_id' => $user['sessionID']
-            )));
+            $httpResponse->setBody(
+                json_encode(
+                    array(
+                        'id'              => $user['customernumber'],
+                        'mail'            => $user['email'],
+                        'first_name'      => $user['firstname'],
+                        'last_name'       => $user['lastname'],
+                        'birthday'        => $user['birthday'],
+                        'customer_groups' => $user['customergroup'],
+                        'session_id'      => $user['sessionID']
+                    )
+                )
+            );
         }
 
         $this->basket->sRefreshBasket();
@@ -157,11 +165,11 @@ class User
     public function getUser($request)
     {
         try {
-            $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
+            $decoded    = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
             $customerId = $decoded['customer_id'];
 
             $sql = ' SELECT password, email FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-            $user = Shopware()->Db()->fetchRow($sql, array($customerId)) ?: array();
+            $user = Shopware()->Db()->fetchRow($sql, array($customerId)) ? : array();
 
             $request->setPost('email', $user["email"]);
             $request->setPost('passwordMD5', $user["password"]);
@@ -178,13 +186,13 @@ class User
             $user = $user['additional']['user'];
 
             return array(
-                'id' => $user['customernumber'],
-                'mail' => $user['email'],
-                'firstName' => $user['firstname'],
-                'lastName' => $user['lastname'],
-                'birthday' => $user['birthday'],
+                'id'             => $user['customernumber'],
+                'mail'           => $user['email'],
+                'firstName'      => $user['firstname'],
+                'lastName'       => $user['lastname'],
+                'birthday'       => $user['birthday'],
                 'customerGroups' => $user['customergroup'],
-                'addresses' => array()
+                'addresses'      => array()
             );
         } catch (Exception $error) {
             return $error->getMessage();
@@ -195,6 +203,7 @@ class User
      * Custom action to update user data
      *
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return array
      */
     public function updateUser($request)
@@ -205,7 +214,7 @@ class User
         );
 
         try {
-            $params = $this->webCheckoutHelper->getJsonParams($request);
+            $params  = $this->webCheckoutHelper->getJsonParams($request);
             $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
             $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
@@ -229,6 +238,7 @@ class User
      * Custom action to update user email
      *
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return array
      */
     public function updateUserEmail($request)
@@ -239,13 +249,13 @@ class User
         );
 
         try {
-            $params = $this->webCheckoutHelper->getJsonParams($request);
-            $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+            $params   = $this->webCheckoutHelper->getJsonParams($request);
+            $decoded  = $this->webCheckoutHelper->getJWT($params['token']);
             $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
 
             $form = $this->createForm("Shopware\\Bundle\\AccountBundle\\Form\Account\\EmailUpdateFormType", $customer);
             $emailData = array(
-                'email' => $decoded['email'],
+                'email'             => $decoded['email'],
                 'emailConfirmation' => $decoded['email']
             );
             $form->submit($emailData, false);
@@ -258,7 +268,7 @@ class User
                 $errors = $form->getErrors(true);
                 $string = '';
                 foreach ($errors as $error) {
-                    $string .= $error->getMessage()."\n";
+                    $string .= $error->getMessage() . "\n";
                 }
                 $response['message'] = $string;
             }
@@ -273,6 +283,7 @@ class User
      * Custom action to update user password
      *
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return array
      */
     public function updateUserPassword($request)
@@ -282,17 +293,17 @@ class User
             'message' => ''
         );
 
-        $params = $this->webCheckoutHelper->getJsonParams($request);
-        $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+        $params   = $this->webCheckoutHelper->getJsonParams($request);
+        $decoded  = $this->webCheckoutHelper->getJWT($params['token']);
         $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
 
         Shopware()->Container()->get('session')->offsetSet('sUserPassword', $customer->getPassword());
 
         $form = $this->createForm("Shopware\\Bundle\\AccountBundle\\Form\Account\\PasswordUpdateFormType", $customer);
         $passwordData = array(
-            'password' => $decoded['password'],
+            'password'             => $decoded['password'],
             'passwordConfirmation' => $decoded['password'],
-            'currentPassword' => $decoded['old_password']
+            'currentPassword'      => $decoded['old_password']
         );
         $form->submit($passwordData);
 
@@ -304,7 +315,7 @@ class User
             $errors = $form->getErrors(true);
             $string = '';
             foreach ($errors as $error) {
-                $string .= $error->getMessage()."\n";
+                $string .= $error->getMessage() . "\n";
             }
             $response['message'] = $string;
         }
@@ -317,6 +328,7 @@ class User
      *
      * @param $email
      * @param $hash
+     *
      * @return array
      */
     private function verifyUser($email, $hash)
@@ -345,7 +357,7 @@ class User
             . $addScopeSql
             . $preHashedSql;
 
-        $getUser = $this->db->fetchRow($sql, array($email)) ?: array();
+        $getUser = $this->db->fetchRow($sql, array($email)) ? : array();
 
         if (!count($getUser)) {
             $isValidLogin = false;
@@ -353,19 +365,20 @@ class User
             $encoderName = 'Prehashed';
 
             $plaintext = $hash;
-            $password = $getUser['password'];
+            $password  = $getUser['password'];
 
             $isValidLogin = $this->passwordEncoder->isPasswordValid($plaintext, $password, $encoderName);
         }
 
         if (!$isValidLogin) {
-            $sErrorMessages = array();
+            $sErrorMessages                   = array();
             $sErrorMessages['sErrorMessages'] = 'your account is invalid';
+
             return $sErrorMessages;
         }
 
         $userId = $getUser['id'];
-        $sql = '
+        $sql    = '
             SELECT * FROM s_user
             WHERE password = ? AND email = ? AND id = ?
             AND UNIX_TIMESTAMP(lastlogin) >= (UNIX_TIMESTAMP(now())-?)

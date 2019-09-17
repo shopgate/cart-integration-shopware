@@ -57,15 +57,16 @@ class Favorites
     public function __construct()
     {
         $this->webCheckoutHelper = new WebCheckout();
-        $this->session = Shopware()->Session();
-        $this->db = Shopware()->Db();
-        $this->container = Shopware()->Container();
+        $this->session           = Shopware()->Session();
+        $this->db                = Shopware()->Db();
+        $this->container         = Shopware()->Container();
     }
 
     /**
      * Custom favorite action to get the favorite list of an user
      *
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return array
      */
     public function getFavorites($request)
@@ -73,7 +74,7 @@ class Favorites
         $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
         $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
 
-        $userId = $this->db->fetchRow($sql, array($decoded['customer_id'])) ?: array();
+        $userId = $this->db->fetchRow($sql, array($decoded['customer_id'])) ? : array();
         $this->session->offsetSet('sUserId', $userId['id']);
 
         $nodes = Shopware()->Modules()->Basket()->sGetNotes();
@@ -90,17 +91,17 @@ class Favorites
      * Custom favorite action to add a product to the favorite list of an user
      *
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return array
      */
     public function addToFavoriteList($request)
     {
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
-        $params = $this->webCheckoutHelper->getJsonParams($request);
-
+        $params  = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
-
-        $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ?: array();
+        $sql     =
+            ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+        $userId  = $this->db->fetchRow($sql, array($decoded['customerId'])) ? : array();
         $this->session->offsetSet('sUserId', $userId['id']);
 
         if ($this->addArticleToWishList($decoded['articles'], $userId['id'], $request)) {
@@ -114,17 +115,17 @@ class Favorites
      * Custom favorite action to delete a product from the favorite list of an user
      *
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return array
      */
     public function deleteFromFavoriteList($request)
     {
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
-        $params = $this->webCheckoutHelper->getJsonParams($request);
-
+        $params  = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
-
-        $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ?: array();
+        $sql     =
+            ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+        $userId  = $this->db->fetchRow($sql, array($decoded['customerId'])) ? : array();
         $this->session->offsetSet('sUserId', $userId['id']);
 
         if ($this->removeProductFromWishList($decoded['articles'], $userId['id'])) {
@@ -142,9 +143,10 @@ class Favorites
     private function isWishList()
     {
         try {
-            $pluginManager  = $this->container->get('shopware_plugininstaller.plugin_manager');
-            $plugin = $pluginManager->getPluginByName('SwagAdvancedCart');
-            $config = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('SwagAdvancedCart');
+            $pluginManager = $this->container->get('shopware_plugininstaller.plugin_manager');
+            $plugin        = $pluginManager->getPluginByName('SwagAdvancedCart');
+            $config        =
+                $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('SwagAdvancedCart');
 
             return $plugin->getInstalled() && $plugin->getActive() && $config['replaceNote'];
         } catch (\Exception $error) {
@@ -156,22 +158,23 @@ class Favorites
      * A helper function to get the carts of an user
      *
      * @param int $userId
+     *
      * @return null|array
      */
     private function getCartItems($userId)
     {
         $builder = $this->container->get('Models')->createQueryBuilder();
         $builder->select(array('cart', 'items', 'details'))
-            ->from('SwagAdvancedCart\Models\Cart\Cart', 'cart')
-            ->leftJoin('cart.customer', 'customer')
-            ->leftJoin('cart.cartItems', 'items')
-            ->leftJoin('items.details', 'details')
-            ->where('customer.id = :customerId')
-            ->andWhere('cart.shopId = :shopId')
-            ->andWhere('LENGTH(cart.name) > 0')
-            ->orderBy('items.id', 'DESC')
-            ->setParameter('customerId', $userId)
-            ->setParameter('shopId', $this->container->get('shop')->getId());
+                ->from('SwagAdvancedCart\Models\Cart\Cart', 'cart')
+                ->leftJoin('cart.customer', 'customer')
+                ->leftJoin('cart.cartItems', 'items')
+                ->leftJoin('items.details', 'details')
+                ->where('customer.id = :customerId')
+                ->andWhere('cart.shopId = :shopId')
+                ->andWhere('LENGTH(cart.name) > 0')
+                ->orderBy('items.id', 'DESC')
+                ->setParameter('customerId', $userId)
+                ->setParameter('shopId', $this->container->get('shop')->getId());
 
         return $builder->getQuery()->getResult();
     }
@@ -193,7 +196,7 @@ class Favorites
                 continue;
             }
             $orderNumber = $cartItem->getProductOrderNumber();
-            $product = $this->prepareArticle($orderNumber, $cartItem);
+            $product     = $this->prepareArticle($orderNumber, $cartItem);
 
             if ($product) {
                 $items[] = $product;
@@ -235,17 +238,18 @@ class Favorites
             return null;
         }
 
-        $sql = 'SELECT active FROM s_articles_details WHERE ordernumber = :orderNumber;';
+        $sql             = 'SELECT active FROM s_articles_details WHERE ordernumber = :orderNumber;';
         $isVariantActive = $this->container->get('db')->fetchOne($sql, array('orderNumber' => $orderNumber));
 
         if (!$isVariantActive) {
-            $message = $this->container->get('snippets')->getNamespace('frontend/plugins/swag_advanced_cart/plugin')->get('ArticleNotAvailable');
+            $message = $this->container->get('snippets')->getNamespace('frontend/plugins/swag_advanced_cart/plugin')
+                                       ->get('ArticleNotAvailable');
             $items[] = array(
-                'id' => $cartItem->getId(),
+                'id'          => $cartItem->getId(),
                 'ordernumber' => $cartItem->getProductOrderNumber(),
-                'quantity' => $cartItem->getQuantity(),
-                'name' => $message,
-                'article' => array(
+                'quantity'    => $cartItem->getQuantity(),
+                'name'        => $message,
+                'article'     => array(
                     'articleName' => $message,
                     'articlename' => $message,
                 ),
@@ -264,7 +268,7 @@ class Favorites
                 $product['articlename'] .= ' ' . $product['additionaltext'];
                 $product['articleName'] .= ' ' . $product['additionaltext'];
             } else {
-                $productName = Shopware()->Modules()->Articles()->sGetArticleNameByOrderNumber($orderNumber);
+                $productName            = Shopware()->Modules()->Articles()->sGetArticleNameByOrderNumber($orderNumber);
                 $product['articlename'] = $productName;
                 $product['articleName'] = $productName;
             }
@@ -278,15 +282,16 @@ class Favorites
     /**
      * A helper function that to add articles to wish list or note
      *
-     * @param array $articles
-     * @param int $userId
+     * @param array                              $articles
+     * @param int                                $userId
      * @param Enlight_Controller_Request_Request $request
+     *
      * @return bool
      */
     private function addArticleToWishList($articles, $userId, $request)
     {
         foreach ($articles as $article) {
-            $articleId = trim($article['product_id']);
+            $articleId   = trim($article['product_id']);
             $orderNumber = trim($article['variant_id']);
 
             $product = Shopware()->Modules()->Articles()->sGetArticleById($articleId);
@@ -308,7 +313,7 @@ class Favorites
                     $request->setPost('ordernumber', $orderNumber);
                     $this->container->get('swag_advanced_cart.cart_handler')->addToList($request->getPost());
                 } else {
-                    $productId = Shopware()->Modules()->Articles()->sGetArticleIdByOrderNumber($orderNumber);
+                    $productId   = Shopware()->Modules()->Articles()->sGetArticleIdByOrderNumber($orderNumber);
                     $productName = Shopware()->Modules()->Articles()->sGetArticleNameByOrderNumber($orderNumber);
 
                     if (empty($productId)) {
@@ -321,6 +326,7 @@ class Favorites
                 return false;
             }
         }
+
         return true;
     }
 
@@ -328,13 +334,14 @@ class Favorites
      * A helper function that to delete articles from wish list or note list
      *
      * @param array $articles
-     * @param int $userId
+     * @param int   $userId
+     *
      * @return bool
      */
     private function removeProductFromWishList($articles, $userId)
     {
         foreach ($articles as $article) {
-            $articleId = trim($article['product_id']);
+            $articleId   = trim($article['product_id']);
             $orderNumber = trim($article['variant_id']);
 
             $product = Shopware()->Modules()->Articles()->sGetArticleById($articleId);
@@ -345,8 +352,8 @@ class Favorites
                 }
 
                 if ($this->isWishList()) {
-                    $carts = $this->getCartItems($userId);
-                    $cart = $carts[0];
+                    $carts  = $this->getCartItems($userId);
+                    $cart   = $carts[0];
                     $cartId = $cart->getId();
 
                     if (empty($cartId)) {
@@ -355,15 +362,15 @@ class Favorites
 
                     $builder = $this->container->get('Models')->createQueryBuilder();
                     $builder->select('item')
-                        ->from('SwagAdvancedCart\Models\Cart\CartItem', 'item')
-                        ->where('item.productOrderNumber = :itemId')
-                        ->andWhere('item.basket_id = :basketId')
-                        ->innerJoin('item.cart', 'cart')
-                        ->innerJoin('cart.customer', 'customer')
-                        ->andWhere('customer.id = :userId')
-                        ->setParameter('itemId', $orderNumber)
-                        ->setParameter('basketId', $cartId)
-                        ->setParameter('userId', $userId);
+                            ->from('SwagAdvancedCart\Models\Cart\CartItem', 'item')
+                            ->where('item.productOrderNumber = :itemId')
+                            ->andWhere('item.basket_id = :basketId')
+                            ->innerJoin('item.cart', 'cart')
+                            ->innerJoin('cart.customer', 'customer')
+                            ->andWhere('customer.id = :userId')
+                            ->setParameter('itemId', $orderNumber)
+                            ->setParameter('basketId', $cartId)
+                            ->setParameter('userId', $userId);
 
                     $cartItem = $builder->getQuery()->getOneOrNullResult();
 
@@ -389,6 +396,7 @@ class Favorites
                 }
             }
         }
+
         return true;
     }
 }
