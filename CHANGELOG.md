@@ -5,13 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.88] - 2019-09-17
+### Added
+- login action for web checkout
+- logout action for web checkout
+- getter for user data
+- creator of guest carts
+- getter for customer carts
+- merging guest to user cart on login
+- synchronization of cart changes (item add, delete & quantity)
+- validation and removal of coupons in cart
+- getter of checkout URL for web checkout
+- synchronization of favorite list items
+- synchronization of user data and addresses
+- persist import cache
+
 ### Fixed
 - export right item number for order items
 - order debit payment method for SW >= 5.0
 - error during customer import with invalid countries
-
-## Added
-- persist import cache
+- customer group specific prices in cart
 
 ## [2.9.87] - 2019-05-21
 ### Fixed
@@ -291,7 +305,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - improved export of payment methods for registered customers in check_cart
 
 ## 2.9.38
-- improved add_order: now setting the customernumber in the billingaddress
+- improved add_order: now setting the customer number in the billing address
 
 ## 2.9.37
 - fixed a bug in product export: inactive details were exported as saleable
@@ -328,7 +342,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## 2.9.31
 - fixed bug with missing images for children
-- fixed bug with missing sale_prices for children in subshops
+- fixed bug with missing sale_prices for children in sub-shops
 - set default position to 450 for event listener "Shopware_Modules_Order_SendMail_Send"
 - removed logic to prevent exporting tier prices with an amount of zero
 - order import: payment info wasn't always displayed correctly
@@ -792,7 +806,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.87...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.88...HEAD
+[2.9.88]: https://github.com/shopgate/interface-shopware/compare/2.9.87...2.9.88
 [2.9.87]: https://github.com/shopgate/interface-shopware/compare/2.9.86...2.9.87
 [2.9.86]: https://github.com/shopgate/interface-shopware/compare/2.9.85...2.9.86
 [2.9.85]: https://github.com/shopgate/interface-shopware/compare/2.9.84...2.9.85

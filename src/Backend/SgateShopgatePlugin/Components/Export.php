@@ -29,8 +29,8 @@ use phpFastCache\CacheManager;
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
 {
-    const CACHE_KEY_CUSTOMERGROUPS = 'customer_groups_ids';
-    const CACHE_KEY_CATEGORY_PRODUCT_SORTING = 'categories_product_sort_';
+    const CACHE_KEY_CUSTOMERGROUPS                  = 'customer_groups_ids';
+    const CACHE_KEY_CATEGORY_PRODUCT_SORTING        = 'categories_product_sort_';
     const CACHE_KEY_STREAM_CATEGORY_PRODUCT_SORTING = 'stream_categories_product_sort_';
 
     /** @var \Shopware\Models\Shop\Shop */
@@ -273,7 +273,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $cachedData = $instance->get($key);
 
         if ($cachedData && is_array($value)) {
-            $cachedData[key($value)] =  $value[key($value)];
+            $cachedData[key($value)] = $value[key($value)];
         } else {
             $cachedData = $value;
         }
@@ -312,7 +312,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     public function getArticleOrderIndex($articleId, $categoryId)
     {
         $cacheKey = self::CACHE_KEY_CATEGORY_PRODUCT_SORTING . $categoryId;
-        $cache = $this->getExportCache($cacheKey);
+        $cache    = $this->getExportCache($cacheKey);
         if ($cache === null) {
             $cache = array();
             ShopgateLogger::getInstance()->log("Start creating Cache {$cacheKey}", ShopgateLogger::LOGTYPE_DEBUG);
@@ -356,9 +356,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     public function getCustomerGroupIdByKey($customerGroupKey)
     {
         $cacheKey = self::CACHE_KEY_CUSTOMERGROUPS;
-        $cache = $this->getExportCache($cacheKey, $customerGroupKey);
+        $cache    = $this->getExportCache($cacheKey, $customerGroupKey);
         if ($cache === null) {
-            $cache = array();
+            $cache           = array();
             $groupRepository = Shopware()->Models()->getRepository('Shopware\Models\Customer\Group');
             $customerGroup   = $groupRepository->findOneBy(array('key' => $customerGroupKey));
 
@@ -388,10 +388,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
 				ORDER BY p.from ASC";
 
         $childPriceModel = Shopware()->Models()->createQuery($dql)
-            ->setMaxResults(1)
-            ->setParameter("adID", $articleDetailsId)
-            ->setParameter("groupKey", $groupKey)
-            ->getOneOrNullResult();
+                                     ->setMaxResults(1)
+                                     ->setParameter("adID", $articleDetailsId)
+                                     ->setParameter("groupKey", $groupKey)
+                                     ->getOneOrNullResult();
 
         return $childPriceModel;
     }
@@ -699,7 +699,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         }
 
         $cacheKey = self::CACHE_KEY_STREAM_CATEGORY_PRODUCT_SORTING . $categoryId;
-        $cache = $this->getExportCache($cacheKey);
+        $cache    = $this->getExportCache($cacheKey);
 
         if ($cache === null) {
             $cache = array();
@@ -715,9 +715,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             /** @var ProductContext|ShopContext $context */
             $context = !$version->assertMinimum('5.2.0')
                 ? Shopware()->Container()->get('shopware_storefront.context_service')
-                    ->createProductContext($shopId, $currencyId, $customerGroupKey)
+                            ->createProductContext($shopId, $currencyId, $customerGroupKey)
                 : Shopware()->Container()->get('shopware_storefront.context_service')
-                    ->createShopContext($shopId, $currencyId, $customerGroupKey);
+                            ->createShopContext($shopId, $currencyId, $customerGroupKey);
 
             $criteria->addBaseCondition(
                 new CustomerGroupCondition(array($context->getCurrentCustomerGroup()->getId()))
@@ -730,12 +730,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             $streamRepo->prepareCriteria($criteria, $productStreamId);
 
             $result = Shopware()->Container()->get('shopware_search.product_number_search')
-                ->search($criteria, $context);
+                                ->search($criteria, $context);
 
             $index      = 0;
             $totalCount = $result->getTotalCount();
             foreach ($result->getProducts() as $product) {
-                $cache[$product->getId()] =  ($totalCount - $index--);
+                $cache[$product->getId()] = ($totalCount - $index--);
             }
 
             ShopgateLogger::getInstance()->log("## Product Count: {$totalCount}", ShopgateLogger::LOGTYPE_DEBUG);

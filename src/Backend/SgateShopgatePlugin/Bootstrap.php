@@ -20,12 +20,17 @@
  */
 
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
+require_once __DIR__ . '/Components/Address.php';
+require_once __DIR__ . '/Components/Cart.php';
+require_once __DIR__ . '/Components/Favorites.php';
+require_once __DIR__ . '/Components/User.php';
 require_once __DIR__ . '/Helpers/Attribute.php';
 require_once __DIR__ . '/Helpers/Cart.php';
 require_once __DIR__ . '/Helpers/FormElementSelect.php';
 require_once __DIR__ . '/Helpers/FormElementCheckbox.php';
 require_once __DIR__ . '/Helpers/FormElementText.php';
 require_once __DIR__ . '/Helpers/FormElementTextfield.php';
+require_once __DIR__ . '/Helpers/WebCheckout.php';
 require_once dirname(__FILE__) . '/Plugin.php';
 
 use Shopgate\Helpers\Attribute as AttributeHelper;
@@ -44,6 +49,7 @@ use Shopware\Models\Dispatch\Dispatch;
 use Shopware\Models\Order\Status;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config as ShopwareShopgatePluginConfig;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -131,24 +137,30 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         return array(
             'version'     => $this->getVersion(),
-            'autor'       => 'Shopgate GmbH',
-            'copyright'   => 'Copyright @ 2017, Shopgate GmbH',
+            'author'      => 'Shopgate GmbH',
+            'copyright'   => 'Copyright @ ' . date('Y') . ' Shopgate GmbH',
             'label'       => $this->getLabel(),
             'source'      => '',
             'description' => 'Shopgate Schnittstelle - Shopware 4 & 5',
-            'licence'     => 'free',
+            'licence'     => 'Apache-2.0',
             'support'     => 'technik@shopgate.com',
-            'link'        => 'http://www.shopgate.com',
+            'link'        => 'https://www.shopgate.com',
             'changes'     => '-',
             'revision'    => '-',
         );
     }
 
+    /**
+     * @return string
+     */
     public function getVersion()
     {
-        return "2.9.87";
+        return '2.9.88';
     }
 
+    /**
+     * @return string
+     */
     public function getLabel()
     {
         return 'Shopgate - Mobile Shopping';
@@ -385,6 +397,51 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             'sendOrderMailForShopgateOrders',
             450
         );
+
+        $config = new ShopwareShopgatePluginConfig();
+        if ($config->assertMinimumVersion("5.2.0")) {
+
+            /* insert javascript for web checkout */
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatch_Frontend_Checkout',
+                'onFrontendCheckout'
+            );
+
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatch_Frontend_Register',
+                'onFrontendRegister'
+            );
+
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatch_Frontend_Account',
+                'onFrontendAccount'
+            );
+
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatch_Frontend_Address',
+                'onFrontendAddress'
+            );
+
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatch_Frontend_Custom',
+                'onFrontendCustom'
+            );
+
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_Frontend_Account_Password',
+                'onFrontendPassword'
+            );
+
+            $this->subscribeEvent(
+                'Shopgate_Frontend_Custom_Event',
+                'onCustomEvent'
+            );
+
+            $this->subscribeEvent(
+                'Theme_Compiler_Collect_Plugin_Javascript',
+                'onCollectJavascriptFiles'
+            );
+        }
     }
 
     /**
@@ -433,16 +490,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             if ($hiddenElement) {
                 // Update element data if it's already existing
                 $hiddenElement->setValue($formElement->getValue())
-                    ->setLabel($formElement->getLabel())
-                    ->setDescription($formElement->getDescription())
-                    ->setType($formElement->getType())
-                    ->setRequired($formElement->getRequired())
-                    ->setPosition(
-                        isset($position)
-                            ? $position
-                            : $formElement->getPosition()
-                    )
-                    ->setScope($formElement->getScope());
+                              ->setLabel($formElement->getLabel())
+                              ->setDescription($formElement->getDescription())
+                              ->setType($formElement->getType())
+                              ->setRequired($formElement->getRequired())
+                              ->setPosition(
+                                  isset($position)
+                                      ? $position
+                                      : $formElement->getPosition()
+                              )
+                              ->setScope($formElement->getScope());
 
                 // perform update
                 $this->Application()->Models()->persist($hiddenElement);
@@ -903,6 +960,19 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             );
 
         $formElementTextfield                 = new FormElementTextfield();
+        $formElementOptionsContainerTextfield = new FormElementOptionsContainerTextfield();
+        $formElements[]                       = $formElementTextfield
+            ->setKey('SGATE_CUSTOM_CSS')
+            ->setOptions(
+                $formElementOptionsContainerTextfield
+                    ->setLabel('CSS Anpassungen Webcheckout')
+                    ->setDescription(
+                        'Hier können Sie CSS Anpassungen für den Webcheckout Ihrer Shopgate App hinterlegen'
+                    )
+                    ->setPosition($position++)
+            );
+
+        $formElementTextfield                 = new FormElementTextfield();
         $formElementOptionsContainerTextfield = new FormElementOptionsContainerTextfield;
         $formElements[]                       = $formElementTextfield
             ->setKey(ShopwareShopgatePluginConfig::HIDDEN_CONFIG_IDENTIFIER)
@@ -1027,7 +1097,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                 $orderId = $args["subject"]->Request()->getParam("orderId");
                 break;
             case "batchProcess":
-                $orders = $args["subject"]->Request()->getParam('orders', array(0 => $args["subject"]->Request()->getParams()));
+                $orders = $args["subject"]->Request()
+                                          ->getParam('orders', array(0 => $args["subject"]->Request()->getParams()));
 
                 if (!empty($orders)) {
                     foreach ($orders as $key => $data) {
@@ -1042,6 +1113,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                         }
                     }
                 }
+
                 return;
             default:
                 return;
@@ -1058,8 +1130,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         /* @var $order \Shopware\CustomModels\Shopgate\Order */
 
         $order = Shopware()->Models()
-            ->getRepository("\\Shopware\\CustomModels\\Shopgate\\Order")
-            ->findOneBy(array("orderId" => $orderId));
+                           ->getRepository("\\Shopware\\CustomModels\\Shopgate\\Order")
+                           ->findOneBy(array("orderId" => $orderId));
 
         if (empty($order)) {
             return;
@@ -1074,8 +1146,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         /* @var $order \Shopware\CustomModels\Shopgate\Order */
 
         $order = Shopware()->Models()
-            ->getRepository("\\Shopware\\CustomModels\\Shopgate\\Order")
-            ->findOneBy(array("orderId" => $orderId));
+                           ->getRepository("\\Shopware\\CustomModels\\Shopgate\\Order")
+                           ->findOneBy(array("orderId" => $orderId));
 
         if (empty($order)) {
             return;
@@ -1129,6 +1201,214 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         $installer = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Install();
         $installer->updateShopgateInstall();
+    }
+
+    /**
+     * Modifies custom views
+     *
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function onCustomEvent(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir(__DIR__ . '/Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgAccountView', false);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgForgotPassword', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgActionName', false);
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
+    }
+
+    /**
+     * Modifies the checkout view when the user agent is the shopgate app's web view
+     *
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function onFrontendCheckout(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir(__DIR__ . '/Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgActionName', $args->getRequest()->getActionName());
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+        $view->assign('sgPromotionVouchers', json_encode(Shopware()->Session()->offsetGet('promotionVouchers')));
+        $view->assign('sgAccountView', false);
+        $view->assign('sgIsNewCustomer', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgHash', false);
+        $view->assign('sgEmail', false);
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
+
+        if ($this->isInWebView($args)) {
+            $referer = array(
+                'type'       => 'shopgate-webcheckout',
+                "user-agent" => $_SERVER['HTTP_USER_AGENT']
+            );
+            Shopware()->Session()->offsetSet('sReferer', json_encode($referer));
+        }
+
+        if ($args->getRequest()->getActionName() === 'shippingPayment') {
+            $user  = Shopware()->Modules()->Admin()->sGetUserData();
+            $user  = $user['additional']['user'];
+            $hash  = $user['password'];
+            $email = $user['email'];
+
+            if ($user['accountmode'] === '0' && !Shopware()->Session()->offsetGet('registeredUser')) {
+                $view->assign('sgIsNewCustomer', true);
+                $view->assign('sgHash', $hash);
+                $view->assign('sgEmail', $email);
+            }
+        }
+
+        if ($args->getRequest()->getActionName() === 'confirm') {
+            Shopware()->Session()->offsetSet('registeredUser', true);
+        }
+
+        if ($args->getRequest()->getActionName() === 'finish') {
+            $basket      = $view->getAssign('sBasket');
+            $orderNumber = $view->getAssign('sOrderNumber');
+
+            $params = array(
+                'order' => array(
+                    'number'   => (string)$orderNumber,
+                    'currency' => $basket['sCurrencyName'],
+                    'totals'   => array(
+                        array(
+                            'type'   => 'shipping',
+                            'amount' => $basket['sShippingcosts'],
+                        ),
+                        array(
+                            'type'   => 'tax',
+                            'amount' => $basket['sAmountTax']
+                        ),
+                        array(
+                            'type'   => 'grandTotal',
+                            'amount' => $basket['AmountNumeric']
+                        )
+                    ),
+                    'products' => array()
+                )
+            );
+
+            foreach ($basket['content'] as $item) {
+                $params['order']['products'][] = array(
+                    'id'       => $item['id'],
+                    'name'     => $item['articlename'],
+                    'quantity' => $item['quantity'],
+                    'price'    => array(
+                        'withTax' => floatval($item['priceNumeric']),
+                        'net'     => floatval($item['netprice'])
+                    )
+                );
+            }
+
+            $view->assign('sgCheckoutParams', json_encode($params));
+        }
+    }
+
+    /**
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function onFrontendRegister(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir(__DIR__ . '/Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgAccountView', false);
+        $view->assign('sgFrontendRegister', true);
+        $view->assign('sgForgotPassword', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgActionName', false);
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
+    }
+
+    /**
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function onFrontendAddress(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir(__DIR__ . '/Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgAccountView', false);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgForgotPassword', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgActionName', false);
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
+    }
+
+    /**
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function onFrontendAccount(\Enlight_Event_EventArgs $args)
+    {
+        $sgCloudCallbackData = Shopware()->Session()->offsetGet('sgCloudCallbackData');
+        $sgAccountView       = $this->isAccountView();
+
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir($this->Path() . 'Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgAccountView', $sgAccountView);
+
+        $forgotPassword = $view->getAssign('sgForgotPassword');
+        if (empty($forgotPassword)) {
+            $view->assign('sgForgotPassword', false);
+        }
+        $view->assign('sgFrontendAccount', true);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgActionName', false);
+
+        $user  = Shopware()->Modules()->Admin()->sGetUserData();
+        $user  = $user['additional']['user'];
+        $hash  = $user['password'];
+        $email = $user['email'];
+
+        $view->assign('sgCloudCallbackData', $sgCloudCallbackData);
+        $view->assign('sgHash', $hash);
+        $view->assign('sgEmail', $email);
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
+    }
+
+    public function onFrontendPassword(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->assign('sgForgotPassword', true);
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
+    }
+
+    public function onFrontendCustom(\Enlight_Event_EventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->addTemplateDir($this->Path() . 'Views/');
+        $view->assign('sgWebCheckout', $this->isInWebView($args));
+        $view->assign('sgAccountView', false);
+        $view->assign('sgForgotPassword', false);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgFrontendAccount', false);
+        $view->assign('sgActionName', false);
+
+        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
+        $view->assign('sgCustomCss', $customCss);
     }
 
     /**
@@ -1256,5 +1536,72 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         }
 
         return $attributesStore;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function onCollectJavascriptFiles()
+    {
+        $jsDir = __DIR__ . '/Views/frontend/_resources/js/';
+
+        return new ArrayCollection(
+            array(
+                $jsDir . 'jquery.shopgate.js',
+            )
+        );
+    }
+
+    /**
+     * Gets order number
+     *
+     * @return string
+     */
+    protected function getOrderNumber()
+    {
+        return Shopware()->Session()->sOrderVariables->sOrderNumber;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isInWebView($args)
+    {
+        $shopgateAppCookie = $args->getRequest()->getCookie('sgWebView');
+        $shopgateApp       = Shopware()->Session()->offsetGet('sgWebView');
+
+        if ((isset($shopgateApp) && $shopgateApp) || (isset($shopgateAppCookie) && $shopgateAppCookie)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isAccountView()
+    {
+        $sgAccount = Shopware()->Session()->offsetGet('sgAccountView');
+
+        if ((isset($sgAccount) && $sgAccount)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config
+     */
+    protected function getConfig()
+    {
+        static $config = null;
+
+        if (!$config) {
+            $config = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
+        }
+
+        return $config;
     }
 }
