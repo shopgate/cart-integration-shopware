@@ -160,30 +160,36 @@ class User
             $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
             $customerId = $decoded['customer_id'];
 
-            $sql = ' SELECT password, email FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-            $user = Shopware()->Db()->fetchRow($sql, array($customerId)) ?: array();
+            $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+            $userId = Shopware()->Db()->fetchAll($sql, array($customerId)) ?: array();
 
-            $request->setPost('email', $user["email"]);
-            $request->setPost('passwordMD5', $user["password"]);
-
-            $checkUser = $this->admin->sLogin(true);
-
-            if (isset($checkUser['sErrorFlag'])) {
-                throw new Exception($checkUser['sErrorMessages'][0], 400);
+            if (!is_array($userId) || !$userId[0]["id"]) {
+                return array(
+                    'error' => true,
+                    'id' => $userId,
+                    'customerId' => $customerId,
+                    'message' => "query error",
+                );
             }
 
-            $this->basket->sRefreshBasket();
+            if (count($userId) > 1) {
+                return array(
+                    'error' => true,
+                    'id' => $userId,
+                    'customerId' => $customerId,
+                    'message' => "multiple users found",
+                );
+            }
 
-            $user = $this->admin->sGetUserData();
-            $user = $user['additional']['user'];
+            $user = Shopware()->Models()->find("Shopware\\Models\\Customer\\Customer", $userId[0]);
 
             return array(
-                'id' => $user['customernumber'],
-                'mail' => $user['email'],
-                'firstName' => $user['firstname'],
-                'lastName' => $user['lastname'],
-                'birthday' => $user['birthday'],
-                'customerGroups' => $user['customergroup'],
+                'id' => $user->getNumber(),
+                'mail' => $user->getEmail(),
+                'firstName' => $user->getFirstName(),
+                'lastName' => $user->getLastName(),
+                'birthday' => $user->getBirthDay(),
+                'customerGroups' => $user->getGroup(),
                 'addresses' => array()
             );
         } catch (Exception $error) {
