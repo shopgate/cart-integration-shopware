@@ -63,23 +63,23 @@ class Cart
     public function __construct()
     {
         $this->webCheckoutHelper = new WebCheckout();
-        $this->session = Shopware()->Session();
-        $this->basket = Shopware()->Modules()->Basket();
-        $this->admin = Shopware()->Modules()->Admin();
-        $this->contextService = Shopware()->Container()->get('shopware_storefront.context_service');
+        $this->session           = Shopware()->Session();
+        $this->basket            = Shopware()->Modules()->Basket();
+        $this->admin             = Shopware()->Modules()->Admin();
+        $this->contextService    = Shopware()->Container()->get('shopware_storefront.context_service');
     }
 
     /**
      * Custom function to get the cart
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_Controller_Request_Request       $request
      * @param Enlight_Controller_Response_ResponseHttp $httpResponse
-     * @param Enlight_View_Default $view
+     * @param Enlight_View_Default                     $view
      */
     public function getCart($request, $httpResponse, $view)
     {
-        $sessionId = $request->getCookie('sg_session');
-        $customerId = $request->getCookie('customer_id');
+        $sessionId         = $request->getCookie('sg_session');
+        $customerId        = $request->getCookie('customer_id');
         $promotionVouchers = json_decode($request->getCookie('sg_promotion'), true);
 
         $this->session->offsetSet('sessionId', $sessionId);
@@ -112,36 +112,38 @@ class Cart
         $currency = Shopware()->Shop()->getCurrency();
 
         // Below code comes from the getBasket function in the Checkout Controller
-        $basket['priceGroup'] = $this->session->offsetGet('sUserGroup');
-        $basket['sCurrencyId'] = $currency->getId();
-        $basket['sCurrencyName'] = $currency->getCurrency();
+        $basket['priceGroup']      = $this->session->offsetGet('sUserGroup');
+        $basket['sCurrencyId']     = $currency->getId();
+        $basket['sCurrencyName']   = $currency->getCurrency();
         $basket['sCurrencyFactor'] = $currency->getFactor();
         $basket['sCurrencySymbol'] = $currency->getSymbol();
 
         $basket['sShippingcostsWithTax'] = $shippingcosts['brutto'];
-        $basket['sShippingcostsNet'] = $shippingcosts['netto'];
-        $basket['sShippingcostsTax'] = $shippingcosts['tax'];
+        $basket['sShippingcostsNet']     = $shippingcosts['netto'];
+        $basket['sShippingcostsTax']     = $shippingcosts['tax'];
 
         if (!empty($shippingcosts['brutto'])) {
-            $basket['AmountNetNumeric'] += $shippingcosts['netto'];
-            $basket['AmountNumeric'] += $shippingcosts['brutto'];
+            $basket['AmountNetNumeric']         += $shippingcosts['netto'];
+            $basket['AmountNumeric']            += $shippingcosts['brutto'];
             $basket['sShippingcostsDifference'] = $shippingcosts['difference']['float'];
         }
         if (!empty($basket['AmountWithTaxNumeric'])) {
             $basket['AmountWithTaxNumeric'] += $shippingcosts['brutto'];
         }
-        if (!Shopware()->Modules()->System()->sUSERGROUPDATA['tax'] && Shopware()->Modules()->System()->sUSERGROUPDATA['id']) {
+        if (!Shopware()->Modules()->System()->sUSERGROUPDATA['tax']
+            && Shopware()->Modules()->System()->sUSERGROUPDATA['id']
+        ) {
             $basket['sTaxRates'] = $this->getTaxRates($basket);
 
             $basket['sShippingcosts'] = $shippingcosts['netto'];
-            $basket['sAmount'] = round($basket['AmountNetNumeric'], 2);
-            $basket['sAmountTax'] = round($basket['AmountWithTaxNumeric'] - $basket['AmountNetNumeric'], 2);
+            $basket['sAmount']        = round($basket['AmountNetNumeric'], 2);
+            $basket['sAmountTax']     = round($basket['AmountWithTaxNumeric'] - $basket['AmountNetNumeric'], 2);
             $basket['sAmountWithTax'] = round($basket['AmountWithTaxNumeric'], 2);
         } else {
             $basket['sTaxRates'] = $this->getTaxRates($basket);
 
             $basket['sShippingcosts'] = $shippingcosts['brutto'];
-            $basket['sAmount'] = $basket['AmountNumeric'];
+            $basket['sAmount']        = $basket['AmountNumeric'];
 
             $basket['sAmountTax'] = round($basket['AmountNumeric'] - $basket['AmountNetNumeric'], 2);
         }
@@ -156,21 +158,23 @@ class Cart
     /**
      * Custom function to add items to cart
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_Controller_Request_Request       $request
      * @param Enlight_Controller_Response_ResponseHttp $httpResponse
      */
     public function addCartItems($request, $httpResponse)
     {
-        // @Below code: Standard Shopware function to get JSON data from the POST array don't work
+        // @Below code: Standard Shopware function to get JSON data from the POST array doesn't work
         $params = $this->webCheckoutHelper->getJsonParams($request);
 
-        $articles = $params['articles'];
-        $sessionId = $params['sessionId'];
+        $articles          = $params['articles'];
+        $sessionId         = $params['sessionId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (!isset($articles)) {
             $httpResponse->setHttpResponseCode(401);
-            $httpResponse->setBody(json_encode(array('message' => 'The request doesn\'t contain an \'articles\' parameter!')));
+            $httpResponse->setBody(
+                json_encode(array('message' => 'The request doesn\'t contain an \'articles\' parameter!'))
+            );
         }
 
         if (isset($sessionId)) {
@@ -189,7 +193,7 @@ class Cart
         } else {
             $sessionId = $this->session->get('sessionId');
             $httpResponse->setHttpResponseCode(201);
-            $httpResponse->setBody(json_encode(array('sessionId'=> $sessionId)));
+            $httpResponse->setBody(json_encode(array('sessionId' => $sessionId)));
         }
         $httpResponse->setHeader('Content-Type', 'application/json');
         $httpResponse->sendResponse();
@@ -199,7 +203,7 @@ class Cart
     /**
      * Custom function to update a cart item
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_Controller_Request_Request       $request
      * @param Enlight_Controller_Response_ResponseHttp $httpResponse
      */
     public function updateCartItem($request, $httpResponse)
@@ -207,9 +211,9 @@ class Cart
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
         $params = $this->webCheckoutHelper->getJsonParams($request);
 
-        $basketId = $params['basketId'];
-        $quantity = $params['quantity'];
-        $sessionId = $params['sessionId'];
+        $basketId          = $params['basketId'];
+        $quantity          = $params['quantity'];
+        $sessionId         = $params['sessionId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (isset($sessionId)) {
@@ -224,10 +228,14 @@ class Cart
         $httpResponse->setHeader('Content-Type', 'application/json');
         if ($error = $this->verifyItemStock($basketId, $quantity)) {
             $httpResponse->setHttpResponseCode(401);
-            $httpResponse->setBody(json_encode(array(
-                'error' => true,
-                'reason' => $error
-            )));
+            $httpResponse->setBody(
+                json_encode(
+                    array(
+                        'error'  => true,
+                        'reason' => $error
+                    )
+                )
+            );
         } else {
             $response = $this->basket->sUpdateArticle($basketId, $quantity);
             $httpResponse->setBody(json_encode($response));
@@ -240,7 +248,7 @@ class Cart
     /**
      * Custom function to delete item from cart
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_Controller_Request_Request       $request
      * @param Enlight_Controller_Response_ResponseHttp $httpResponse
      */
     public function deleteCartItem($request, $httpResponse)
@@ -248,9 +256,9 @@ class Cart
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
         $params = $this->webCheckoutHelper->getJsonParams($request);
 
-        $articleId = $params['articleId'];
-        $sessionId = $params['sessionId'];
-        $voucher = $params['voucher'];
+        $articleId         = $params['articleId'];
+        $sessionId         = $params['sessionId'];
+        $voucher           = $params['voucher'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         $response['oldPromotionVouchers'] = $promotionVouchers;
@@ -261,13 +269,13 @@ class Cart
         }
 
         if (isset($promotionVouchers) && $voucher) {
-            $sql = 'SELECT DISTINCT `ordernumber` FROM `s_order_basket` WHERE id=?';
+            $sql         = 'SELECT DISTINCT `ordernumber` FROM `s_order_basket` WHERE id=?';
             $orderNumber = Shopware()->Db()->fetchCol($sql, array($articleId));
 
-            $sql = 'SELECT 1 FROM `s_plugin_promotion` LIMIT 1';
+            $sql  = 'SELECT 1 FROM `s_plugin_promotion` LIMIT 1';
             $test = Shopware()->Db()->fetchCol($sql);
             if ($test) {
-                $sql = 'SELECT DISTINCT `id` FROM `s_plugin_promotion` WHERE number=?';
+                $sql       = 'SELECT DISTINCT `id` FROM `s_plugin_promotion` WHERE number=?';
                 $voucherId = Shopware()->Db()->fetchCol($sql, $orderNumber);
 
                 $response['voucherId'] = $voucherId;
@@ -278,8 +286,7 @@ class Cart
                 }
             }
         }
-
-        $response['deleteArticle'] = $this->basket->sDeleteArticle($articleId);
+        $response['deleteArticle']     = $this->basket->sDeleteArticle($articleId);
         $response['promotionVouchers'] = json_encode($this->session->get('promotionVouchers'));
 
         $httpResponse->setHeader('Content-Type', 'application/json');
@@ -291,22 +298,22 @@ class Cart
     /**
      * Custom function to add coupon to cart
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_Controller_Request_Request       $request
      * @param Enlight_Controller_Response_ResponseHttp $httpResponse
-     * @param Enlight_View_Default $view
+     * @param Enlight_View_Default                     $view
      */
     public function addCouponsCode($request, $httpResponse, $view)
     {
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
         $params = $this->webCheckoutHelper->getJsonParams($request);
 
-        $code = $params['couponCode'];
-        $sessionId = $params['sessionId'];
+        $code              = $params['couponCode'];
+        $sessionId         = $params['sessionId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
-        $customerId = $params['customerId'];
+        $customerId        = $params['customerId'];
 
         if (isset($customerId)) {
-            $sql = 'SELECT DISTINCT `id` FROM `s_user` WHERE customernumber=?';
+            $sql    = 'SELECT DISTINCT `id` FROM `s_user` WHERE customernumber=?';
             $userId = Shopware()->Db()->fetchCol($sql, array($customerId));
             $this->session->offsetSet('sUserId', $userId[0]);
         }
@@ -322,7 +329,7 @@ class Cart
 
         $httpResponse->setHeader('Content-Type', 'application/json');
 
-        $voucher = $this->basket->sAddVoucher($code);
+        $voucher                = $this->basket->sAddVoucher($code);
         $response['addVoucher'] = $voucher;
 
         if ($voucher) {
@@ -335,17 +342,18 @@ class Cart
 
         $this->basket->sGetBasket();
 
-        $promotionVariables = $view->getAssign();
-        $voucherPromotionId = $promotionVariables['voucherPromotionId'];
+        $promotionVariables    = $view->getAssign();
+        $voucherPromotionId    = $promotionVariables['voucherPromotionId'];
         $promotionUsedTooOften = $promotionVariables['promotionsUsedTooOften'];
-        $promotions = $this->session->get('promotionVouchers');
+        $promotions            = $this->session->get('promotionVouchers');
 
         foreach ($promotionUsedTooOften as $promotionUsed) {
             if ($promotionUsed->id == $voucherPromotionId) {
-                $response['addVoucher']['sErrorFlag'] = true;
                 $text = Shopware()->Snippets()->getNamespace('frontend/swag_promotion/main')->get('usedPromotions');
                 $text = str_replace('{$promotionUsedTooOften->name}', $promotionUsed->name, $text);
                 $text = str_replace('{$promotionUsedTooOften->maxUsage}', $promotionUsed->maxUsage, $text);
+
+                $response['addVoucher']['sErrorFlag']        = true;
                 $response['addVoucher']['sErrorMessages'][0] = $text;
 
                 foreach ($promotions as $key => $promotion) {
@@ -371,28 +379,29 @@ class Cart
      */
     private function getUserData()
     {
-        $system = Shopware()->System();
+        $system   = Shopware()->System();
         $userData = $this->admin->sGetUserData();
         if (!empty($userData['additional']['countryShipping'])) {
             $system->sUSERGROUPDATA = Shopware()->Db()->fetchRow('
                 SELECT * FROM s_core_customergroups
                 WHERE groupkey = ?
-            ', array($system->sUSERGROUP));
+            ', array($system->sUSERGROUP)
+            );
 
             $taxFree = $this->isTaxFreeDelivery($userData);
             $this->session->offsetSet('taxFree', $taxFree);
 
             if ($taxFree) {
-                $system->sUSERGROUPDATA['tax'] = 0;
+                $system->sUSERGROUPDATA['tax']           = 0;
                 $system->sCONFIG['sARTICLESOUTPUTNETTO'] = 1; //Old template
-                Shopware()->Session()->sUserGroupData = $system->sUSERGROUPDATA;
-                $userData['additional']['charge_vat'] = false;
-                $userData['additional']['show_net'] = false;
-                Shopware()->Session()->sOutputNet = true;
+                Shopware()->Session()->sUserGroupData    = $system->sUSERGROUPDATA;
+                $userData['additional']['charge_vat']    = false;
+                $userData['additional']['show_net']      = false;
+                Shopware()->Session()->sOutputNet        = true;
             } else {
                 $userData['additional']['charge_vat'] = true;
-                $userData['additional']['show_net'] = !empty($system->sUSERGROUPDATA['tax']);
-                Shopware()->Session()->sOutputNet = empty($system->sUSERGROUPDATA['tax']);
+                $userData['additional']['show_net']   = !empty($system->sUSERGROUPDATA['tax']);
+                Shopware()->Session()->sOutputNet     = empty($system->sUSERGROUPDATA['tax']);
             }
         }
 
@@ -402,8 +411,9 @@ class Cart
     /**
      * Adds an array of articles to the cart based on an array of article IDs
      *
-     * @param array $articles
+     * @param array  $articles
      * @param string $sessionId
+     *
      * @return array
      */
     private function addArticlesToCart($articles, $sessionId)
@@ -411,7 +421,7 @@ class Cart
         $response = array(); // Contains only errors
 
         foreach ($articles as $article) {
-            $articleId = trim($article['product_id']);
+            $articleId   = trim($article['product_id']);
             $orderNumber = trim($article['variant_id']);
 
             $product = Shopware()->Modules()->Articles()->sGetArticleById($articleId);
@@ -424,21 +434,21 @@ class Cart
                 $builder = Shopware()->Models()->getConnection()->createQueryBuilder();
 
                 $builder->select('id', 'quantity')
-                    ->from('s_order_basket', 'basket')
-                    ->where('articleID = :articleId')
-                    ->andWhere('sessionID = :sessionId')
-                    ->andWhere('ordernumber = :ordernumber')
-                    ->andWhere('modus != 1')
-                    ->setParameter('articleId', $product['articleID'])
-                    ->setParameter('sessionId', $sessionId)
-                    ->setParameter('ordernumber', $orderNumber);
+                        ->from('s_order_basket', 'basket')
+                        ->where('articleID = :articleId')
+                        ->andWhere('sessionID = :sessionId')
+                        ->andWhere('ordernumber = :ordernumber')
+                        ->andWhere('modus != 1')
+                        ->setParameter('articleId', $product['articleID'])
+                        ->setParameter('sessionId', $sessionId)
+                        ->setParameter('ordernumber', $orderNumber);
 
                 $statement = $builder->execute();
 
-                $quantity =  $article['quantity'];
+                $quantity = $article['quantity'];
 
                 if ($basketProduct = $statement->fetch()) {
-                    $quantity +=  $basketProduct['quantity'];
+                    $quantity += $basketProduct['quantity'];
                 }
 
                 if ($infoMessage = $this->getInstockInfo($orderNumber, $quantity)) {
@@ -467,27 +477,34 @@ class Cart
     private function getInstockInfo($orderNumber, $quantity)
     {
         if (empty($orderNumber)) {
-            return Shopware()->Snippets()->getNamespace('frontend')->get('CheckoutSelectVariant',
-                'Please select an option to place the required product in the cart', true);
+            return Shopware()->Snippets()->getNamespace('frontend')->get(
+                'CheckoutSelectVariant', 'Please select an option to place the required product in the cart', true
+            );
         }
 
-        $quantity = max(1, (int) $quantity);
-        $inStock = $this->getAvailableStock($orderNumber);
+        $quantity = max(1, (int)$quantity);
+        $inStock  = $this->getAvailableStock($orderNumber);
 
         $inStock['quantity'] = $quantity;
 
         if (empty($inStock['articleID'])) {
-            return Shopware()->Snippets()->getNamespace('frontend')->get('CheckoutArticleNotFound',
-                'Product could not be found.', true);
+            return Shopware()->Snippets()->getNamespace('frontend')->get(
+                'CheckoutArticleNotFound', 'Product could not be found.', true
+            );
         }
         if (!empty($inStock['laststock']) || !empty(Shopware()->Config()->InstockInfo)) {
             if ((int)$inStock['instock'] <= 0 && !empty($inStock['laststock'])) {
-                return Shopware()->Snippets()->getNamespace('frontend')->get('CheckoutArticleNoStock',
-                    'Unfortunately we can not deliver the desired product in sufficient quantity', true);
+                return Shopware()->Snippets()->getNamespace('frontend')->get(
+                    'CheckoutArticleNoStock',
+                    'Unfortunately we can not deliver the desired product in sufficient quantity',
+                    true
+                );
             } elseif ((int)$inStock['instock'] < (int)$inStock['quantity']) {
-                $result = 'Unfortunately we can not deliver the desired product in sufficient quantity. (#0 of #1 in stock).';
-                $result = Shopware()->Snippets()->getNamespace('frontend')->get('CheckoutArticleLessStock', $result,
-                    true);
+                $result =
+                    'Unfortunately we can not deliver the desired product in sufficient quantity. (#0 of #1 in stock).';
+                $result = Shopware()->Snippets()->getNamespace('frontend')->get(
+                    'CheckoutArticleLessStock', $result, true
+                );
 
                 return str_replace(array('#0', '#1'), array($inStock['instock'], $inStock['quantity']), $result);
             }
@@ -500,7 +517,8 @@ class Cart
      * Get shipping costs as an array (brutto / netto) depending on selected country / payment
      *
      * @param Enlight_Controller_Request_Request $request
-     * @param Enlight_View_Default $view
+     * @param Enlight_View_Default               $view
+     *
      * @return array
      */
     private function getShippingCosts($request, $view)
@@ -511,13 +529,15 @@ class Cart
             return array('brutto' => 0, 'netto' => 0);
         }
 
-        $this->session['sState'] = $view->sUserData['additional']['stateShipping']['id']? (int) $view->sUserData['additional']['stateShipping']['id'] : null;
+        $this->session['sState'] = $view->sUserData['additional']['stateShipping']['id']
+            ? (int)$view->sUserData['additional']['stateShipping']['id']
+            : null;
         $dispatches = $this->admin->sGetPremiumDispatches($country['id'], null, $this->session['sState']);
         if (empty($dispatches)) {
             unset($this->session['sDispatch']);
         } else {
-            $dispatch = reset($dispatches);
-            $this->session['sDispatch'] = (int) $dispatch['id'];
+            $dispatch                   = reset($dispatches);
+            $this->session['sDispatch'] = (int)$dispatch['id'];
         }
 
         $shippingcosts = $this->admin->sGetPremiumShippingcosts($country);
@@ -530,13 +550,14 @@ class Cart
      * of available countries
      *
      * @param Enlight_View_Default $view
+     *
      * @return array with country information
      */
     private function getSelectedCountry($view)
     {
         if (!empty($view->sUserData['additional']['countryShipping'])) {
-            $this->session['sCountry'] = (int) $view->sUserData['additional']['countryShipping']['id'];
-            $this->session['sArea'] = (int) $view->sUserData['additional']['countryShipping']['areaID'];
+            $this->session['sCountry'] = (int)$view->sUserData['additional']['countryShipping']['id'];
+            $this->session['sArea']    = (int)$view->sUserData['additional']['countryShipping']['areaID'];
 
             return $view->sUserData['additional']['countryShipping'];
         } else {
@@ -546,9 +567,9 @@ class Cart
 
                 return false;
             }
-            $country = reset($countries);
-            $this->session['sCountry'] = (int) $country['id'];
-            $this->session['sArea'] = (int) $country['areaID'];
+            $country                   = reset($countries);
+            $this->session['sCountry'] = (int)$country['id'];
+            $this->session['sArea']    = (int)$country['areaID'];
 
             return $country;
         }
@@ -558,7 +579,8 @@ class Cart
      * Get selected payment or do payment mean selection automatically
      *
      * @param Enlight_Controller_Request_Request $request
-     * @param Enlight_View_Default $view
+     * @param Enlight_View_Default               $view
+     *
      * @return array
      */
     private function getSelectedPayment($request, $view)
@@ -577,7 +599,7 @@ class Cart
 
         $paymentClass = $this->admin->sInitiatePaymentClass($payment);
         if ($payment && $paymentClass instanceof \ShopwarePlugin\PaymentMethods\Components\BasePaymentMethod) {
-            $data = $paymentClass->getCurrentPaymentDataAsArray(Shopware()->Session()->sUserId);
+            $data                  = $paymentClass->getCurrentPaymentDataAsArray(Shopware()->Session()->sUserId);
             $payment['validation'] = $paymentClass->validate($data);
             if (!empty($data)) {
                 $payment['data'] = $data;
@@ -596,8 +618,8 @@ class Cart
 
         $payment = $this->getDefaultPaymentMethod($paymentMethods);
 
-        $this->session['sPaymentID'] = (int) $payment['id'];
-        $request->setPost('sPayment', (int) $payment['id']);
+        $this->session['sPaymentID'] = (int)$payment['id'];
+        $request->setPost('sPayment', (int)$payment['id']);
         $this->admin->sUpdatePayment();
 
         return $payment;
@@ -615,7 +637,7 @@ class Cart
         $result = array();
 
         if (!empty($basket['sShippingcostsTax'])) {
-            $basket['sShippingcostsTax'] = number_format((float) $basket['sShippingcostsTax'], 2);
+            $basket['sShippingcostsTax'] = number_format((float)$basket['sShippingcostsTax'], 2);
 
             $result[$basket['sShippingcostsTax']] = $basket['sShippingcostsWithTax'] - $basket['sShippingcostsNet'];
             if (empty($result[$basket['sShippingcostsTax']])) {
@@ -637,7 +659,8 @@ class Cart
                 // Ticket 4842 - dynamic tax-rates
                 $resultVoucherTaxMode = Shopware()->Db()->fetchOne(
                     'SELECT taxconfig FROM s_emarketing_vouchers WHERE ordercode=?
-                ', array($item['ordernumber']));
+                ', array($item['ordernumber'])
+                );
                 // Old behaviour
                 if (empty($resultVoucherTaxMode) || $resultVoucherTaxMode === 'default') {
                     $tax = Shopware()->Config()->get('sVOUCHERTAX');
@@ -647,11 +670,12 @@ class Cart
                 } elseif ($resultVoucherTaxMode === 'none') {
                     // No tax
                     $tax = '0';
-                } elseif ((int) $resultVoucherTaxMode) {
+                } elseif ((int)$resultVoucherTaxMode) {
                     // Fix defined tax
-                    $tax = Shopware()->Db()->fetchOne('
-                    SELECT tax FROM s_core_tax WHERE id = ?
-                    ', array($resultVoucherTaxMode));
+                    $tax = Shopware()->Db()->fetchOne(
+                        'SELECT tax FROM s_core_tax WHERE id = ?',
+                        array($resultVoucherTaxMode)
+                    );
                 }
                 $item['tax_rate'] = $tax;
             } else {
@@ -669,7 +693,7 @@ class Cart
                 continue;
             } // Ignore 0 % tax
 
-            $taxKey = number_format((float) $item['tax_rate'], 2);
+            $taxKey = number_format((float)$item['tax_rate'], 2);
 
             $result[$taxKey] += str_replace(',', '.', $item['tax']);
         }
@@ -705,10 +729,13 @@ class Cart
             AND ob.modus=0
             WHERE a.id=ad.articleID
         ';
-        $row = Shopware()->Db()->fetchRow($sql, array(
-            $ordernumber,
-            Shopware()->Session()->get('sessionId'),
-        ));
+        $row = Shopware()->Db()->fetchRow(
+            $sql,
+            array(
+                $ordernumber,
+                Shopware()->Session()->get('sessionId'),
+            )
+        );
 
         return $row;
     }
@@ -718,6 +745,7 @@ class Cart
      *
      * @param $basketId
      * @param $quantity
+     *
      * @return null|string
      */
     private function verifyItemStock($basketId, $quantity)
@@ -728,6 +756,7 @@ class Cart
                 return $this->getInstockInfo($basketItem['ordernumber'], $quantity);
             }
         }
+
         return null;
     }
 

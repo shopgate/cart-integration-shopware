@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
-## [2.9.88] - 2019-07-02
+## [2.9.88] - 2019-09-17
+
 ### Added
 - login action for web checkout
 - logout action for web checkout
@@ -26,9 +27,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - order debit payment method for SW >= 5.0
 - error during customer import with invalid countries
 - customer group specific prices in cart
-
-## Added
-- persist import cache
 
 ## [2.9.87] - 2019-05-21
 ### Fixed
