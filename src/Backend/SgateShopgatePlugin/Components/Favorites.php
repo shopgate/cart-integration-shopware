@@ -187,6 +187,10 @@ class Favorites
     {
         $items = array();
 
+        if (empty($cart)) {
+            return $items;
+        }
+
         /** @var CartItem $cartItem */
         foreach ($cart->getCartItems() as $cartItem) {
             if (!$cartItem->getDetail() || !$cartItem->getDetail()->getActive()) {
@@ -390,5 +394,24 @@ class Favorites
             }
         }
         return true;
+    }
+
+    /**
+     * check for product exists in active category
+     *
+     * @param $productId
+     *
+     * @return mixed
+     */
+    private function existsInMainCategory($productId)
+    {
+        $categoryId = Shopware()->Shop()->getCategory()->getId();
+
+        $exist = Shopware()->Db()->fetchRow(
+            'SELECT * FROM s_articles_categories_ro WHERE categoryID = ? AND articleID = ?',
+            array($categoryId, $productId)
+        );
+
+        return $exist;
     }
 }
