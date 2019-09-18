@@ -90,7 +90,7 @@ class User
         $httpResponse->setHeader('Content-Type', 'application/json');
 
         if (isset($hash)) {
-            $email = strtolower($this->Request()->getPost('email'));
+            $email = strtolower($request->getPost('email'));
             $user = $this->verifyUser($email, $hash);
             if (!empty($user['sErrorMessages'])) {
                 $httpResponse->setHttpResponseCode(401);
