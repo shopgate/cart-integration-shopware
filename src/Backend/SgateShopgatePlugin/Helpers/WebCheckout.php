@@ -146,11 +146,10 @@ class WebCheckout
             $decoded     = JWT::decode($token, $key, array('HS256'));
 
             return json_decode(json_encode($decoded), true);
-        } catch (\Exception $e) {
-
+        } catch (Exception $error) {
             return array(
                 "error" => true,
-                "message" => $e->getMessage()
+                "message" => $error->getMessage()
             );
         }
     }

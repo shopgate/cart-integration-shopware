@@ -206,7 +206,6 @@ class User
                 'additional'     => $user->getAdditional()
             );
         } catch (Exception $error) {
-
             return array(
                 'error' => true,
                 'message' => $error->getMessage()
