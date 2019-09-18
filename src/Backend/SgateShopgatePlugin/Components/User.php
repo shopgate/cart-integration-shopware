@@ -365,10 +365,10 @@ class User
 
         $addScopeSql = '';
         if ($scopedRegistration == true) {
-            $addScopeSql = $this->db->quoteInto(' AND subshopID = ? ', $this->subshopId);
+            $addScopeSql = Shopware()->Db()->quoteInto(' AND subshopID = ? ', $this->subshopId);
         }
 
-        $preHashedSql = $this->db->quoteInto(' AND password = ? ', $hash);
+        $preHashedSql = Shopware()->Db()->quoteInto(' AND password = ? ', $hash);
 
         $sql = '
                 SELECT id, customergroup, password, encoder
@@ -377,7 +377,7 @@ class User
             . $addScopeSql
             . $preHashedSql;
 
-        $getUser = $this->db->fetchRow($sql, array($email)) ?: array();
+        $getUser = Shopware()->Db()->fetchRow($sql, array($email)) ?: array();
 
         if (!count($getUser)) {
             $isValidLogin = false;
@@ -387,7 +387,7 @@ class User
             $plaintext = $hash;
             $password = $getUser['password'];
 
-            $isValidLogin = $this->passwordEncoder->isPasswordValid($plaintext, $password, $encoderName);
+            $isValidLogin = Shopware()->PasswordEncoder()->isPasswordValid($plaintext, $password, $encoderName);
         }
 
         if (!$isValidLogin) {
@@ -403,7 +403,7 @@ class User
             AND UNIX_TIMESTAMP(lastlogin) >= (UNIX_TIMESTAMP(now())-?)
         ';
 
-        $user = $this->db->fetchRow(
+        $user = Shopware()->Db()->fetchRow(
             $sql, array($hash, $email, $userId, 7200,)
         );
 
