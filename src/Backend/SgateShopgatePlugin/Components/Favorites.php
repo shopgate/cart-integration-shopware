@@ -73,13 +73,13 @@ class Favorites
     {
         $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
 
-        if ($decoded["error"]) {
+        if ($decoded['error']) {
             return $decoded;
         }
 
-        $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-
-        $userId = $this->db->fetchRow($sql, array($decoded['customer_id'])) ?: array();
+        $sql    =
+            ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+        $userId = $this->db->fetchRow($sql, array($decoded['customer_id'])) ? : array();
         $this->session->offsetSet('sUserId', $userId['id']);
 
         $nodes = Shopware()->Modules()->Basket()->sGetNotes();
@@ -105,13 +105,13 @@ class Favorites
         $params  = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
-        if ($decoded["error"]) {
+        if ($decoded['error']) {
             return $decoded;
         }
 
         $sql    =
             ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ?: array();
+        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ? : array();
         $this->session->offsetSet('sUserId', $userId['id']);
 
         if ($this->addArticleToWishList($decoded['articles'], $userId['id'], $request)) {
@@ -134,13 +134,13 @@ class Favorites
         $params  = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
-        if ($decoded["error"]) {
+        if ($decoded['error']) {
             return $decoded;
         }
 
-        $sql =
+        $sql    =
             ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ?: array();
+        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ? : array();
         $this->session->offsetSet('sUserId', $userId['id']);
 
         if ($this->removeProductFromWishList($decoded['articles'], $userId['id'])) {

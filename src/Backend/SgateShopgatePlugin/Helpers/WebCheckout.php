@@ -148,8 +148,8 @@ class WebCheckout
             return json_decode(json_encode($decoded), true);
         } catch (Exception $error) {
             return array(
-                "error" => true,
-                "message" => $error->getMessage()
+                'error'   => true,
+                'message' => $error->getMessage()
             );
         }
     }
