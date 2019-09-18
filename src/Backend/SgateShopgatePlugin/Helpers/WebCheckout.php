@@ -135,11 +135,18 @@ class WebCheckout
      */
     public function getJWT($token)
     {
-        $key = trim($this->getConfig()->getApikey());
-        JWT::$leeway = 60;
-        $decoded = JWT::decode($token, $key, array('HS256'));
+        try {
+            $key = trim($this->getConfig()->getApikey());
+            JWT::$leeway = 60;
+            $decoded = JWT::decode($token, $key, array('HS256'));
 
-        return json_decode(json_encode($decoded), true);
+            return json_decode(json_encode($decoded), true);
+        } catch (\Exception $e) {
+            return array(
+                "error" => true,
+                "message" => $e->getMessage()
+            );
+        }
     }
 
 

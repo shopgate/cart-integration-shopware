@@ -71,6 +71,11 @@ class Favorites
     public function getFavorites($request)
     {
         $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
+
+        if ($decoded["error"]) {
+            return $decoded;
+        }
+
         $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
 
         $userId = $this->db->fetchRow($sql, array($decoded['customer_id'])) ?: array();
@@ -99,6 +104,10 @@ class Favorites
 
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
+        if ($decoded["error"]) {
+            return $decoded;
+        }
+
         $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
         $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ?: array();
         $this->session->offsetSet('sUserId', $userId['id']);
@@ -122,6 +131,10 @@ class Favorites
         $params = $this->webCheckoutHelper->getJsonParams($request);
 
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+
+        if ($decoded["error"]) {
+            return $decoded;
+        }
 
         $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
         $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ?: array();

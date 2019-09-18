@@ -158,6 +158,11 @@ class User
     {
         try {
             $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
+
+            if ($decoded["error"]) {
+                return $decoded;
+            }
+
             $customerId = $decoded['customer_id'];
 
             $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
@@ -190,10 +195,13 @@ class User
                 'lastName' => $user->getLastName(),
                 'birthday' => $user->getBirthDay(),
                 'customerGroups' => $user->getGroup(),
-                'addresses' => array()
+                'additional' => $user->getAdditional()
             );
         } catch (Exception $error) {
-            return $error->getMessage();
+            return array(
+                'error' => true,
+                'message' => $error->getMessage()
+            );
         }
     }
 
@@ -213,6 +221,12 @@ class User
         try {
             $params = $this->webCheckoutHelper->getJsonParams($request);
             $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+
+            if ($decoded["error"]) {
+                $response['success'] = false;
+                $response['message'] = $decoded["message"];
+                return $response;
+            }
 
             $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
             $customer->setFirstname($decoded['first_name']);
@@ -247,6 +261,12 @@ class User
         try {
             $params = $this->webCheckoutHelper->getJsonParams($request);
             $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+
+            if ($decoded["error"]) {
+                $response['message'] = $decoded["message"];
+                return $response;
+            }
+
             $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
 
             $form = $this->createForm("Shopware\\Bundle\\AccountBundle\\Form\Account\\EmailUpdateFormType", $customer);
@@ -290,6 +310,12 @@ class User
 
         $params = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+
+        if ($decoded["error"]) {
+            $response['message'] = $decoded["message"];
+            return $response;
+        }
+
         $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
 
         Shopware()->Container()->get('session')->offsetSet('sUserPassword', $customer->getPassword());

@@ -63,6 +63,11 @@ class Address
     public function getAddressesAction($request)
     {
         $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
+
+        if ($decoded["error"]) {
+            return $decoded;
+        }
+
         $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
 
         $defaultBillingAddress = $customer->getDefaultBillingAddress();
@@ -110,6 +115,11 @@ class Address
     public function addAddressAction($request)
     {
         $data = $this->getAddressData($request);
+
+        if ($data["error"]) {
+            return $data;
+        }
+
         $customer = $this->webCheckoutHelper->getCustomer($data['customer_id']);
 
         if ($request->isPut()) {
@@ -135,6 +145,11 @@ class Address
     {
         $params = $this->webCheckoutHelper->getJsonParams($request);
         $data = $this->webCheckoutHelper->getJWT($params['token']);
+
+        if ($data["error"]) {
+            return $data;
+        }
+
         $customer = $this->webCheckoutHelper->getCustomer($data['customer_id']);
         $addressService = $this->container->get('shopware_account.address_service');
         $addressRepository = $this->models->getRepository("Shopware\\Models\\Customer\\Address");
@@ -155,6 +170,10 @@ class Address
     {
         $params = $this->webCheckoutHelper->getJsonParams($request);
         $data = $this->webCheckoutHelper->getJWT($params['token']);
+
+        if ($data["error"]) {
+            return $data;
+        }
 
         if (!empty($data['address']['country'])) {
             $query = $this->models->getConnection()->createQueryBuilder();
