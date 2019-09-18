@@ -60,17 +60,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     public $subshopId;
 
     /**
-<<<<<<< HEAD
-=======
-     * Shopware password encoder.
-     * Injected over the class constructor
-     *
-     * @var \Shopware\Components\Password\Manager
-     */
-    private $passwordEncoder;
-
-    /**
->>>>>>> d89587f8cea83606726a12ef90a24c22f796aaae
      * @var StoreFrontBundle\Service\ProductServiceInterface
      */
     private $productService;
@@ -108,10 +97,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->admin = Shopware()->Modules()->Admin();
         $this->session = Shopware()->Session();
         $this->db = Shopware()->Db();
-<<<<<<< HEAD
-=======
-        $this->passwordEncoder = Shopware()->PasswordEncoder();
->>>>>>> d89587f8cea83606726a12ef90a24c22f796aaae
         $this->webCheckoutCartService = new Shopgate\Components\Cart();
         $this->webCheckoutUserService = new Shopgate\Components\User();
         $this->webCheckoutHelper = new WebCheckout();
