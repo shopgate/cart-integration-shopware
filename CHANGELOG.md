@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 
 ## [2.9.88] - 2019-09-17
+
 ### Added
 - login action for web checkout
 - logout action for web checkout

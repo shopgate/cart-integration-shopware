@@ -90,7 +90,7 @@ class User
         $httpResponse->setHeader('Content-Type', 'application/json');
 
         if (isset($hash)) {
-            $email = strtolower($this->Request()->getPost('email'));
+            $email = strtolower($request->getPost('email'));
             $user  = $this->verifyUser($email, $hash);
             if (!empty($user['sErrorMessages'])) {
                 $httpResponse->setHttpResponseCode(401);
@@ -165,37 +165,51 @@ class User
     public function getUser($request)
     {
         try {
-            $decoded    = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
-            $customerId = $decoded['customer_id'];
+            $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
 
-            $sql = ' SELECT password, email FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-            $user = Shopware()->Db()->fetchRow($sql, array($customerId)) ? : array();
-
-            $request->setPost('email', $user["email"]);
-            $request->setPost('passwordMD5', $user["password"]);
-
-            $checkUser = $this->admin->sLogin(true);
-
-            if (isset($checkUser['sErrorFlag'])) {
-                throw new Exception($checkUser['sErrorMessages'][0], 400);
+            if ($decoded["error"]) {
+                return $decoded;
             }
 
-            $this->basket->sRefreshBasket();
+            $customerId = $decoded['customer_id'];
 
-            $user = $this->admin->sGetUserData();
-            $user = $user['additional']['user'];
+            $sql    = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+            $userId = Shopware()->Db()->fetchAll($sql, array($customerId)) ?: array();
+
+            if (!is_array($userId) || !$userId[0]["id"]) {
+                return array(
+                    'error' => true,
+                    'id' => $userId,
+                    'customerId' => $customerId,
+                    'message' => "query error",
+                );
+            }
+
+            if (count($userId) > 1) {
+                return array(
+                    'error' => true,
+                    'id' => $userId,
+                    'customerId' => $customerId,
+                    'message' => "multiple users found",
+                );
+            }
+
+            $user = Shopware()->Models()->find("Shopware\\Models\\Customer\\Customer", $userId[0]);
 
             return array(
-                'id'             => $user['customernumber'],
-                'mail'           => $user['email'],
-                'firstName'      => $user['firstname'],
-                'lastName'       => $user['lastname'],
-                'birthday'       => $user['birthday'],
-                'customerGroups' => $user['customergroup'],
-                'addresses'      => array()
+                'id'             => $user->getNumber(),
+                'mail'           => $user->getEmail(),
+                'firstName'      => $user->getFirstName(),
+                'lastName'       => $user->getLastName(),
+                'birthday'       => $user->getBirthDay(),
+                'customerGroups' => $user->getGroup(),
+                'additional'     => $user->getAdditional()
             );
         } catch (Exception $error) {
-            return $error->getMessage();
+            return array(
+                'error' => true,
+                'message' => $error->getMessage()
+            );
         }
     }
 
@@ -216,6 +230,12 @@ class User
         try {
             $params  = $this->webCheckoutHelper->getJsonParams($request);
             $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+
+            if ($decoded["error"]) {
+                $response['success'] = false;
+                $response['message'] = $decoded["message"];
+                return $response;
+            }
 
             $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
             $customer->setFirstname($decoded['first_name']);
@@ -249,8 +269,15 @@ class User
         );
 
         try {
-            $params   = $this->webCheckoutHelper->getJsonParams($request);
-            $decoded  = $this->webCheckoutHelper->getJWT($params['token']);
+            $params  = $this->webCheckoutHelper->getJsonParams($request);
+            $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+
+            if ($decoded["error"]) {
+                $response['message'] = $decoded["message"];
+
+                return $response;
+            }
+
             $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
 
             $form = $this->createForm("Shopware\\Bundle\\AccountBundle\\Form\Account\\EmailUpdateFormType", $customer);
@@ -293,8 +320,14 @@ class User
             'message' => ''
         );
 
-        $params   = $this->webCheckoutHelper->getJsonParams($request);
-        $decoded  = $this->webCheckoutHelper->getJWT($params['token']);
+        $params  = $this->webCheckoutHelper->getJsonParams($request);
+        $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+
+        if ($decoded["error"]) {
+            $response['message'] = $decoded["message"];
+            return $response;
+        }
+
         $customer = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
 
         Shopware()->Container()->get('session')->offsetSet('sUserPassword', $customer->getPassword());
@@ -345,10 +378,10 @@ class User
 
         $addScopeSql = '';
         if ($scopedRegistration == true) {
-            $addScopeSql = $this->db->quoteInto(' AND subshopID = ? ', $this->subshopId);
+            $addScopeSql = Shopware()->Db()->quoteInto(' AND subshopID = ? ', $this->subshopId);
         }
 
-        $preHashedSql = $this->db->quoteInto(' AND password = ? ', $hash);
+        $preHashedSql = Shopware()->Db()->quoteInto(' AND password = ? ', $hash);
 
         $sql = '
                 SELECT id, customergroup, password, encoder
@@ -357,7 +390,7 @@ class User
             . $addScopeSql
             . $preHashedSql;
 
-        $getUser = $this->db->fetchRow($sql, array($email)) ? : array();
+        $getUser = Shopware()->Db()->fetchRow($sql, array($email)) ?: array();
 
         if (!count($getUser)) {
             $isValidLogin = false;
@@ -367,7 +400,7 @@ class User
             $plaintext = $hash;
             $password  = $getUser['password'];
 
-            $isValidLogin = $this->passwordEncoder->isPasswordValid($plaintext, $password, $encoderName);
+            $isValidLogin = Shopware()->PasswordEncoder()->isPasswordValid($plaintext, $password, $encoderName);
         }
 
         if (!$isValidLogin) {
@@ -384,7 +417,7 @@ class User
             AND UNIX_TIMESTAMP(lastlogin) >= (UNIX_TIMESTAMP(now())-?)
         ';
 
-        $user = $this->db->fetchRow(
+        $user = Shopware()->Db()->fetchRow(
             $sql, array($hash, $email, $userId, 7200,)
         );
 

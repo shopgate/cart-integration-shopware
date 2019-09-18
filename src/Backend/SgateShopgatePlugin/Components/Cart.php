@@ -286,7 +286,6 @@ class Cart
                 }
             }
         }
-
         $response['deleteArticle']     = $this->basket->sDeleteArticle($articleId);
         $response['promotionVouchers'] = json_encode($this->session->get('promotionVouchers'));
 
@@ -824,24 +823,5 @@ class Cart
     private function getPayments()
     {
         return $this->admin->sGetPaymentMeans();
-    }
-
-    /**
-     * check for product exists in active category
-     *
-     * @param $productId
-     *
-     * @return mixed
-     */
-    private function existsInMainCategory($productId)
-    {
-        $categoryId = $this->get('shop')->getCategory()->getId();
-
-        $exist = $this->get('db')->fetchRow(
-            'SELECT * FROM s_articles_categories_ro WHERE categoryID = ? AND articleID = ?',
-            array($categoryId, $productId)
-        );
-
-        return $exist;
     }
 }
