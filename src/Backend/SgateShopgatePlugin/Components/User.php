@@ -167,14 +167,15 @@ class User
         try {
             $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
 
-            if ($decoded["error"]) {
+            if ($decoded['error']) {
                 return $decoded;
             }
 
             $customerId = $decoded['customer_id'];
 
-            $sql    = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-            $userId = Shopware()->Db()->fetchAll($sql, array($customerId)) ?: array();
+            $sql    =
+                ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+            $userId = Shopware()->Db()->fetchAll($sql, array($customerId)) ? : array();
 
             if (!is_array($userId) || !$userId[0]["id"]) {
                 return array(
@@ -231,9 +232,10 @@ class User
             $params  = $this->webCheckoutHelper->getJsonParams($request);
             $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
-            if ($decoded["error"]) {
+            if ($decoded['error']) {
                 $response['success'] = false;
-                $response['message'] = $decoded["message"];
+                $response['message'] = $decoded['message'];
+
                 return $response;
             }
 
@@ -272,8 +274,8 @@ class User
             $params  = $this->webCheckoutHelper->getJsonParams($request);
             $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
-            if ($decoded["error"]) {
-                $response['message'] = $decoded["message"];
+            if ($decoded['error']) {
+                $response['message'] = $decoded['message'];
 
                 return $response;
             }
@@ -323,8 +325,8 @@ class User
         $params  = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
-        if ($decoded["error"]) {
-            $response['message'] = $decoded["message"];
+        if ($decoded['error']) {
+            $response['message'] = $decoded['message'];
             return $response;
         }
 
@@ -390,7 +392,7 @@ class User
             . $addScopeSql
             . $preHashedSql;
 
-        $getUser = Shopware()->Db()->fetchRow($sql, array($email)) ?: array();
+        $getUser = Shopware()->Db()->fetchRow($sql, array($email)) ? : array();
 
         if (!count($getUser)) {
             $isValidLogin = false;

@@ -75,7 +75,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             Shopware()->Models()->find("Shopware\Models\Shop\Shop", Shopware()->Shop()->getId())->getLocale();
         $this->exportComponent = $exportComponent;
 
-        if ($this->config->assertMinimumVersion('5.6')) {
+        if ($this->getConfig()->assertMinimumVersion('5.6')) {
             $container         = Shopware()->Container();
             $connection        = Shopware()->Container()->get('dbal_connection');
             $this->translation = new Shopware_Components_Translation($connection, $container);

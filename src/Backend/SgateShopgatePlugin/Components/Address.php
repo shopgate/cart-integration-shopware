@@ -65,7 +65,7 @@ class Address
     {
         $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
 
-        if ($decoded["error"]) {
+        if ($decoded['error']) {
             return $decoded;
         }
 
@@ -117,7 +117,7 @@ class Address
     {
         $data = $this->getAddressData($request);
 
-        if ($data["error"]) {
+        if ($data['error']) {
             return $data;
         }
 
@@ -148,7 +148,7 @@ class Address
         $params = $this->webCheckoutHelper->getJsonParams($request);
         $data   = $this->webCheckoutHelper->getJWT($params['token']);
 
-        if ($data["error"]) {
+        if ($data['error']) {
             return $data;
         }
 
@@ -174,7 +174,7 @@ class Address
         $params = $this->webCheckoutHelper->getJsonParams($request);
         $data   = $this->webCheckoutHelper->getJWT($params['token']);
 
-        if ($data["error"]) {
+        if ($data['error']) {
             return $data;
         }
 
