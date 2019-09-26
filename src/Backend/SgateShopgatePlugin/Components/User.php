@@ -203,7 +203,7 @@ class User
                 'firstName'      => $user->getFirstName(),
                 'lastName'       => $user->getLastName(),
                 'birthday'       => $user->getBirthDay(),
-                'customerGroups' => $user->getGroup(),
+                'customerGroups' => $user->getGroupKey(),
                 'additional'     => $user->getAdditional()
             );
         } catch (Exception $error) {
