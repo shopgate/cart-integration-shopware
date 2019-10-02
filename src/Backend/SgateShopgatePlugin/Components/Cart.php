@@ -89,7 +89,7 @@ class Cart
             $this->session->offsetSet('promotionVouchers', $promotionVouchers);
         }
 
-        if (!empty($customerId) && $customerId !== "null") {
+        if (!empty($customerId) && $customerId !== 'null') {
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
             $this->session->offsetSet('sUserMail', $customer->getEmail());
             $this->session->offsetSet('sUserPassword', $customer->getPassword());
@@ -184,7 +184,7 @@ class Cart
             session_id($sessionId);
         }
 
-        if (!empty($customerId) && $customerId !== "null") {
+        if (!empty($customerId) && $customerId !== 'null') {
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
@@ -229,7 +229,7 @@ class Cart
             session_id($sessionId);
         }
 
-        if (!empty($customerId) && $customerId !== "null") {
+        if (!empty($customerId) && $customerId !== 'null') {
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
@@ -282,7 +282,7 @@ class Cart
             session_id($sessionId);
         }
 
-        if (!empty($customerId) && $customerId !== "null") {
+        if (!empty($customerId) && $customerId !== 'null') {
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
@@ -331,7 +331,7 @@ class Cart
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
         $customerId        = $params['customerId'];
 
-        if (isset($customerId) && $customerId !== "null") {
+        if (isset($customerId) && $customerId !== 'null') {
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
             $this->session->offsetSet('sUserId', $customer->getId());
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
