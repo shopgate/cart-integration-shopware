@@ -413,6 +413,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->session->offsetSet('sgWebView', true);
 
         if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+            $userData = $this->admin->sGetUserData();
+            $this->session->offsetSet('sPaymentID', $userData["paymentID"]);
             $this->session->offsetSet('sgAccountView', true);
             $this->redirect('account');
         } else {
@@ -439,6 +441,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->session->offsetSet('sgWebView', true);
 
         if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+            $userData = $this->admin->sGetUserData();
+            $this->session->offsetSet('sPaymentID', $userData["paymentID"]);
             $this->session->offsetSet('sgAccountView', true);
             $this->redirect('account/orders');
         } else {
@@ -464,7 +468,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $token = $this->Request()->getParam('token');
         $this->session->offsetSet('sgWebView', true);
 
-        if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+        if (empty($token) || $this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
             $this->redirect('checkout/cart');
         } else {
             $this->redirect('shopgate/error');

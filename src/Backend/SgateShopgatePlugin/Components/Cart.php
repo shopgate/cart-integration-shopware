@@ -94,6 +94,7 @@ class Cart
             $this->session->offsetSet('sUserMail', $customer->getEmail());
             $this->session->offsetSet('sUserPassword', $customer->getPassword());
             $this->session->offsetSet('sUserId', $customer->getId());
+            $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
             $this->admin->sCheckUser();
         }
 
@@ -168,6 +169,7 @@ class Cart
 
         $articles          = $params['articles'];
         $sessionId         = $params['sessionId'];
+        $customerId        = $params['customerId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (!isset($articles)) {
@@ -180,6 +182,11 @@ class Cart
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
+        }
+
+        if (!empty($customerId) && $customerId !== "null") {
+            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
         if (isset($promotionVouchers)) {
@@ -214,11 +221,17 @@ class Cart
         $basketId          = $params['basketId'];
         $quantity          = $params['quantity'];
         $sessionId         = $params['sessionId'];
+        $customerId        = $params['customerId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
+        }
+
+        if (!empty($customerId) && $customerId !== "null") {
+            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
         if (isset($promotionVouchers)) {
@@ -259,6 +272,7 @@ class Cart
         $articleId         = $params['articleId'];
         $sessionId         = $params['sessionId'];
         $voucher           = $params['voucher'];
+        $customerId        = $params['customerId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         $response['oldPromotionVouchers'] = $promotionVouchers;
@@ -266,6 +280,11 @@ class Cart
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
+        }
+
+        if (!empty($customerId) && $customerId !== "null") {
+            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
         if (isset($promotionVouchers) && $voucher) {
@@ -312,10 +331,10 @@ class Cart
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
         $customerId        = $params['customerId'];
 
-        if (isset($customerId)) {
-            $sql    = 'SELECT DISTINCT `id` FROM `s_user` WHERE customernumber=?';
-            $userId = Shopware()->Db()->fetchCol($sql, array($customerId));
-            $this->session->offsetSet('sUserId', $userId[0]);
+        if (isset($customerId) && $customerId !== "null") {
+            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sUserId', $customer->getId());
+            $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
         if (isset($sessionId)) {
