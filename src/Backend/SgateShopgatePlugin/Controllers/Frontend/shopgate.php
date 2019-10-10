@@ -673,7 +673,15 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $this->Response()->setHeader('Set-Cookie', 'session-1='.$sessionId.'; path=/; HttpOnly');
             $this->redirect('checkout/confirm#show-registration');
         } else {
-            $this->redirect('account#show-registration');
+
+            if ($this->admin->sCheckUser()) {
+                $this->admin->logout();
+            }
+
+            $request = $this->Request();
+            $request->setControllerName('register');
+            $request->setModuleName('frontend');
+            $request->setActionName('index')->setDispatched(false);
         }
     }
 
