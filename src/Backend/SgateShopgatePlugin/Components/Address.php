@@ -63,13 +63,13 @@ class Address
      */
     public function getAddressesAction($request)
     {
-        $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
+        $data = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
 
-        if ($decoded['error']) {
-            return $decoded;
+        if (isset($data['error']) && $data['error']) {
+            return $data;
         }
 
-        $customer               = $this->webCheckoutHelper->getCustomer($decoded['customer_id']);
+        $customer               = $this->webCheckoutHelper->getCustomer($data['customer_id']);
         $defaultBillingAddress  = $customer->getDefaultBillingAddress();
         $defaultShippingAddress = $customer->getDefaultShippingAddress();
 
@@ -117,7 +117,7 @@ class Address
     {
         $data = $this->getAddressData($request);
 
-        if ($data['error']) {
+        if (isset($data['error']) && $data['error']) {
             return $data;
         }
 
@@ -148,7 +148,7 @@ class Address
         $params = $this->webCheckoutHelper->getJsonParams($request);
         $data   = $this->webCheckoutHelper->getJWT($params['token']);
 
-        if ($data['error']) {
+        if (isset($data['error']) && $data['error']) {
             return $data;
         }
 
@@ -174,7 +174,7 @@ class Address
         $params = $this->webCheckoutHelper->getJsonParams($request);
         $data   = $this->webCheckoutHelper->getJWT($params['token']);
 
-        if ($data['error']) {
+        if (isset($data['error']) && $data['error']) {
             return $data;
         }
 
