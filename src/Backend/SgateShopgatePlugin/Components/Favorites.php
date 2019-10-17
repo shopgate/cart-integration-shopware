@@ -420,7 +420,7 @@ class Favorites
     }
 
     /**
-     * check for product exists in active category
+     * Check if product exists in active category
      *
      * @param $productId
      *
