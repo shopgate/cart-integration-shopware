@@ -726,6 +726,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             $criteria->addBaseCondition(
                 new CategoryCondition(array($baseCategoryId))
             );
+            $criteria->limit(5000);
 
             $streamRepo->prepareCriteria($criteria, $productStreamId);
 

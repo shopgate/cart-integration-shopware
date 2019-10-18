@@ -73,7 +73,7 @@ class Favorites
     {
         $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
 
-        if ($decoded['error']) {
+        if (isset($decoded['error']) && $decoded['error']) {
             return $decoded;
         }
 
@@ -105,7 +105,7 @@ class Favorites
         $params  = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
-        if ($decoded['error']) {
+        if (isset($decoded['error']) && $decoded['error']) {
             return $decoded;
         }
 
@@ -134,7 +134,7 @@ class Favorites
         $params  = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
-        if ($decoded['error']) {
+        if (isset($decoded['error']) && $decoded['error']) {
             return $decoded;
         }
 
@@ -420,7 +420,7 @@ class Favorites
     }
 
     /**
-     * check for product exists in active category
+     * Check if product exists in active category
      *
      * @param $productId
      *

@@ -167,7 +167,7 @@ class User
         try {
             $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
 
-            if ($decoded['error']) {
+            if (isset($decoded['error']) && $decoded['error']) {
                 return $decoded;
             }
 
@@ -232,7 +232,7 @@ class User
             $params  = $this->webCheckoutHelper->getJsonParams($request);
             $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
-            if ($decoded['error']) {
+            if (isset($decoded['error']) && $decoded['error']) {
                 $response['success'] = false;
                 $response['message'] = $decoded['message'];
 
@@ -274,7 +274,7 @@ class User
             $params  = $this->webCheckoutHelper->getJsonParams($request);
             $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
-            if ($decoded['error']) {
+            if (isset($decoded['error']) && $decoded['error']) {
                 $response['message'] = $decoded['message'];
 
                 return $response;
@@ -325,7 +325,7 @@ class User
         $params  = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
-        if ($decoded['error']) {
+        if (isset($decoded['error']) && $decoded['error']) {
             $response['message'] = $decoded['message'];
             return $response;
         }
