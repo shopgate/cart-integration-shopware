@@ -90,11 +90,23 @@ class Cart
         }
 
         if (!empty($customerId) && $customerId !== 'null') {
+            $sql    =
+                ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+            $userId = Shopware()->Db()->fetchRow($sql, array($customerId)) ? : array();
+
+            if (!$userId["id"]) {
+                $httpResponse->setHttpResponseCode(401);
+                $httpResponse->setHeader('Content-Type', 'application/json');
+                $httpResponse->setBody("Invalid customer number");
+                $httpResponse->sendResponse();
+                exit();
+            }
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
             $this->session->offsetSet('sUserMail', $customer->getEmail());
             $this->session->offsetSet('sUserPassword', $customer->getPassword());
             $this->session->offsetSet('sUserId', $customer->getId());
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
+            $this->session->offsetSet('sUserGroup', $customer->getGroupKey());
             $this->admin->sCheckUser();
         }
 
@@ -109,11 +121,11 @@ class Cart
         }
 
         $shippingcosts = $this->getShippingCosts($request, $view);
-
         $currency = Shopware()->Shop()->getCurrency();
 
         // Below code comes from the getBasket function in the Checkout Controller
-        $basket['priceGroup']      = $this->session->offsetGet('sUserGroup');
+        $basket['priceGroup']      = $this->session->offsetGet('sUserGroup')
+            ? $this->session->offsetGet('sUserGroup') : Shopware()->Shop()->getCustomerGroup()->getKey();
         $basket['sCurrencyId']     = $currency->getId();
         $basket['sCurrencyName']   = $currency->getCurrency();
         $basket['sCurrencyFactor'] = $currency->getFactor();
