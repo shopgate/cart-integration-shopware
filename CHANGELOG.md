@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - improved SW 5.6 support
+- read payment fee ordernumber and label from configuration
 
 ## [2.9.88] - 2019-09-17
 ### Added
