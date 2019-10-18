@@ -94,10 +94,10 @@ class Cart
                 ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
             $userId = Shopware()->Db()->fetchRow($sql, array($customerId)) ? : array();
 
-            if (!$userId["id"]) {
+            if (!$userId['id']) {
                 $httpResponse->setHttpResponseCode(401);
                 $httpResponse->setHeader('Content-Type', 'application/json');
-                $httpResponse->setBody("Invalid customer number");
+                $httpResponse->setBody('Invalid customer number');
                 $httpResponse->sendResponse();
                 exit();
             }
