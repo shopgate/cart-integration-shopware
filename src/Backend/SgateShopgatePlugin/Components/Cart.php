@@ -97,7 +97,7 @@ class Cart
             if (!$userId["id"]) {
                 $httpResponse->setHttpResponseCode(401);
                 $httpResponse->setHeader('Content-Type', 'application/json');
-                $httpResponse->setBody("{}");
+                $httpResponse->setBody("Invalid customer number");
                 $httpResponse->sendResponse();
                 exit();
             }
