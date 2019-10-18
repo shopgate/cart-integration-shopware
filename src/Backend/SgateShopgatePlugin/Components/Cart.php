@@ -109,11 +109,11 @@ class Cart
         }
 
         $shippingcosts = $this->getShippingCosts($request, $view);
-
         $currency = Shopware()->Shop()->getCurrency();
 
         // Below code comes from the getBasket function in the Checkout Controller
-        $basket['priceGroup']      = $this->session->offsetGet('sUserGroup');
+        $basket['priceGroup']      = $this->session->offsetGet('sUserGroup')
+            ? $this->session->offsetGet('sUserGroup') : Shopware()->Shop()->getCustomerGroup()->getKey();
         $basket['sCurrencyId']     = $currency->getId();
         $basket['sCurrencyName']   = $currency->getCurrency();
         $basket['sCurrencyFactor'] = $currency->getFactor();
