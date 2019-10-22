@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../engine/Shopware/Components/Plugin/schema/plugin.xsd">
+    <label lang="de">Swag Plugin System</label>
+    <label lang="en">Swag plugin system</label>
+
+    <version>2.9.89</version>
+    <copyright>(c) by Shopgate GmbH</copyright>
+    <license>Apache</license>
+    <link>https://store.shopware.com/sgate00633f/shopgate-mobile-commerce-fuer-shopware.html</link>
+    <author>Shopgate GmbH</author>
+    <compatibility minVersion="4.0.0"/>
+    <changelog version="2.9.89">
+        <changes lang="en">Quality compliance</changes>
+    </changelog>
+    <description>
+        <![CDATA[
+   <b>Mobile Commerce for Shopware</b>
+   <p>Get your Shopping-Apps in 30 minutes!</p>
+   <p>Launch your own mobile website for smartphones and tablets in your look & feel.
+Be available on the App Store with your amazing new native app for iPhone, iPad and Android.
+Increase your mobile sales: Up to 900% increase in mobile conversion rates.
+Get powerful mobile marketing/M-Commerce features like barcode and QR scanner, push messages and integrated mobile coupons! <a href="https://www.shopgate.com">www.shopgate.com</a></p>
+   ]]>
+    </description>
+    <description lang="de">
+        <![CDATA[
+   <b>Mobile Commerce für Shopware</b>
+   <p><a href="https://angebote.shopgate.com/shopware/shopping-apps">Jetzt Demo anfordern</a></p>
+   <p>Starke Kundenbeziehungen durch Shopping-Apps</p>
+   <p>Machen Sie aus einmaligen Shop-Besuchern wiederkehrende Kunden. Shopgate bietet Ihnen eine mobile Komplettlösung für erfolgreichen Mobile Commerce. Unsere skalierbare All-In-One-Plattform stellt Ihnen die passende mobile Lösung für jede Art von Betriebssystem (iOS/Android) und Endgerät (Smartphones/Tablets) in unterschiedlichen Versionen zur Verfügung.
+Ihre Vorteile mit Shopgate:
+App-Kunden sind aktiver als mobile Web-Kunden. Erhöhen Sie Ihre Ergebnisse in jedem Kaufstadium durch höhere Warenkörbe, höhere Conversion-Rates und mehr Umsatz pro Kunde.</p>
+<p>- Einfache Integration- Automatische Aktualisierungen- Intuitive Nutzung- Transparente Ergebnisse- Individuelle Gestaltung Ihrer App- Mehr als 200 integrierte</p>
+<p>Marketing-Features</p>
+<p>App-Marketing-Services</p>
+<p>Unsere Mobile-Commerce-Experten teilen ihre jahrelange Erfahrung im App-Marketing mit Ihnen und stellen individuell für Ihre App Performance-optimierte Marketing-Kampagnen auf die Beine. So generieren wir für Sie mehr Besucher, mehr Bestellungen und durch die bessere Performance der App-Kunden auch deutlich mehr Umsatz.</p>
+<p>Warum Shopgate?</p>
+<p>Unabhängig von der Branche und der Größe – Über 15.000 zufriedene Kunden setzen bereits auf unsere Apps, um starke und loyale Beziehungen zu ihrer Zielgruppe aufzubauen.</p>
+<p><a href="https://angebote.shopgate.com/shopware/shopping-apps">Jetzt Demo anfordern</a></p>
+<p><a href="http://www.shopgate.com/de/shopware/">http://www.shopgate.com/de/shopware/</a></p>
+<p>Kontakt:Telefon: +49 69 1337 22-0E-Mail: sales-de@shopgate.com  <a href="https://www.shopgate.com">www.shopgate.com</a></p>
+   ]]>
+    </description>
+</plugin>
