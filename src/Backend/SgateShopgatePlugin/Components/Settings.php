@@ -274,7 +274,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Settings
     private function getTaxFreeCountries()
     {
         $countries = Shopware()->Models()->createQuery(
-            "SELECT c.iso FROM '\Shopware\Models\Country\Country' c WHERE c.taxFree = 1"
+            "SELECT c.iso FROM \Shopware\Models\Country\Country c WHERE c.taxFree = 1"
         )->getResult();
         $result    = array();
         foreach ($countries as $country) {

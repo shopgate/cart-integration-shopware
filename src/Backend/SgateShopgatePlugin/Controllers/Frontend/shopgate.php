@@ -60,14 +60,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     public $subshopId;
 
     /**
-     * Shopware password encoder.
-     * Injected over the class constructor
-     *
-     * @var \Shopware\Components\Password\Manager
-     */
-    private $passwordEncoder;
-
-    /**
      * @var StoreFrontBundle\Service\ProductServiceInterface
      */
     private $productService;
@@ -105,7 +97,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->admin = Shopware()->Modules()->Admin();
         $this->session = Shopware()->Session();
         $this->db = Shopware()->Db();
-        $this->passwordEncoder = Shopware()->PasswordEncoder();
         $this->webCheckoutCartService = new Shopgate\Components\Cart();
         $this->webCheckoutUserService = new Shopgate\Components\User();
         $this->webCheckoutHelper = new WebCheckout();
@@ -422,6 +413,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->session->offsetSet('sgWebView', true);
 
         if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+            $userData = $this->admin->sGetUserData();
+            $this->session->offsetSet('sPaymentID', $userData["paymentID"]);
             $this->session->offsetSet('sgAccountView', true);
             $this->redirect('account');
         } else {
@@ -448,6 +441,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->session->offsetSet('sgWebView', true);
 
         if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+            $userData = $this->admin->sGetUserData();
+            $this->session->offsetSet('sPaymentID', $userData["paymentID"]);
             $this->session->offsetSet('sgAccountView', true);
             $this->redirect('account/orders');
         } else {
@@ -473,7 +468,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $token = $this->Request()->getParam('token');
         $this->session->offsetSet('sgWebView', true);
 
-        if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+        if (empty($token) || $this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
             $this->redirect('checkout/cart');
         } else {
             $this->redirect('shopgate/error');
@@ -678,7 +673,14 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $this->Response()->setHeader('Set-Cookie', 'session-1='.$sessionId.'; path=/; HttpOnly');
             $this->redirect('checkout/confirm#show-registration');
         } else {
-            $this->redirect('account#show-registration');
+            if ($this->admin->sCheckUser()) {
+                $this->admin->logout();
+            }
+
+            $request = $this->Request();
+            $request->setControllerName('register');
+            $request->setModuleName('frontend');
+            $request->setActionName('index')->setDispatched(false);
         }
     }
 

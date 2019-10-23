@@ -174,7 +174,15 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $this->system      = Shopware()->System();
         $this->locale      = Shopware()->Models()
             ->find("Shopware\Models\Shop\Shop", Shopware()->Shop()->getId())->getLocale();
-        $this->translation = new Shopware_Components_Translation();
+
+        if ($this->config->assertMinimumVersion('5.6')) {
+            $container         = Shopware()->Container();
+            $connection        = Shopware()->Container()->get('dbal_connection');
+            $this->translation = new Shopware_Components_Translation($connection, $container);
+        } else {
+            $this->translation = new Shopware_Components_Translation();
+        }
+
         $this->langId      = $this->shop->getLocale()->getId();
 
         $customerGroupKey              = Shopware()->Shop()->getCustomerGroup()->getKey();
@@ -2661,16 +2669,20 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     protected function insertOrderPaymentCosts(sOrder $oOrder, ShopgateOrder $oShopgateOrder)
     {
+        $orderNumberPaymentFeeConfig      = Shopware()->Config()->get('sPAYMENTSURCHARGEABSOLUTENUMBER');
+        $orderNumberPaymentFeeLabelConfig = Shopware()->Config()->get('sPAYMENTSURCHARGEABSOLUTE');
+        $orderNumberPaymentFeeLabel       = !empty($orderNumberPaymentFeeLabelConfig) ? $orderNumberPaymentFeeLabelConfig : "Zuschlag für Zahlungsart";
+        $orderNumberPaymentFee            = !empty($orderNumberPaymentFeeConfig) ? $orderNumberPaymentFeeConfig : "sw-payment-absolute";
         if (floatval($oShopgateOrder->getAmountShopPayment()) > 0) {
             $aItem                 = array();
             $aItem['id']           = -1;
             $aItem['articleID']    = 0;
-            $aItem['ordernumber']  = "sw-payment-absolute";
+            $aItem['ordernumber']  = $orderNumberPaymentFee;
             $aItem['priceNumeric'] = $oShopgateOrder->getAmountShopPayment();
             $aItem['price']        = $oShopgateOrder->getAmountShopPayment();
             $aItem['quantity']     = 1;
             $aItem['amount']       = $aItem['price'] * $aItem['quantity'];
-            $aItem['articlename']  = "Zuschlag für Zahlungsart";
+            $aItem['articlename']  = $orderNumberPaymentFeeLabel;
             $aItem['modus']        = "4";
             $aItem['taxID']        = 0;
             $aItem['tax_rate']     = "19";
@@ -2680,7 +2692,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $aItem                 = array();
             $aItem['id']           = -1;
             $aItem['articleID']    = 0;
-            $aItem['ordernumber']  = "sw-payment-absolute";
+            $aItem['ordernumber']  = $orderNumberPaymentFee;
             $aItem['priceNumeric'] = $oShopgateOrder->getAmountShopPayment();
             $aItem['price']        = $oShopgateOrder->getAmountShopPayment();
             $aItem['quantity']     = 1;

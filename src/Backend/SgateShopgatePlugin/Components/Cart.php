@@ -89,11 +89,24 @@ class Cart
             $this->session->offsetSet('promotionVouchers', $promotionVouchers);
         }
 
-        if (!empty($customerId) && $customerId !== "null") {
+        if (!empty($customerId) && $customerId !== 'null') {
+            $sql    =
+                ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+            $userId = Shopware()->Db()->fetchRow($sql, array($customerId)) ? : array();
+
+            if (!$userId['id']) {
+                $httpResponse->setHttpResponseCode(401);
+                $httpResponse->setHeader('Content-Type', 'application/json');
+                $httpResponse->setBody('Invalid customer number');
+                $httpResponse->sendResponse();
+                exit();
+            }
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
             $this->session->offsetSet('sUserMail', $customer->getEmail());
             $this->session->offsetSet('sUserPassword', $customer->getPassword());
             $this->session->offsetSet('sUserId', $customer->getId());
+            $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
+            $this->session->offsetSet('sUserGroup', $customer->getGroupKey());
             $this->admin->sCheckUser();
         }
 
@@ -108,11 +121,11 @@ class Cart
         }
 
         $shippingcosts = $this->getShippingCosts($request, $view);
-
         $currency = Shopware()->Shop()->getCurrency();
 
         // Below code comes from the getBasket function in the Checkout Controller
-        $basket['priceGroup']      = $this->session->offsetGet('sUserGroup');
+        $basket['priceGroup']      = $this->session->offsetGet('sUserGroup')
+            ? $this->session->offsetGet('sUserGroup') : Shopware()->Shop()->getCustomerGroup()->getKey();
         $basket['sCurrencyId']     = $currency->getId();
         $basket['sCurrencyName']   = $currency->getCurrency();
         $basket['sCurrencyFactor'] = $currency->getFactor();
@@ -168,6 +181,7 @@ class Cart
 
         $articles          = $params['articles'];
         $sessionId         = $params['sessionId'];
+        $customerId        = $params['customerId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (!isset($articles)) {
@@ -180,6 +194,11 @@ class Cart
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
+        }
+
+        if (!empty($customerId) && $customerId !== 'null') {
+            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
         if (isset($promotionVouchers)) {
@@ -214,11 +233,17 @@ class Cart
         $basketId          = $params['basketId'];
         $quantity          = $params['quantity'];
         $sessionId         = $params['sessionId'];
+        $customerId        = $params['customerId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
+        }
+
+        if (!empty($customerId) && $customerId !== 'null') {
+            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
         if (isset($promotionVouchers)) {
@@ -259,6 +284,7 @@ class Cart
         $articleId         = $params['articleId'];
         $sessionId         = $params['sessionId'];
         $voucher           = $params['voucher'];
+        $customerId        = $params['customerId'];
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         $response['oldPromotionVouchers'] = $promotionVouchers;
@@ -266,6 +292,11 @@ class Cart
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
+        }
+
+        if (!empty($customerId) && $customerId !== 'null') {
+            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
         if (isset($promotionVouchers) && $voucher) {
@@ -286,7 +317,6 @@ class Cart
                 }
             }
         }
-
         $response['deleteArticle']     = $this->basket->sDeleteArticle($articleId);
         $response['promotionVouchers'] = json_encode($this->session->get('promotionVouchers'));
 
@@ -313,10 +343,10 @@ class Cart
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
         $customerId        = $params['customerId'];
 
-        if (isset($customerId)) {
-            $sql    = 'SELECT DISTINCT `id` FROM `s_user` WHERE customernumber=?';
-            $userId = Shopware()->Db()->fetchCol($sql, array($customerId));
-            $this->session->offsetSet('sUserId', $userId[0]);
+        if (isset($customerId) && $customerId !== 'null') {
+            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sUserId', $customer->getId());
+            $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
         if (isset($sessionId)) {
@@ -824,24 +854,5 @@ class Cart
     private function getPayments()
     {
         return $this->admin->sGetPaymentMeans();
-    }
-
-    /**
-     * check for product exists in active category
-     *
-     * @param $productId
-     *
-     * @return mixed
-     */
-    private function existsInMainCategory($productId)
-    {
-        $categoryId = $this->get('shop')->getCategory()->getId();
-
-        $exist = $this->get('db')->fetchRow(
-            'SELECT * FROM s_articles_categories_ro WHERE categoryID = ? AND articleID = ?',
-            array($categoryId, $productId)
-        );
-
-        return $exist;
     }
 }
