@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- plugin.xml file to meet shopware code quality standards
 ### Fixed
 - improved SW 5.6 support
 - read payment fee ordernumber and label from configuration
