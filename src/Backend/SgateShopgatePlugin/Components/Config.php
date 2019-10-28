@@ -294,12 +294,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
      */
     protected function loadFormConfigurationValues()
     {
-        /** @var Enlight_Config $pConfig */
-        $pConfig = Shopware()->Plugins()->Backend()->SgateShopgatePlugin()->Config();
-
         $shopgateConfig = array();
         foreach ($this->getFormConfigurationMapping() as $setting => $shopwareKey) {
-            $value = $pConfig->{$shopwareKey};
+            $value = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', $shopwareKey);
             if (!is_null($value)) {
                 $shopgateConfig[$setting] = $value;
             }
