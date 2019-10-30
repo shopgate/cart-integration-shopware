@@ -227,8 +227,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
                     true
                 );
             }
-            if (!isset($images['src']) || empty($images['src'])) {
-                $images = Shopware()->Modules()->Articles()->sGetArticlePictures($article->getId(), true, 0);
+            if (!isset($images['src']) || !isset($images['src']['0']) || empty($images['src']['0'])) {
+                $images = Shopware()->Modules()->Articles()->sGetArticlePictures($article->getId(), true, 0, $details->getNumber());
             }
 
             // Choose the best available picture in the list (original could also be removed)
@@ -297,7 +297,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
                 return $imgSrcArray[self::ORIGINAL];
             }
 
-            if (!file_exists($this->getShopRootFS() . $this->getRelativeImagePath($imgSrcArray[self::ORIGINAL]))) {
+            if (!is_file($this->getShopRootFS() . $this->getRelativeImagePath($imgSrcArray[self::ORIGINAL]))) {
                 $images = array();
                 foreach ($imgSrcArray as $image) {
                     // check for the highest resolution and availablitity of the image
@@ -406,7 +406,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
      */
     protected function isWebAddress($address)
     {
-        return preg_match('/^https?:\/\/.*/i', $address) !== false;
+        return preg_match('/^https?:\/\/.*/i', $address) !== 0;
     }
 
     /**
