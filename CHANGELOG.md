@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Removed
+- compatibility with PHP < 5.6
+- compatibility with Shopware < 5.2
 
 ## [2.9.89] - 2019-11-18
 ### Added
