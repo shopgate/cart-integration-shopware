@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.89] - 2019-11-18
 ### Added
 - plugin.xml file to meet shopware code quality standards
 ### Fixed
@@ -811,7 +813,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.88...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.89...HEAD
+[2.9.89]: https://github.com/shopgate/interface-shopware/compare/2.9.88...2.9.89
 [2.9.88]: https://github.com/shopgate/interface-shopware/compare/2.9.87...2.9.88
 [2.9.87]: https://github.com/shopgate/interface-shopware/compare/2.9.86...2.9.87
 [2.9.86]: https://github.com/shopgate/interface-shopware/compare/2.9.85...2.9.86
