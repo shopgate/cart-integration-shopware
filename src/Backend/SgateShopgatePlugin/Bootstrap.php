@@ -1440,57 +1440,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     }
 
     /**
-     * This is code from the Shopware support team.
-     *
-     * @param bool $throwException
-     *
-     * @return bool|string
-     * @throws Exception
-     */
-    public function checkLicense($throwException = true)
-    {
-        try {
-            /** @var $license Shopware_Components_License */
-            $license = Shopware()->License();
-        } catch (\Exception $e) {
-            if ($throwException) {
-                throw new Exception('The license manager has to be installed and active');
-            } else {
-                return false;
-            }
-        }
-
-        try {
-            static $hashOfAnEmptyString, $module = 'SgateShopgatePlugin';
-            if (!isset($hashOfAnEmptyString)) {
-                $user                       = base64_decode('wHkEvk0rRvRfykxftL/6V/rjakE=');
-                $pass                       = base64_decode('TaEQIempiaLPUAZbJ3+pZFMngWM=');
-                $hashOfAnEmptyString        = sha1(uniqid('', true), true);
-                $notCoreLicense             = $license->getLicense($module, $hashOfAnEmptyString);
-                $coreLicense                = $license->getCoreLicense();
-                $isTheLengthOfTheStringOkay = strlen($coreLicense) === 20
-                    ? sha1($coreLicense . $user . $coreLicense, true)
-                    : 0;
-                $isTheLicenseCorrect        = $notCoreLicense === sha1(
-                        $pass . $isTheLengthOfTheStringOkay . $hashOfAnEmptyString,
-                        true
-                    );
-            }
-            if (!$isTheLicenseCorrect && $throwException) {
-                throw new Exception('License check for module "' . $module . '" has failed.');
-            }
-
-            return $isTheLicenseCorrect;
-        } catch (Exception $e) {
-            if ($throwException) {
-                throw new Exception('License check for module "' . $module . '" has failed.');
-            } else {
-                return false;
-            }
-        }
-    }
-
-    /**
      * @param Status $shopwareOrderStatus
      *
      * @return string
