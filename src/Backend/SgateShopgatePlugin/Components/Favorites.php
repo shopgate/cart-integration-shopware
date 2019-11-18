@@ -72,8 +72,13 @@ class Favorites
     public function getFavorites($request)
     {
         $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
-        $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
 
+        if (isset($decoded['error']) && $decoded['error']) {
+            return $decoded;
+        }
+
+        $sql    =
+            ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
         $userId = $this->db->fetchRow($sql, array($decoded['customer_id'])) ? : array();
         $this->session->offsetSet('sUserId', $userId['id']);
 
@@ -99,9 +104,14 @@ class Favorites
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
         $params  = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
-        $sql     =
+
+        if (isset($decoded['error']) && $decoded['error']) {
+            return $decoded;
+        }
+
+        $sql    =
             ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-        $userId  = $this->db->fetchRow($sql, array($decoded['customerId'])) ? : array();
+        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ? : array();
         $this->session->offsetSet('sUserId', $userId['id']);
 
         if ($this->addArticleToWishList($decoded['articles'], $userId['id'], $request)) {
@@ -123,9 +133,14 @@ class Favorites
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
         $params  = $this->webCheckoutHelper->getJsonParams($request);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
-        $sql     =
+
+        if (isset($decoded['error']) && $decoded['error']) {
+            return $decoded;
+        }
+
+        $sql    =
             ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-        $userId  = $this->db->fetchRow($sql, array($decoded['customerId'])) ? : array();
+        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ? : array();
         $this->session->offsetSet('sUserId', $userId['id']);
 
         if ($this->removeProductFromWishList($decoded['articles'], $userId['id'])) {
@@ -189,6 +204,10 @@ class Favorites
     private function prepareCartItems($cart)
     {
         $items = array();
+
+        if (empty($cart)) {
+            return $items;
+        }
 
         /** @var CartItem $cartItem */
         foreach ($cart->getCartItems() as $cartItem) {
@@ -398,5 +417,24 @@ class Favorites
         }
 
         return true;
+    }
+
+    /**
+     * Check if product exists in active category
+     *
+     * @param $productId
+     *
+     * @return mixed
+     */
+    private function existsInMainCategory($productId)
+    {
+        $categoryId = Shopware()->Shop()->getCategory()->getId();
+
+        $exist = Shopware()->Db()->fetchRow(
+            'SELECT * FROM s_articles_categories_ro WHERE categoryID = ? AND articleID = ?',
+            array($categoryId, $productId)
+        );
+
+        return $exist;
     }
 }

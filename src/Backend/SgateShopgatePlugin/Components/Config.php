@@ -297,9 +297,30 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
         /** @var Enlight_Config $pConfig */
         $pConfig = Shopware()->Plugins()->Backend()->SgateShopgatePlugin()->Config();
 
+        // since Shopware 5.6 for some setups the plugin configuration can't be loaded anymore the old way
+        if (empty($pConfig)) {
+            return loadFormConfigurationValuesNew();
+        }
+
         $shopgateConfig = array();
         foreach ($this->getFormConfigurationMapping() as $setting => $shopwareKey) {
             $value = $pConfig->{$shopwareKey};
+            if (!is_null($value)) {
+                $shopgateConfig[$setting] = $value;
+            }
+        }
+
+        return $shopgateConfig;
+    }
+
+    /**
+     * @return array
+     */
+    protected function loadFormConfigurationValuesNew()
+    {
+        $shopgateConfig = array();
+        foreach ($this->getFormConfigurationMapping() as $setting => $shopwareKey) {
+            $value = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', $shopwareKey);
             if (!is_null($value)) {
                 $shopgateConfig[$setting] = $value;
             }
