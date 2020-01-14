@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [2.9.90] - 2020-01-14
+### Fixed
+- export of customer group specific prices
+
+### Removed
+- compatibility with PHP < 5.6
+- compatibility with Shopware < 5.2
+
 ## [2.9.89] - 2019-11-18
 ### Added
 - plugin.xml file to meet shopware code quality standards
@@ -813,7 +821,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.89...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.90...HEAD
+[2.9.90]: https://github.com/shopgate/interface-shopware/compare/2.9.89...2.9.90
 [2.9.89]: https://github.com/shopgate/interface-shopware/compare/2.9.88...2.9.89
 [2.9.88]: https://github.com/shopgate/interface-shopware/compare/2.9.87...2.9.88
 [2.9.87]: https://github.com/shopgate/interface-shopware/compare/2.9.86...2.9.87

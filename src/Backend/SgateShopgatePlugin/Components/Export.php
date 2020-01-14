@@ -265,7 +265,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
 
     /**
      * @param string $key
-     * @param string $value
+     * @param string | array $value
      */
     protected function setExportCache($key, $value)
     {
@@ -285,7 +285,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
      * @param string        $key
      * @param string | null $subKey
      *
-     * @return mixed|null
+     * @return string | array | null
      */
     protected function getExportCache($key, $subKey = null)
     {
@@ -307,7 +307,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
      * @param $articleId
      * @param $categoryId
      *
-     * @return null
+     * @return int | null
      */
     public function getArticleOrderIndex($articleId, $categoryId)
     {
@@ -369,7 +369,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             $this->setExportCache($cacheKey, $cache);
         }
 
-        return isset($cache[$cacheKey][$customerGroupKey]) ? $cache[$cacheKey][$customerGroupKey] : null;
+        return isset($cache[$customerGroupKey]) ? $cache[$customerGroupKey] : null;
     }
 
     /**
