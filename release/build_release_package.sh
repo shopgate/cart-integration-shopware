@@ -14,3 +14,5 @@ cd release/package
 zip -r ../../$ZIP_FILE_NAME .
 cd ..
 rm -rf package
+cd ..
+rm -rf src/Backend/SgateShopgatePlugin/vendor
