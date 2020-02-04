@@ -120,11 +120,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
     public function setName()
     {
         $articleDetail = $this->detail;
+        $articleData = $this->articleData;
         $purchaseSteps = $this->getPurchaseSteps($articleDetail);
         if (!empty($purchaseSteps) && $purchaseSteps > 1) {
-            parent::setName($this->article->getName() . ' ' . $purchaseSteps . 'er Packung');
+            parent::setName($articleData['articleName'] . ' ' . $purchaseSteps . 'er Packung');
         } else {
-            parent::setName($this->article->getName());
+            parent::setName($articleData['articleName']);
         }
     }
 

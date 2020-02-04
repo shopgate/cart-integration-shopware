@@ -66,7 +66,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Category_Xml ex
      */
     public function setName()
     {
-        parent::setName($this->item->getName());
+        $categoryContent = $this->getCategoryContent();
+
+        parent::setName($categoryContent['name']);
     }
 
     /**

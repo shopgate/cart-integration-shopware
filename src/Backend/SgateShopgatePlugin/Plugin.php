@@ -5445,6 +5445,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $sArticlesObject             = Shopware()->Modules()->Articles();
         $sArticlesObject->category   = $category;
         $sArticlesObject->categoryId = $category->getId();
+        $sArticlesObject->translationId = $this->locale->getId();
 
         $articleData = $sArticlesObject->sGetArticleById($article->getId());
         if ((empty($articleData) || !isset($articleData['price']))
@@ -5497,6 +5498,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         }
         $query      = $builder->getQuery();
         $categories = $query->getResult();
+        $sCategoryObject = Shopware()->Modules()->Categories();
 
         /* @var $category \Shopware\Models\Category\Category */
         foreach ($categories as $category) {
@@ -5507,8 +5509,10 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 // The root category shouldn't be exported
                 continue;
             }
+            $categoryContent = $sCategoryObject->sGetCategoryContent($category->getId());
             $categoryExportModel = new Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Category_Xml();
             $categoryExportModel->setItem($category);
+            $categoryExportModel->setCategoryContent($categoryContent);
             $categoryExportModel->setMaximumPosition($this->iMaxCategoryPosition);
             $categoryExportModel->setRootCategoryId($rootCategory->getId());
             $this->addCategoryModel($categoryExportModel->generateData());
