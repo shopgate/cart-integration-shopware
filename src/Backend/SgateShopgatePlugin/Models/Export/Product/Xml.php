@@ -268,7 +268,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
 
             $tierPrice->setReduction($reduction);
             $tierPrice->setReductionType(Shopgate_Model_Catalog_TierPrice::DEFAULT_TIER_PRICE_TYPE_FIXED);
-            $tierPrice->setAggregateChildren(false);
             if ($this->getDefaultCustomerGroupKey() != $blockPrice['pricegroup']) {
                 $groupUid = $this->exportComponent->getCustomerGroupIdByKey($blockPrice['pricegroup']);
                 if ($groupUid == null) {

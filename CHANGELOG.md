@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-- Added an option to check the "always_select_payment" flag during checkout
+### Added
+- option to check the "always_select_payment" flag during checkout
+
+### Fixed
+- export of customer group specific prices
 
 ## [2.9.90] - 2020-01-14
 ### Fixed
