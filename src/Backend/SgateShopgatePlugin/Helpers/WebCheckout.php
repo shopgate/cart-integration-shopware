@@ -41,7 +41,7 @@ class WebCheckout
 
         if (isset($token)) {
             $key               = trim($this->getConfig()->getApikey());
-            JWT::$leeway       = 60;
+            JWT::$leeway       = 300;
             $decoded           = JWT::decode($token, $key, array('HS256'));
             $decoded           = json_decode(json_encode($decoded), true);
             $customerId        = $decoded['customer_id'];
@@ -142,7 +142,7 @@ class WebCheckout
     {
         try {
             $key         = trim($this->getConfig()->getApikey());
-            JWT::$leeway = 60;
+            JWT::$leeway = 300;
             $decoded     = JWT::decode($token, $key, array('HS256'));
 
             return json_decode(json_encode($decoded), true);
