@@ -501,6 +501,31 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     }
 
     /**
+     * Custom action to login user and redirect to bonus points
+     */
+    public function bonusPointsAction()
+    {
+        $sessionId = $this->Request()->getParam('sessionId');
+
+        if (isset($sessionId)) {
+            session_write_close();
+            session_id($sessionId);
+            session_start(array(
+                'sessionId' => $sessionId
+            ));
+        }
+
+        $token = $this->Request()->getParam('token');
+        $this->session->offsetSet('sgWebView', true);
+
+        if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+            $this->redirect('BonusSystem/points');
+        } else {
+            $this->redirect('shopgate/error');
+        }
+    }
+
+    /**
      * Custom function to add coupon to cart
      */
     public function addCouponsCodeAction()
