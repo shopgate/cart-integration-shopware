@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [2.9.91] - 2020-06-24
+### Added
+- support for bonus points page
+
 ## [2.9.90] - 2020-01-14
 ### Fixed
 - export of customer group specific prices
@@ -146,7 +150,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [2.9.72] - 2017-11-20
 ### Fixed
-- fixed URL in product redirect 
+- fixed URL in product redirect
 
 ## [2.9.71] - 2017-11-08
 ### Added
@@ -821,7 +825,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.90...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.91...HEAD
+[2.9.91]: https://github.com/shopgate/interface-shopware/compare/2.9.90...2.9.91
 [2.9.90]: https://github.com/shopgate/interface-shopware/compare/2.9.89...2.9.90
 [2.9.89]: https://github.com/shopgate/interface-shopware/compare/2.9.88...2.9.89
 [2.9.88]: https://github.com/shopgate/interface-shopware/compare/2.9.87...2.9.88
