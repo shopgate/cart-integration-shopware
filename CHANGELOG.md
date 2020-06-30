@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [2.9.91] - 2020-06-24
 ### Added
-- support for bonus points page
+- support for bonus points and account/documents page
 
 ## [2.9.90] - 2020-01-14
 ### Fixed

@@ -433,6 +433,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             );
 
             $this->subscribeEvent(
+              'Enlight_Controller_Action_Frontend_Account_Documents',
+              'onFrontendCustom'
+            );
+
+            $this->subscribeEvent(
                 'Enlight_Controller_Action_Frontend_Account_Password',
                 'onFrontendPassword'
             );

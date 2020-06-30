@@ -10,7 +10,7 @@
     <author>Shopgate GmbH</author>
     <compatibility minVersion="5.2.0"/>
     <changelog version="2.9.91">
-        <changes lang="en">Added support for bonus points page</changes>
+        <changes lang="en">Added support for bonus points and documents page</changes>
     </changelog>
     <description>
         <![CDATA[
