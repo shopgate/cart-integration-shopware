@@ -306,11 +306,11 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $sessionId = $this->Request()->getParam('sessionId');
 
         if (isset($sessionId)) {
-          session_write_close();
-          session_id($sessionId);
-          session_start(array(
-            'sessionId' => $sessionId
-          ));
+            session_write_close();
+            session_id($sessionId);
+            session_start(array(
+              'sessionId' => $sessionId
+            ));
         }
 
         $token = $this->Request()->getParam('token');
