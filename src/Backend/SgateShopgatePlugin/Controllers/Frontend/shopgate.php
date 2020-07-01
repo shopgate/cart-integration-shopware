@@ -303,20 +303,20 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
     private function loginHelper()
     {
-      $sessionId = $this->Request()->getParam('sessionId');
+        $sessionId = $this->Request()->getParam('sessionId');
 
-      if (isset($sessionId)) {
-        session_write_close();
-        session_id($sessionId);
-        session_start(array(
-          'sessionId' => $sessionId
-        ));
-      }
+        if (isset($sessionId)) {
+          session_write_close();
+          session_id($sessionId);
+          session_start(array(
+            'sessionId' => $sessionId
+          ));
+        }
 
-      $token = $this->Request()->getParam('token');
-      $this->session->offsetSet('sgWebView', true);
+        $token = $this->Request()->getParam('token');
+        $this->session->offsetSet('sgWebView', true);
 
-      return $this->webCheckoutHelper->loginAppUser($token, $this->Request());
+        return $this->webCheckoutHelper->loginAppUser($token, $this->Request());
     }
 
     public function pluginAction()
