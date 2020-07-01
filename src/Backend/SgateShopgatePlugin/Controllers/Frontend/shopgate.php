@@ -494,7 +494,11 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->session->offsetSet('sgWebView', true);
 
         if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
-            $this->redirect('checkout/confirm');
+            if (Shopware()->Config()->get('always_select_payment')) {
+                $this->redirect('checkout/shippingPayment');
+            } else {
+                $this->redirect('checkout/confirm');
+            }
         } else {
             $this->redirect('shopgate/error');
         }

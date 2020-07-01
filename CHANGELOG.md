@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- option to check the "always_select_payment" flag during checkout
+- Increased the JWT Token timeout from 60 seconds to 5 minutes
+
+### Fixed
+- export of customer group specific prices
 
 ## [2.9.91] - 2020-06-24
 ### Added
