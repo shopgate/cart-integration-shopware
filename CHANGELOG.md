@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Increased the JWT Token timeout from 60 seconds to 5 minutes
 
 ### Fixed
+- category image urls for Shopware 5.6
 - export of customer group specific prices
 
 ## [2.9.90] - 2020-01-14
