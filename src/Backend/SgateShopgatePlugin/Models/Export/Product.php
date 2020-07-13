@@ -656,6 +656,120 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         return $result;
     }
 
+    private function hasInstalledPlugin($name)
+    {
+        $plugins = Shopware()->Db()->fetchAll("
+            SELECT `name`
+            FROM s_core_plugins
+            WHERE source != 'Default' AND active = 1
+        ");
+
+        foreach ($plugins as $plugin) {
+            if ($plugin['name'] == $name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function grabCustomizedAttributesForArticle($article)
+    {
+        $query = "
+            SELECT
+                `template`.`id` AS template_id,
+                `template`.`internal_name` AS template_internal_name,
+                `template`.`display_name` AS template_display_name,
+                `template`.`description` AS template_description,
+                `template`.`media_id` AS template_media_id,
+                `template`.`step_by_step_configurator` AS template_step_by_step_configurator,
+                `template`.`active` AS template_active,
+                `template`.`confirm_input` AS template_confirm_input,
+
+                `option`.`id` AS option_id,
+                `option`.`template_id` AS option_template_id,
+                `option`.`name` AS option_name,
+                `option`.`description` AS option_description,
+                `option`.`ordernumber` AS option_ordernumber,
+                `option`.`required` AS option_required,
+                `option`.`type` AS option_type,
+                `option`.`position` AS option_position,
+                `option`.`default_value` AS option_default_value,
+                `option`.`placeholder` AS option_placeholder,
+                `option`.`is_once_surcharge` AS option_is_once_surcharge,
+                `option`.`max_text_length` AS option_max_text_length,
+                `option`.`min_value` AS option_min_value,
+                `option`.`max_value` AS option_max_value,
+                `option`.`max_file_size` AS option_max_file_size,
+                `option`.`min_date` AS option_min_date,
+                `option`.`max_date` AS option_max_date,
+                `option`.`max_files` AS option_max_files,
+                `option`.`interval` AS option_interval,
+                `option`.`could_contain_values` AS option_could_contain_values,
+                `option`.`allows_multiple_selection` AS option_allows_multiple_selection,
+
+                `price`.`id` AS price_id,
+                `price`.`option_id` AS price_option_id,
+                `price`.`value_id` AS price_value_id,
+                `price`.`surcharge` AS price_surcharge,
+                `price`.`tax_id` AS price_tax_id,
+                `price`.`customer_group_name` AS price_customer_group_name,
+                `price`.`customer_group_id` AS price_customer_group_id,
+                `price`.`is_percentage_surcharge` AS price_is_percentage_surcharge,
+                `price`.`percentage` AS price_percentage
+
+            FROM
+                s_plugin_custom_products_template `template`
+                LEFT JOIN s_plugin_custom_products_template_product_relation `r` ON `r`.`template_id` = `template`.id
+                LEFT JOIN s_plugin_custom_products_option `option` ON `option`.`template_id` = `template`.id
+                LEFT JOIN s_plugin_custom_products_price `price` ON `price`.`option_id` = `option`.`id`
+            WHERE
+                article_id = ${article['articleID']}
+                AND `template`.`active` = 1
+        ";
+
+        return Shopware()->Db()->fetchAll($query);
+    }
+
+    private function getCustomizableAttributes($article)
+    {
+        $customAttributes = $this->grabCustomizedAttributesForArticle($article);
+
+        if (count($customAttributes) == 0) {
+            return [];
+        }
+
+        // The SwagCustomProducts plugin allows one template per article
+        $template = ['options' => []];
+
+        // Grab the template information from the first entry
+        foreach ($customAttributes[0] as $key => $value) {
+            // If the index starts with template_
+            if (strpos($key, 'template_') === 0) {
+                // Store it and strip the prefix
+                $template[str_replace('template_', '', $key)] = $value;
+            }
+        }
+
+        // Run through the options and format them into a neat array
+        foreach ($customAttributes as $attribute) {
+
+            $option = ['price' => []];
+            foreach ($attribute as $key => $value) {
+                if (strpos($key, 'option_') === 0) {
+                    $option[str_replace('option_', '', $key)] = $value;
+                }
+                if (strpos($key, 'price_') === 0) {
+                    $option['price'][str_replace('price_', '', $key)] = $value;
+                }
+            }
+
+            $template['options'][] = $option;
+        }
+
+        return $template;
+    }
+
     /**
      * Prepare item properties prior to xml/csv export
      *
@@ -704,6 +818,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
                     $properties[$label][] = $attr;
                 }
             }
+        }
+
+        if ($this->hasInstalledPlugin('SwagCustomProducts')) {
+            $properties['CustomizedAttributes'] = json_encode($this->getCustomizableAttributes($article));
         }
 
         $sizeUnit = $this->config->getExportDimensionUnit();

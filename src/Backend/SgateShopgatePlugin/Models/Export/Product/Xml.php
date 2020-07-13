@@ -430,7 +430,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
         $result     = array();
         foreach ($properties as $label => $value) {
             if (!empty($value)) {
-                $value              = implode(', ', $value);
+                if (!is_string($value)) {
+                    $value = implode(', ', $value);
+                }
+
                 $propertyItemObject = new Shopgate_Model_Catalog_Property();
                 $propertyItemObject->setUid(bin2hex($label));
                 $propertyItemObject->setLabel($label);
