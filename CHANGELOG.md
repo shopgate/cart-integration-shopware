@@ -8,10 +8,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - option to check the "always_select_payment" flag during checkout
 - Increased the JWT Token timeout from 60 seconds to 5 minutes
+- Disabled the bot flag in the session during web checkout
 
 ### Fixed
 - category image urls for Shopware 5.6
 - export of customer group specific prices
+- Fixed cart being emptied upon login
 
 ## [2.9.90] - 2020-01-14
 ### Fixed
@@ -153,7 +155,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [2.9.72] - 2017-11-20
 ### Fixed
-- fixed URL in product redirect 
+- fixed URL in product redirect
 
 ## [2.9.71] - 2017-11-08
 ### Added
