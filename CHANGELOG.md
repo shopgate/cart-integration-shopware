@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - category image urls for Shopware 5.6
 - export of customer group specific prices
 - Fixed cart being emptied upon login
+- missing article number for cart rule items in the order details
 
 ## [2.9.90] - 2020-01-14
 ### Fixed
