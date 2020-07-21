@@ -428,7 +428,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             );
 
             $this->subscribeEvent(
-              'Enlight_Controller_Action_Frontend_BonusSystem',
+              'Enlight_Controller_Action_Frontend_BonusSystem_Points',
               'onFrontendCustom'
             );
 
@@ -1535,7 +1535,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      */
     protected function isInWebView($args)
     {
-        $shopgateAppCookie = $args->getRequest()->getCookie('sgWebView');
+        $shopgateAppCookie = $args->getSubject()->Request()->getCookie('sgWebView');
         $shopgateApp       = Shopware()->Session()->offsetGet('sgWebView');
 
         if ((isset($shopgateApp) && $shopgateApp) || (isset($shopgateAppCookie) && $shopgateAppCookie)) {
