@@ -301,6 +301,24 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->pluginAction();
     }
 
+    private function loginHelper()
+    {
+        $sessionId = $this->Request()->getParam('sessionId');
+
+        if (isset($sessionId)) {
+            session_write_close();
+            session_id($sessionId);
+            session_start(array(
+              'sessionId' => $sessionId
+            ));
+        }
+
+        $token = $this->Request()->getParam('token');
+        $this->session->offsetSet('sgWebView', true);
+
+        return $this->webCheckoutHelper->loginAppUser($token, $this->Request());
+    }
+
     public function pluginAction()
     {
         define("_SHOPGATE_API", true);
@@ -399,20 +417,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function accountAction()
     {
-        $sessionId = $this->Request()->getParam('sessionId');
-
-        if (isset($sessionId)) {
-            session_write_close();
-            session_id($sessionId);
-            session_start(array(
-                'sessionId' => $sessionId
-            ));
-        }
-
-        $token = $this->Request()->getParam('token');
-        $this->session->offsetSet('sgWebView', true);
-
-        if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+        if ($this->loginHelper()) {
             $userData = $this->admin->sGetUserData();
             $this->session->offsetSet('sPaymentID', $userData["paymentID"]);
             $this->session->offsetSet('sgAccountView', true);
@@ -427,20 +432,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function accountOrdersAction()
     {
-        $sessionId = $this->Request()->getParam('sessionId');
-
-        if (isset($sessionId)) {
-            session_write_close();
-            session_id($sessionId);
-            session_start(array(
-                'sessionId' => $sessionId
-            ));
-        }
-
-        $token = $this->Request()->getParam('token');
-        $this->session->offsetSet('sgWebView', true);
-
-        if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+        if ($this->loginHelper()) {
             $userData = $this->admin->sGetUserData();
             $this->session->offsetSet('sPaymentID', $userData["paymentID"]);
             $this->session->offsetSet('sgAccountView', true);
@@ -455,20 +447,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function payPalExpressAction()
     {
-        $sessionId = $this->Request()->getParam('sessionId');
-
-        if (isset($sessionId)) {
-            session_write_close();
-            session_id($sessionId);
-            session_start(array(
-                'sessionId' => $sessionId
-            ));
-        }
-
         $token = $this->Request()->getParam('token');
-        $this->session->offsetSet('sgWebView', true);
 
-        if (empty($token) || $this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+        if (empty($token) || $this->loginHelper()) {
             $this->redirect('checkout/cart');
         } else {
             $this->redirect('shopgate/error');
@@ -480,25 +461,36 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function checkoutAction()
     {
-        $sessionId = $this->Request()->getParam('sessionId');
-
-        if (isset($sessionId)) {
-            session_write_close();
-            session_id($sessionId);
-            session_start(array(
-                'sessionId' => $sessionId
-            ));
-        }
-
-        $token = $this->Request()->getParam('token');
-        $this->session->offsetSet('sgWebView', true);
-
-        if ($this->webCheckoutHelper->loginAppUser($token, $this->Request())) {
+        if ($this->loginHelper()) {
             if (Shopware()->Config()->get('always_select_payment')) {
                 $this->redirect('checkout/shippingPayment');
             } else {
                 $this->redirect('checkout/confirm');
             }
+        } else {
+            $this->redirect('shopgate/error');
+        }
+    }
+
+    /**
+     * Custom action to login user and redirect to bonus points
+     */
+    public function bonusPointsAction()
+    {
+        if ($this->loginHelper()) {
+            $this->redirect('BonusSystem/points');
+        } else {
+            $this->redirect('shopgate/error');
+        }
+    }
+
+    /**
+     * Custom action to login user and redirect to account documents
+     */
+    public function documentsAction()
+    {
+        if ($this->loginHelper()) {
+            $this->redirect('account/documents');
         } else {
             $this->redirect('shopgate/error');
         }
