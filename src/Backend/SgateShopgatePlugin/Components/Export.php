@@ -355,21 +355,21 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
      */
     public function getCustomerGroupIdByKey($customerGroupKey)
     {
-        $cacheKey = self::CACHE_KEY_CUSTOMERGROUPS;
-        $cache    = $this->getExportCache($cacheKey, $customerGroupKey);
+        $cacheKey = self::CACHE_KEY_CUSTOMERGROUPS . $customerGroupKey;
+        $cache    = $this->getExportCache($cacheKey);
         if ($cache === null) {
             $cache           = array();
             $groupRepository = Shopware()->Models()->getRepository('Shopware\Models\Customer\Group');
             $customerGroup   = $groupRepository->findOneBy(array('key' => $customerGroupKey));
 
             if ($customerGroup instanceof \Shopware\Models\Customer\Group) {
-                $cache[$customerGroupKey] = $customerGroup->getId();
+                $cache = $customerGroup->getId();
             }
 
             $this->setExportCache($cacheKey, $cache);
         }
 
-        return isset($cache[$customerGroupKey]) ? $cache[$customerGroupKey] : null;
+        return $cache;
     }
 
     /**
@@ -744,6 +744,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             $this->setExportCache($cacheKey, $cache);
         }
 
-        return isset($cache) ? $cache : null;
+        return $cache;
     }
 }
