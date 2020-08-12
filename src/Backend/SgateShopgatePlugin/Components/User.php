@@ -123,15 +123,6 @@ class User
             $httpResponse->setHttpResponseCode(401);
             $httpResponse->setBody(json_encode($error));
         } else {
-            // if (!empty($basket['content'])) {
-            //     $this->basket->clearBasket();
-            //     $this->basket->sRefreshBasket();
-
-            //     foreach ($basket['content'] as $basketItem) {
-            //         $this->basket->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
-            //     }
-            // }
-
             $user = $this->admin->sGetUserData();
             $user = $user['additional']['user'];
 

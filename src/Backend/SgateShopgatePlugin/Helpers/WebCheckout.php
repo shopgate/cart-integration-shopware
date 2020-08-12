@@ -85,19 +85,6 @@ class WebCheckout
                 throw new Exception($checkUser['sErrorMessages'][0], 400);
             }
 
-            // Shopware()->Modules()->Basket()->sRefreshBasket();
-            // Shopware()->Modules()->Basket()->clearBasket();
-
-            // if (!empty($basket['content'])) {
-            //     foreach ($basket['content'] as $basketItem) {
-            //         Shopware()->Modules()->Basket()->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
-            //     }
-
-            //     if (!empty($voucher)) {
-            //         Shopware()->Modules()->Basket()->sAddVoucher($voucher['code']);
-            //     }
-            // }
-
             return true;
         }
 
