@@ -205,7 +205,7 @@ class Cart
             $this->session->offsetSet('promotionVouchers', $promotionVouchers);
         }
 
-        $response = $this->addArticlesToCart($articles, $sessionId);
+        $response = $this->addArticlesToCart($request, $articles, $sessionId);
         if ($response) {
             $httpResponse->setHttpResponseCode(401);
             $httpResponse->setBody(json_encode($response));
@@ -447,13 +447,17 @@ class Cart
      *
      * @return array
      */
-    private function addArticlesToCart($articles, $sessionId)
+    private function addArticlesToCart($request, $articles, $sessionId)
     {
         $response = array(); // Contains only errors
-
         foreach ($articles as $article) {
             $articleId   = trim($article['product_id']);
             $orderNumber = trim($article['variant_id']);
+
+            // Used by the SwagCustomProducts Plugin
+            if (isset($article['customProductsHash'])) {
+                $request->setQuery('customProductsHash', $article['customProductsHash']);
+            }
 
             $product = Shopware()->Modules()->Articles()->sGetArticleById($articleId);
 
