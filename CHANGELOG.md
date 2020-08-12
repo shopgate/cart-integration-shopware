@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Support for SwagCustomProducts plugin in export and checkout
+
 
 ## [2.9.91] - 2020-07-24
 ### Added
