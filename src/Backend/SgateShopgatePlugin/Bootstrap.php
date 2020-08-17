@@ -155,7 +155,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      */
     public function getVersion()
     {
-        return '2.9.90';
+        return '2.9.91';
     }
 
     /**
@@ -425,6 +425,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $this->subscribeEvent(
                 'Enlight_Controller_Action_PostDispatch_Frontend_Custom',
                 'onFrontendCustom'
+            );
+
+            $this->subscribeEvent(
+              'Enlight_Controller_Action_Frontend_BonusSystem_Points',
+              'onFrontendCustom'
+            );
+
+            $this->subscribeEvent(
+              'Enlight_Controller_Action_Frontend_Account_Documents',
+              'onFrontendCustom'
             );
 
             $this->subscribeEvent(
@@ -1357,34 +1367,43 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      */
     public function onFrontendAccount(\Enlight_Event_EventArgs $args)
     {
-        $sgCloudCallbackData = Shopware()->Session()->offsetGet('sgCloudCallbackData');
-        $sgAccountView       = $this->isAccountView();
-
+        $request = $args->getSubject()->Request();
         $view = $args->getSubject()->View();
-        $view->addTemplateDir($this->Path() . 'Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
-        $view->assign('sgAccountView', $sgAccountView);
-
-        $forgotPassword = $view->getAssign('sgForgotPassword');
-        if (empty($forgotPassword)) {
-            $view->assign('sgForgotPassword', false);
-        }
-        $view->assign('sgFrontendAccount', true);
-        $view->assign('sgFrontendRegister', false);
+        $view->addTemplateDir($this->Path() . 'Views/');
         $view->assign('sgActionName', false);
-
-        $user  = Shopware()->Modules()->Admin()->sGetUserData();
-        $user  = $user['additional']['user'];
-        $hash  = $user['password'];
-        $email = $user['email'];
-
-        $view->assign('sgCloudCallbackData', $sgCloudCallbackData);
-        $view->assign('sgHash', $hash);
-        $view->assign('sgEmail', $email);
-        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
 
         $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
         $view->assign('sgCustomCss', $customCss);
+
+        if ($request->getPathInfo() !== '/account/documents') {
+            $sgCloudCallbackData = Shopware()->Session()->offsetGet('sgCloudCallbackData');
+            $sgAccountView       = $this->isAccountView();
+
+            $view->assign('sgAccountView', $sgAccountView);
+
+            $forgotPassword = $view->getAssign('sgForgotPassword');
+            if (empty($forgotPassword)) {
+                $view->assign('sgForgotPassword', false);
+            }
+            $view->assign('sgFrontendAccount', true);
+            $view->assign('sgFrontendRegister', false);
+            $view->assign('sgActionName', false);
+
+            $user  = Shopware()->Modules()->Admin()->sGetUserData();
+            $user  = $user['additional']['user'];
+            $hash  = $user['password'];
+            $email = $user['email'];
+
+            $view->assign('sgCloudCallbackData', $sgCloudCallbackData);
+            $view->assign('sgHash', $hash);
+            $view->assign('sgEmail', $email);
+            $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+        } else {
+            $view->assign('sgAccountView', false);
+            $view->assign('sgForgotPassword', false);
+            $view->assign('sgFrontendAccount', false);
+        }
     }
 
     public function onFrontendPassword(\Enlight_Event_EventArgs $args)
@@ -1516,7 +1535,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      */
     protected function isInWebView($args)
     {
-        $shopgateAppCookie = $args->getRequest()->getCookie('sgWebView');
+        $shopgateAppCookie = $args->getSubject()->Request()->getCookie('sgWebView');
         $shopgateApp       = Shopware()->Session()->offsetGet('sgWebView');
 
         if ((isset($shopgateApp) && $shopgateApp) || (isset($shopgateAppCookie) && $shopgateAppCookie)) {

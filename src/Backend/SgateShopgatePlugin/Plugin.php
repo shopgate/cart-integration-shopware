@@ -3722,6 +3722,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 $orderItem->setUnitAmount($externalCoupon->getAmount() * -1);
                 $orderItem->setUnitAmountWithTax($externalCoupon->getAmount() * -1);
                 $orderItem->setName($externalCoupon->getName());
+                $orderItem->setItemNumberPublic($externalCoupon->getCode());
                 $orderItem->setItemNumber($externalCoupon->getCode());
                 $orderItem->setTaxPercent(0);
                 $orderItem->setOrderItemId($externalCoupon->getCode());

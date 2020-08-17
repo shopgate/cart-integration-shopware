@@ -5,15 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.91] - 2020-07-24
 ### Added
 - option to check the "always_select_payment" flag during checkout
 - Increased the JWT Token timeout from 60 seconds to 5 minutes
+- support for bonus points and account/documents page
 - Disabled the bot flag in the session during web checkout
 
 ### Fixed
 - category image urls for Shopware 5.6
 - export of customer group specific prices
 - Fixed cart being emptied upon login
+- missing article number for cart rule items in the order details
 
 ## [2.9.90] - 2020-01-14
 ### Fixed
@@ -830,7 +834,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.90...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.91...HEAD
+[2.9.91]: https://github.com/shopgate/interface-shopware/compare/2.9.90...2.9.91
 [2.9.90]: https://github.com/shopgate/interface-shopware/compare/2.9.89...2.9.90
 [2.9.89]: https://github.com/shopgate/interface-shopware/compare/2.9.88...2.9.89
 [2.9.88]: https://github.com/shopgate/interface-shopware/compare/2.9.87...2.9.88
