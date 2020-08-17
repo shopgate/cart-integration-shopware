@@ -80,9 +80,22 @@ class User
         $sessionId = $request->getPost('sessionId');
 
         if (isset($sessionId)) {
-            //Set session id using both methods because standard shopware login merges basket with session_id
+            /**
+             * Set session id using both methods because standard shopware
+             * login merges basket with session_id. Setting the session_id
+             * requires resetting the session entirely since it can no longer
+             * be changed once session_start() was called.
+             *
+             * All session variables are saved and replaced once the session
+             * is recreated with the desired id.
+             */
+            $oldSession = array_merge(array(), $_SESSION);
+            session_commit(); // Ends the current session
+            session_id($sessionId); // Sets the ID for the new session
+            session_start(); // Stars a fresh session with the new ID
+            $_SESSION = array_merge(array(), $oldSession); // Replace old session variables
+
             $this->session->offsetSet('sessionId', $sessionId);
-            session_id($sessionId);
         }
 
         $basket = $this->basket->sGetBasket();
@@ -123,15 +136,6 @@ class User
             $httpResponse->setHttpResponseCode(401);
             $httpResponse->setBody(json_encode($error));
         } else {
-            if (!empty($basket['content'])) {
-                $this->basket->clearBasket();
-                $this->basket->sRefreshBasket();
-
-                foreach ($basket['content'] as $basketItem) {
-                    $this->basket->sAddArticle($basketItem['ordernumber'], $basketItem['quantity']);
-                }
-            }
-
             $user = $this->admin->sGetUserData();
             $user = $user['additional']['user'];
 
