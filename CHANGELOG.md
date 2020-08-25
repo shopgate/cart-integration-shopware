@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - The coupon code got lost after login
+- The cart getting lost after a user returns from checkout too quickly
 
 ## [2.9.91] - 2020-07-24
 ### Added
