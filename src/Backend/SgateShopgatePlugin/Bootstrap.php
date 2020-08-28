@@ -1403,6 +1403,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $view->assign('sgAccountView', false);
             $view->assign('sgForgotPassword', false);
             $view->assign('sgFrontendAccount', false);
+            $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
         }
     }
 
