@@ -41,7 +41,7 @@ class WebCheckout
 
         if (isset($token)) {
             $key               = trim($this->getConfig()->getApikey());
-            JWT::$leeway       = 60;
+            JWT::$leeway       = 300;
             $decoded           = JWT::decode($token, $key, array('HS256'));
             $decoded           = json_decode(json_encode($decoded), true);
             $customerId        = $decoded['customer_id'];
@@ -56,6 +56,24 @@ class WebCheckout
 
             if (count($user) > 1) {
                 return false;
+            }
+
+            /**
+             * Anti-CAPTCHA:
+             *
+             * During initialization, the system sometimes sets the Bot flag
+             * in the session depending on the user agent. If the flag is set,
+             * the session is scrapped and certain features, like adding
+             * articles to the cart, are disabled. It's not always possible to
+             * trick the system by spoofind the user agent so it's necessary
+             * to explicitly disable the flag here or risk the cart items not
+             * being set, resulting in a cleared cart upon login.
+             *
+             * @see ./Shopware/Plugins/Default/Core/System/Bootstrap.php:102 @onInitResourceSystem
+             * @see ./Shopware/Core/sBasket.php:1804 @sAddArticle
+             */
+            if (Shopware()->Session()->Bot) {
+                Shopware()->Session()->Bot = false;
             }
 
             $request->setPost('email', $user[0]["email"]);
@@ -142,7 +160,7 @@ class WebCheckout
     {
         try {
             $key         = trim($this->getConfig()->getApikey());
-            JWT::$leeway = 60;
+            JWT::$leeway = 300;
             $decoded     = JWT::decode($token, $key, array('HS256'));
 
             return json_decode(json_encode($decoded), true);

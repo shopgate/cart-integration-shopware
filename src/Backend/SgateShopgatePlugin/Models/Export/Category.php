@@ -85,14 +85,19 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Category extend
     public function getImageUrl($category)
     {
         if ($category->getMedia()) {
-            $baseUrl = "http://";
-            $baseUrl .= Shopware()->Shop()->getHost();
-            $baseUrl .= Shopware()->Shop()->getBasePath();
-            $baseUrl .= "/";
             // It is possible to have inconsistent data that appears the getMedia() method to return an invalid media object, without really being existent
             // -> callin the getPath Method would throw an exception in that case
             try {
-                $baseUrl .= $category->getMedia()->getPath();
+                if (version_compare(Shopware()->Config()->version, '5.6', '>=')) {
+                    $mediaService = Shopware()->Container()->get('shopware_media.media_service');
+                    $baseUrl = $mediaService->getUrl($category->getMedia()->getPath());
+                } else {
+                    $baseUrl = "http://";
+                    $baseUrl .= Shopware()->Shop()->getHost();
+                    $baseUrl .= Shopware()->Shop()->getBasePath();
+                    $baseUrl .= "/";
+                    $baseUrl .= $category->getMedia()->getPath();
+                }
             } catch (Exception $e) {
                 $baseUrl = null;
             }
