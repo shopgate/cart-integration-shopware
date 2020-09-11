@@ -5443,6 +5443,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $exportModel->setConfig($this->config);
         $exportModel->setDetail($mainDetail);
         $exportModel->setArticle($article);
+
+        /** @var sArticles $sArticlesObject */
         $sArticlesObject             = Shopware()->Modules()->Articles();
         $sArticlesObject->category   = $category;
         $sArticlesObject->categoryId = $category->getId();
@@ -5459,6 +5461,18 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         $exportModel->setArticleData($articleData);
         $exportModel->setIsChild(false);
+
+        $unit = $mainDetail->getUnit();
+        if ($unit) {
+            /** Apply translations for unit data */
+            $unitData = $sArticlesObject->sGetUnit($unit->getId());
+            if (!empty($unitData['unit'])) {
+                $unit->setUnit($unitData['unit']);
+            }
+            if (!empty($unitData['description'])) {
+                $unit->setName($unitData['description']);
+            }
+        }
 
         return $exportModel;
     }

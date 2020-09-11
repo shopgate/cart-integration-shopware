@@ -123,7 +123,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
         $articleData = $this->articleData;
         $purchaseSteps = $this->getPurchaseSteps($articleDetail);
         if (!empty($purchaseSteps) && $purchaseSteps > 1) {
-            parent::setName($articleData['articleName'] . ' ' . $purchaseSteps . 'er Packung');
+            $packLabel = 'er Packung';
+            if (!empty($articleData['packunit'])) {
+                $packLabel = $articleData['packunit'];
+            }
+            parent::setName($articleData['articleName'] . ' ' . $purchaseSteps . $packLabel);
         } else {
             parent::setName($articleData['articleName']);
         }
@@ -396,8 +400,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
             foreach ($images as $image) {
                 $imagesItemObject = new Shopgate_Model_Media_Image();
                 $imagesItemObject->setUrl($image);
-                $imagesItemObject->setTitle($this->article->getName());
-                $imagesItemObject->setAlt($this->article->getName());
+                $imagesItemObject->setTitle($this->articleData['articleName']);
+                $imagesItemObject->setAlt($this->articleData['articleName']);
                 $imagesItemObject->setSortOrder($i++);
                 $result[] = $imagesItemObject;
             }
