@@ -70,14 +70,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
      */
     private $snippets;
 
-    private $propertiesLabels = [
+    private $propertiesLabels = array(
         'manufacture' => 'Herstellernummer',
         'content' => 'Inhalt',
         'qty' => 'Menge',
         'width' => 'Breite',
         'height' => 'Höhe',
         'length' => 'Länge',
-    ];
+    );
 
     /**
      * @param Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export $exportComponent
@@ -571,6 +571,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
     /**
      * @param string $description
      *
+     * @param $articleData
      * @return string
      */
     protected function getCustomFieldsAsDescription($description, $articleData)
