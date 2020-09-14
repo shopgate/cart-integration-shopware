@@ -155,7 +155,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      */
     public function getVersion()
     {
-        return '2.9.91-tonitec';
+        return '2.9.91-tonitec-3';
     }
 
     /**

@@ -3,14 +3,17 @@
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.3/engine/Shopware/Components/Plugin/schema/plugin.xsd">
     <label lang="de">Swag Plugin System</label>
     <label lang="en">Swag plugin system</label>
-    <version>2.9.91-tonitec</version>
+    <version>2.9.91-tonitec-3</version>
     <copyright>(c) by Shopgate GmbH</copyright>
     <license>Apache</license>
     <link>https://store.shopware.com/sgate00633f/shopgate-mobile-commerce-fuer-shopware.html</link>
     <author>Shopgate GmbH</author>
     <compatibility minVersion="5.2.0"/>
-    <changelog version="2.9.91-tonitec">
+    <changelog version="2.9.91-tonitec-3">
         <changes lang="en">Added support for SwagCustomProducts features used by Tonitec</changes>
+        <changes lang="en">Fixed item not being added to cart if its "laststock" = 0 but "InstockInfo" flag was set in the settings</changes>
+        <changes lang="en">Fixed coupon code getting lost after login</changes>
+        <changes lang="en">Fixed cart getting lost after a user returns from checkout too quickly</changes>
     </changelog>
     <description>
         <![CDATA[

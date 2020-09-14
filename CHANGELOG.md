@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - Support for SwagCustomProducts plugin in export and checkout
 
+### Fixed
+- Item not added to cart if its "laststock" = 0 but "InstockInfo" flag was set in the settings
+- The coupon code got lost after login
+- The cart getting lost after a user returns from checkout too quickly
 
 ## [2.9.91] - 2020-07-24
 ### Added

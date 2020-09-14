@@ -47,6 +47,18 @@
                             false,
                             {ldelim}'sessionId': '{$sgSessionId}', 'promotionVouchers': '{$sgPromotionVouchers}'{rdelim},
                             function (err, serial, output) {ldelim}
+
+                                // Update the cart in the background
+                                var commands = [
+                                    {ldelim}
+                                        'c': 'broadcastEvent',
+                                        'p': {ldelim}
+                                            'event': 'fetchCartAfterSessionUpdate'
+                                        {rdelim}
+                                    {rdelim},
+                                ]
+                                window.SGAppConnector.sendAppCommands(commands);
+
                                 {if $sgActionName === 'shippingPayment'}
                                     {if $sgIsNewCustomer && $sgEmail && $sgHash }
                                         window.SGAppConnector.sendPipelineRequest(

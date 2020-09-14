@@ -527,7 +527,8 @@ class Cart
                 'CheckoutArticleNotFound', 'Product could not be found.', true
             );
         }
-        if (!empty($inStock['laststock']) || !empty(Shopware()->Config()->InstockInfo)) {
+
+        if (!empty($inStock['laststock']) && !empty(Shopware()->Config()->InstockInfo)) {
             if ((int)$inStock['instock'] <= 0 && !empty($inStock['laststock'])) {
                 return Shopware()->Snippets()->getNamespace('frontend')->get(
                     'CheckoutArticleNoStock',
