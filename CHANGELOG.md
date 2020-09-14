@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [2.10.0] - 2020-09-10
+### Added
+- Multi shop view support when export categories and products
+
 ## [2.9.91] - 2020-07-24
 ### Added
 - option to check the "always_select_payment" flag during checkout
