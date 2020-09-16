@@ -14,7 +14,7 @@ You can find more information in our [support center](https://support.shopgate.c
 
 ## Shop Multi Views and Translations
 
-We need distinguish url of plugin location to allow Shopware load correct shop view data, locale and configuration
+We need distinguishable URLs for the plugin location to enable Shopware loading the correct shop view data, locale and configuration.
 
 Shop settings generally should be
 
