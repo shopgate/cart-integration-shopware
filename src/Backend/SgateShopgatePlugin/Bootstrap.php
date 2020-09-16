@@ -155,7 +155,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      */
     public function getVersion()
     {
-        return '2.9.91';
+        return '2.9.92';
     }
 
     /**
@@ -1403,6 +1403,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $view->assign('sgAccountView', false);
             $view->assign('sgForgotPassword', false);
             $view->assign('sgFrontendAccount', false);
+            $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
         }
     }
 
@@ -1425,6 +1426,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgFrontendRegister', false);
         $view->assign('sgFrontendAccount', false);
         $view->assign('sgActionName', false);
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
 
         $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
         $view->assign('sgCustomCss', $customCss);

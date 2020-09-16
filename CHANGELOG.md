@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- updateSession pipeline was not called every time when session changed. Caused emtpy cart in engage.
 
 ## [2.10.0] - 2020-09-10
 ### Added
