@@ -860,6 +860,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
     {
         $currencySymbol = Shopware()->System()->sCurrency["symbol"];
         $basePrice      = '';
+        $unitDetails = $detail->getUnit();
 
         if ($detail->getPurchaseUnit() > 0
             && $detail->getUnit() != null
@@ -867,7 +868,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         ) {
             // remove trailing zeros to the right of the decimal point
             $referenceUnit = (string)(float)$detail->getReferenceUnit();
-            $unit = $detail->getUnit()->getName();
+            $unit = $unitDetails ? $unitDetails->getName() : 'St&uuml;ck';
             $amount = ($price / $detail->getPurchaseUnit()) * $detail->getReferenceUnit();
             $amount = Shopware()->Modules()->Articles()->sFormatPrice($amount);
 
@@ -885,7 +886,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
 
             $basePrice .= " / {$referenceUnit} {$unit}";
         } elseif ($this->getPurchaseSteps($detail) > 1) {
-            $label = $detail->getUnit()->getName();
+            $label = 'pro St&uuml;ck';
+            if ($unitDetails) {
+                $label = $unitDetails->getName();
+            }
             $amount    = Shopware()->Modules()->Articles()->sFormatPrice($price);
             $basePrice = "{$amount} {$currencySymbol} {$label}";
         }
