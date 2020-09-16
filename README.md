@@ -16,15 +16,15 @@ You can find more information in our [support center](https://support.shopgate.c
 
 We need distinguishable URLs for the plugin location to enable Shopware loading the correct shop view data, locale and configuration.
 
-Shop settings generally should be
+Example:
 
-- `virtual Url` field point to (example)
-    - /shop/de for DE shop
-    - /shop/en for EN shop
+If the shop is set up to have its virtual URL point to
+- `/shop/de` for the German shop
+- `/shop/en` for the English shop
 
-Plugin access uri should be accordingly:
-- /shop/de/shopgate/plugin for DE shop view and translations
-- /shop/en/shopgate/plugin for EN shop view and translations
+then access to the plugin should be
+- `/shop/de/shopgate/plugin` to get contents (catalog etc.) in German
+- `/shop/en/shopgate/plugin` to get contents (catalog etc.) in English
 
 ## Changelog
 
