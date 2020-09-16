@@ -66,7 +66,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Category_Xml ex
      */
     public function setName()
     {
-        parent::setName($this->item->getName());
+        parent::setName($this->categoryContent['name']);
     }
 
     /**
@@ -99,8 +99,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Category_Xml ex
         if ($imageUrl != null) {
             $imageItem = new Shopgate_Model_Media_Image();
             $imageItem->setUrl($this->getImageUrl($this->item));
-            $imageItem->setTitle($this->item->getName());
-            $imageItem->setAlt($this->item->getName());
+            $imageItem->setTitle($this->getName());
+            $imageItem->setAlt($this->getName());
 
             parent::setImage($imageItem);
         }

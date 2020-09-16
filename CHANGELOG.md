@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - updateSession pipeline was not called every time when session changed. Caused emtpy cart in engage.
 
+### Added
+- Multi shop view support when export categories and products
+
 ## [2.9.91] - 2020-07-24
 ### Added
 - option to check the "always_select_payment" flag during checkout
