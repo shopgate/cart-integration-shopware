@@ -12,7 +12,7 @@ Download and unzip the [latest releases](https://github.com/shopgate/cart-integr
 
 You can find more information in our [support center](https://support.shopgate.com/hc/en-us/articles/202798446-Connecting-to-Shopware) and our [developer documentation](https://docs.shopgate.com/).
 
-## Shop multi views and translations
+## Shop Multi Views and Translations
 
 We need distinguish url of plugin location to allow Shopware load correct shop view data, locale and configuration
 
