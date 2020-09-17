@@ -8,10 +8,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [2.9.92] - 2020-09-17
 ### Fixed
-- updateSession pipeline was not called every time when session changed. Caused emtpy cart in engage.
+- empty cart in web checkout after visiting the bonus points page
 
 ### Added
-- Multi shop view support when export categories and products
+- multi shop view / language support for the export of categories and products
 
 ## [2.9.91] - 2020-07-24
 ### Added
