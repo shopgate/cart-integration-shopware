@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.92] - 2020-09-17
 ### Fixed
 - updateSession pipeline was not called every time when session changed. Caused emtpy cart in engage.
 
@@ -839,7 +841,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.91...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.92...HEAD
+[2.9.92]: https://github.com/shopgate/interface-shopware/compare/2.9.91...2.9.92
 [2.9.91]: https://github.com/shopgate/interface-shopware/compare/2.9.90...2.9.91
 [2.9.90]: https://github.com/shopgate/interface-shopware/compare/2.9.89...2.9.90
 [2.9.89]: https://github.com/shopgate/interface-shopware/compare/2.9.88...2.9.89
