@@ -66,6 +66,20 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
     protected $translation;
 
     /**
+     * @var Shopware_Components_Snippet_Manager
+     */
+    private $snippets;
+
+    private $propertiesLabels = array(
+        'manufacture' => 'Herstellernummer',
+        'content' => 'Inhalt',
+        'qty' => 'Menge',
+        'width' => 'Breite',
+        'height' => 'Höhe',
+        'length' => 'Länge',
+    );
+
+    /**
      * @param Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export $exportComponent
      */
     public function __construct(Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export $exportComponent)
@@ -82,6 +96,38 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         } else {
             $this->translation = new Shopware_Components_Translation();
         }
+        $this->snippets = Shopware()->Snippets();
+        if ($this->snippets) {
+            $this->snippets->setLocale($this->locale);
+            $this->setPropertiesLabels();
+        }
+    }
+
+    private function setPropertiesLabels()
+    {
+        if (!$this->snippets) {
+            return;
+        }
+        $backendArticleViewMain = $this->snippets->getNamespace('backend/article/view/main');
+        $this->propertiesLabels['manufacture'] = $backendArticleViewMain->get(
+            'detail/settings/supplier_number', 'Herstellernummer'
+        );
+        $this->propertiesLabels['content'] = $backendArticleViewMain->get(
+            'detail/base_price/content', 'Inhalt'
+        );
+
+        $this->propertiesLabels['height'] = $backendArticleViewMain->get(
+            'detail/settings/height', 'Höhe'
+        );
+        $this->propertiesLabels['width'] = $backendArticleViewMain->get(
+            'detail/settings/width', 'Breite'
+        );
+        $this->propertiesLabels['length'] = $backendArticleViewMain->get(
+            'detail/settings/length', 'Länge'
+        );
+        $this->propertiesLabels['qty'] = $this->snippets->getNamespace('frontend/detail/data')->get(
+            'DetailDataColumnQuantity', 'Menge'
+        );
     }
 
     /**
@@ -451,7 +497,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
                 $description = $articleData['description_long'];
         }
 
-        $description = $this->getCustomFieldsAsDescription($description);
+        $description = $this->getCustomFieldsAsDescription($description, $articleData);
         $description = $this->addDownloadsToDescription($articleData['sDownloads'], $description);
 
         // remove all newlines and carriage returns
@@ -525,9 +571,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
     /**
      * @param string $description
      *
+     * @param $articleData
      * @return string
      */
-    protected function getCustomFieldsAsDescription($description)
+    protected function getCustomFieldsAsDescription($description, $articleData)
     {
         $attributesAsDescription = array_filter($this->config->getExportAttributesAsDescription());
         if (empty($attributesAsDescription)) {
@@ -536,6 +583,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
 
         $elements  = array_intersect($this->exportComponent->getArticleElements(), $attributesAsDescription);
         $customFields = array();
+        $translated = $this->translation->read(Shopware()->Shop()->getId(), 'article', $articleData['articleID']);
         foreach ($elements as $elementIndex => $elementName) {
             if (!empty($this->articleData[$elementIndex])) {
                 $customField = $this->articleData[$elementIndex];
@@ -550,7 +598,19 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             }
 
             if (!empty($customField)) {
-                $customFields[] = "<h4>{$elementName}</h4>\n{$customField}\n\n";
+                $attrLabel = $elementName;
+                if ($this->snippets) {
+                    $attrLabel = $this->snippets
+                        ->getNamespace('backend/attribute_columns')
+                        ->get('s_articles_attributes_' . $elementIndex . '_label', $elementName);
+                }
+
+                $key = '__attribute_' . $elementIndex;
+                if (!empty($translated[$key])) {
+                    $customField = $translated[$key];
+                }
+
+                $customFields[] = "<h4>{$attrLabel}</h4>\n{$customField}\n\n";
             }
             unset($customField);
         }
@@ -669,7 +729,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         $properties = array();
 
         if ($detail->getSupplierNumber()) {
-            $properties['Herstellernummer'][] = $detail->getSupplierNumber();
+            $properties[$this->propertiesLabels['manufacture']][] = $detail->getSupplierNumber();
         }
 
         if ($detail->getPurchaseUnit() > 0
@@ -677,22 +737,24 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             && $detail->getUnit()->getId()
         ) {
             $steps                  = str_replace(".", ",", round($detail->getPurchaseUnit(), 2));
-            $properties['Inhalt'][] = $steps . ' ' . $detail->getUnit()->getName();
+            $properties[$this->propertiesLabels['content']][] = $steps . ' ' . $detail->getUnit()->getName();
         }
 
         if ($this->getPurchaseSteps($detail)) {
             $steps = round($this->getPurchaseSteps($detail), 0);
             if ($steps > 1) {
-                $properties['Menge'][] = $steps . 'er Packung';
+                $properties[$this->propertiesLabels['qty']][] = $steps . ' ' . $detail->getUnit()->getName();
             }
         }
 
-        /* @var $attribute \Shopware\Models\Attribute\Article */
+        /* @var $attribute \Shopware\Models\Article\Article */
         $attribute = $detail->getAttribute();
         $elements  = $this->exportComponent->getArticleElements();
+
         if ($attribute) {
-            foreach ($elements as $attr => $label) {
-                $methodName = 'get' . str_replace('_', '', $attr);
+            $translated = $this->translation->read(Shopware()->Shop()->getId(), 'article', $detail->getId());
+            foreach ($elements as $attrId => $label) {
+                $methodName = 'get' . str_replace('_', '', $attrId);
                 if (!in_array($label, $this->getConfig()->getExportAttributes())
                     || !method_exists($attribute, $methodName)
                 ) {
@@ -701,7 +763,17 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
 
                 $attr = $attribute->$methodName();
                 if (!empty($attr)) {
-                    $properties[$label][] = $attr;
+                    $key = '__attribute_' . $attrId;
+                    if (!empty($translated[$key])) {
+                        $attr = $translated[$key];
+                    }
+                    $attrLabel = $label;
+                    if ($this->snippets) {
+                        $attrLabel = $this->snippets
+                            ->getNamespace('backend/attribute_columns')
+                            ->get('s_articles_attributes_' . $attrId . '_label', $label);
+                    }
+                    $properties[$attrLabel][] = $attr;
                 }
             }
         }
@@ -709,13 +781,13 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         $sizeUnit = $this->config->getExportDimensionUnit();
         if ($sizeUnit != -1) {
             if ((float)$detail->getWidth()) {
-                $properties['Breite'][] = (float)$detail->getWidth() . " $sizeUnit";
+                $properties[$this->propertiesLabels['width']][] = (float)$detail->getWidth() . " $sizeUnit";
             }
             if ((float)$detail->getHeight()) {
-                $properties['Höhe'][] = (float)$detail->getHeight() . " $sizeUnit";
+                $properties[$this->propertiesLabels['height']][] = (float)$detail->getHeight() . " $sizeUnit";
             }
             if ((float)$detail->getLen()) {
-                $properties['Länge'][] = (float)$detail->getLen() . " $sizeUnit";
+                $properties[$this->propertiesLabels['length']][] = (float)$detail->getLen() . " $sizeUnit";
             }
         }
 
@@ -788,6 +860,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
     {
         $currencySymbol = Shopware()->System()->sCurrency["symbol"];
         $basePrice      = '';
+        $unitDetails = $detail->getUnit();
 
         if ($detail->getPurchaseUnit() > 0
             && $detail->getUnit() != null
@@ -795,8 +868,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         ) {
             // remove trailing zeros to the right of the decimal point
             $referenceUnit = (string)(float)$detail->getReferenceUnit();
-            $unit          = $detail->getUnit()->getName();
-
+            $unit = $unitDetails ? $unitDetails->getName() : 'St&uuml;ck';
             $amount = ($price / $detail->getPurchaseUnit()) * $detail->getReferenceUnit();
             $amount = Shopware()->Modules()->Articles()->sFormatPrice($amount);
 
@@ -814,8 +886,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
 
             $basePrice .= " / {$referenceUnit} {$unit}";
         } elseif ($this->getPurchaseSteps($detail) > 1) {
+            $label = 'pro St&uuml;ck';
+            if ($unitDetails) {
+                $label = $unitDetails->getName();
+            }
             $amount    = Shopware()->Modules()->Articles()->sFormatPrice($price);
-            $basePrice = "{$amount} {$currencySymbol} pro St&uuml;ck";
+            $basePrice = "{$amount} {$currencySymbol} {$label}";
         }
 
         return $basePrice;

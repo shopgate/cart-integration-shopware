@@ -12,6 +12,20 @@ Download and unzip the [latest releases](https://github.com/shopgate/cart-integr
 
 You can find more information in our [support center](https://support.shopgate.com/hc/en-us/articles/202798446-Connecting-to-Shopware) and our [developer documentation](https://docs.shopgate.com/).
 
+## Shop Multi Views and Translations
+
+We need distinguishable URLs for the plugin location to enable Shopware loading the correct shop view data, locale and configuration.
+
+Example:
+
+If the shop is set up to have its virtual URL point to
+- `/shop/de` for the German shop
+- `/shop/en` for the English shop
+
+then access to the plugin should be
+- `/shop/de/shopgate/plugin` to get contents (catalog etc.) in German
+- `/shop/en/shopgate/plugin` to get contents (catalog etc.) in English
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) file for more information.

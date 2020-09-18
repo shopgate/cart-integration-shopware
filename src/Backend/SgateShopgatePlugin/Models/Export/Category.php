@@ -37,6 +37,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Category extend
     protected $rootCategoryId = null;
 
     /**
+     * $var null
+     */
+    protected $categoryContent = null;
+
+    /**
      * @param   int $categoryId
      *
      * @return $this
@@ -56,6 +61,18 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Category extend
     public function setMaximumPosition($maxPosition)
     {
         $this->maxCategoryPosition = $maxPosition;
+
+        return $this;
+    }
+
+    /**
+     * @param array $categoryContent
+     *
+     * @return $this
+     */
+    public function setCategoryContent($categoryContent)
+    {
+        $this->categoryContent = $categoryContent;
 
         return $this;
     }
@@ -118,5 +135,13 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Category extend
         }
 
         return $this->maxCategoryPosition - $shopwareOrderIndex;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCategoryContent()
+    {
+        return $this->categoryContent;
     }
 }
