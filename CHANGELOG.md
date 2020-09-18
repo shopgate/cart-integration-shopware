@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- Item not added to cart if its "laststock" = 0 but "InstockInfo" flag was set in the settings
+- The coupon code got lost after login
+- The cart getting lost after a user returns from checkout too quickly
 
 ## [2.9.92] - 2020-09-17
 ### Fixed
