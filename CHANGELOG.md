@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.93]
 ### Fixed
-- Item not added to cart if its "laststock" = 0 but "InstockInfo" flag was set in the settings
-- The coupon code got lost after login
-- The cart getting lost after a user returns from checkout too quickly
+- item not added to cart if its "laststock" is 0 but "InstockInfo" flag is set in the settings
+- coupon code getting lost after login
+- cart getting lost when returning from check out too quickly
+- product export aborting on some items with package units
 
 ## [2.9.92] - 2020-09-17
 ### Fixed
@@ -845,7 +848,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.92...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.93...HEAD
+[2.9.93]: https://github.com/shopgate/interface-shopware/compare/2.9.92...2.9.93
 [2.9.92]: https://github.com/shopgate/interface-shopware/compare/2.9.91...2.9.92
 [2.9.91]: https://github.com/shopgate/interface-shopware/compare/2.9.90...2.9.91
 [2.9.90]: https://github.com/shopgate/interface-shopware/compare/2.9.89...2.9.90
