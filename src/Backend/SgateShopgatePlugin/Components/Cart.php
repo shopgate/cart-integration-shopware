@@ -107,7 +107,6 @@ class Cart
             $this->session->offsetSet('sUserId', $customer->getId());
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
             $this->session->offsetSet('sUserGroup', $customer->getGroupKey());
-            $this->admin->sCheckUser();
         }
 
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
@@ -120,6 +119,7 @@ class Cart
             exit();
         }
 
+        $view->assign('sUserData', $this->getUserData());
         $shippingcosts = $this->getShippingCosts($request, $view);
         $currency = Shopware()->Shop()->getCurrency();
 
@@ -437,6 +437,32 @@ class Cart
         }
 
         return $userData;
+    }
+
+    /**
+     * Validates if the provided customer should get a tax free delivery
+     *
+     * @param array $userData
+     *
+     * @return bool
+     */
+    protected function isTaxFreeDelivery($userData)
+    {
+        if (!empty($userData['additional']['countryShipping']['taxfree'])) {
+            return true;
+        }
+
+        if (empty($userData['additional']['countryShipping']['taxfree_ustid'])) {
+            return false;
+        }
+
+        if (empty($userData['shippingaddress']['ustid'])
+            && !empty($userData['billingaddress']['ustid'])
+            && !empty($userData['additional']['country']['taxfree_ustid'])) {
+            return true;
+        }
+
+        return !empty($userData['shippingaddress']['ustid']);
     }
 
     /**

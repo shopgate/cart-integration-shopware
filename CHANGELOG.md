@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 ### Fixed
+- Incorrect shipping costs were shown for customers with a shipping address in another country
 - Item not added to cart if its "laststock" = 0 but "InstockInfo" flag was set in the settings
 - The coupon code got lost after login
 - The cart getting lost after a user returns from checkout too quickly
