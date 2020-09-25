@@ -39,7 +39,7 @@
                 .is--act-cart {ldelim}display: none{rdelim}
                 {$sgCustomCss}
             </style>
-            {if $sgActionName === 'confirm' || $sgActionName === 'shippingPayment' ||  $sgActionName === 'cart'}
+            {if $sgSessionId || $sgActionName === 'confirm' || $sgActionName === 'shippingPayment' ||  $sgActionName === 'cart'}
                 <script type="text/javascript">
                     function initPipelineCall () {ldelim}
                         window.SGAppConnector.sendPipelineRequest(
