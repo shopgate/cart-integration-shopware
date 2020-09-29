@@ -452,6 +452,18 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                 'onCollectJavascriptFiles'
             );
         }
+
+        if ($config->assertMinimumVersion("5.3.0")) {
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PreDispatch_Frontend',
+                'registerViewDir'
+            );
+
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PreDispatch_Widgets',
+                'registerViewDir'
+            );
+        }
     }
 
     /**
@@ -1520,6 +1532,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                 $jsDir . 'jquery.shopgate.js',
             )
         );
+    }
+
+    /**
+     * Starting with Shopware 5.3 on default smarty templates can only be loaded from registered template directories.
+     *
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function registerViewDir(\Enlight_Event_EventArgs $args)
+    {
+        $args->getSubject()->View()->addTemplateDir($this->Path() . 'Views/');
     }
 
     /**
