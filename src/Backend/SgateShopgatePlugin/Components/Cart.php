@@ -292,6 +292,10 @@ class Cart
         if (isset($sessionId)) {
             $this->session->offsetSet('sessionId', $sessionId);
             session_id($sessionId);
+            if ($this->isAdvancedCartActive()) {
+                $this->deleteItemFromPermanentBasket($sessionId, $articleId);
+                $this->deleteItemFromCurrentBasket($sessionId, $articleId);
+            }
         }
 
         if (!empty($customerId) && $customerId !== 'null') {
@@ -324,6 +328,95 @@ class Cart
         $httpResponse->setBody(json_encode($response));
         $httpResponse->sendResponse();
         exit();
+    }
+
+    private function isAdvancedCartActive()
+    {
+        try {
+            $pluginManager = Shopware()->Container()->get('shopware_plugininstaller.plugin_manager');
+            $plugin        = $pluginManager->getPluginByName('SwagAdvancedCart');
+
+            return $plugin->getInstalled() && $plugin->getActive();
+        } catch (\Exception $error) {
+            return false;
+        }
+    }
+
+    /**
+     * @param $sessionId
+     * @param $articleId
+     */
+    private function deleteItemFromPermanentBasket($sessionId, $articleId)
+    {
+        $user = Shopware()->Db()->fetchRow('
+                SELECT id FROM s_user
+                WHERE sessionID = ?
+            ', array($sessionId)
+        );
+        if (!isset($user['id'])) {
+            return;
+        }
+        $customerId = $user['id'];
+
+        $basketItem = Shopware()->Db()->fetchRow('
+                SELECT ordernumber FROM s_order_basket
+                WHERE id = ?
+            ', array($articleId)
+        );
+        if (!isset($basketItem['ordernumber'])) {
+            return;
+        }
+        $ordernumber = $basketItem['ordernumber'];
+
+        $permanentBasket = Shopware()->Db()->fetchRow('
+                SELECT id FROM s_order_basket_saved
+                WHERE user_id = ?
+            ', array($customerId)
+        );
+        if (!isset($permanentBasket['id'])) {
+            return;
+        }
+
+        $permanentBasketId = $permanentBasket['id'];
+
+        Shopware()->Db()->query('
+                DELETE FROM s_order_basket_saved_items 
+                WHERE basket_id = ? and article_ordernumber = ?
+            ', array($permanentBasketId, $ordernumber)
+        );
+    }
+
+    /**
+     * @param $sessionId
+     * @param $articleId
+     */
+    private function deleteItemFromCurrentBasket($sessionId, $articleId)
+    {
+        $basketItem = Shopware()->Db()->fetchRow('
+                SELECT ordernumber FROM s_order_basket
+                WHERE id = ?
+            ', array($articleId)
+        );
+        if (!isset($basketItem['ordernumber'])) {
+            return;
+        }
+        $ordernumber = $basketItem['ordernumber'];
+
+        $permanentBasket = Shopware()->Db()->fetchRow('
+                SELECT id FROM s_order_basket_saved
+                WHERE cookie_value = ?
+            ', array($sessionId)
+        );
+        if (!isset($permanentBasket['id'])) {
+            return;
+        }
+        $permanentBasketId = $permanentBasket['id'];
+
+        Shopware()->Db()->query('
+                DELETE FROM s_order_basket_saved_items 
+                WHERE basket_id = ? and article_ordernumber = ?
+            ', array($permanentBasketId, $ordernumber)
+        );
     }
 
     /**
