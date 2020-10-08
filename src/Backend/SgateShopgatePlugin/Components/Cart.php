@@ -356,7 +356,6 @@ class Cart
         if (!isset($user['id'])) {
             return;
         }
-        $customerId = $user['id'];
 
         $basketItem = Shopware()->Db()->fetchRow('
                 SELECT ordernumber FROM s_order_basket
@@ -366,24 +365,27 @@ class Cart
         if (!isset($basketItem['ordernumber'])) {
             return;
         }
-        $ordernumber = $basketItem['ordernumber'];
 
-        $permanentBasket = Shopware()->Db()->fetchRow('
+        $permanentBaskets = Shopware()->Db()->fetchAll('
                 SELECT id FROM s_order_basket_saved
                 WHERE user_id = ?
-            ', array($customerId)
+            ', array($user['id'])
         );
-        if (!isset($permanentBasket['id'])) {
+        if (empty($permanentBaskets)) {
             return;
         }
 
-        $permanentBasketId = $permanentBasket['id'];
+        foreach ($permanentBaskets as $permanentBasket) {
+            if (!isset($permanentBasket['id'])) {
+                continue;
+            }
 
-        Shopware()->Db()->query('
+            Shopware()->Db()->query('
                 DELETE FROM s_order_basket_saved_items 
                 WHERE basket_id = ? and article_ordernumber = ?
-            ', array($permanentBasketId, $ordernumber)
-        );
+            ', array($permanentBasket['id'], $basketItem['ordernumber'])
+            );
+        }
     }
 
     /**
@@ -400,7 +402,6 @@ class Cart
         if (!isset($basketItem['ordernumber'])) {
             return;
         }
-        $ordernumber = $basketItem['ordernumber'];
 
         $permanentBasket = Shopware()->Db()->fetchRow('
                 SELECT id FROM s_order_basket_saved
@@ -410,12 +411,11 @@ class Cart
         if (!isset($permanentBasket['id'])) {
             return;
         }
-        $permanentBasketId = $permanentBasket['id'];
 
         Shopware()->Db()->query('
                 DELETE FROM s_order_basket_saved_items 
                 WHERE basket_id = ? and article_ordernumber = ?
-            ', array($permanentBasketId, $ordernumber)
+            ', array($permanentBasket['id'], $basketItem['ordernumber'])
         );
     }
 
