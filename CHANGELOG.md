@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Added the minimum charge to the addCoupon error message for easier parsing
+
 ### Fixed
 - Incorrect shipping costs were shown for customers with a shipping address in another country
 - Item not added to cart if its "laststock" = 0 but "InstockInfo" flag was set in the settings
