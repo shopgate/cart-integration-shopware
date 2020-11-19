@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - aborting Paypal checkout 
+- smarty exception: directory not allowed by security setting 
 
 ## [2.9.93]
 ### Fixed
