@@ -336,6 +336,10 @@ class Cart
             $pluginManager = Shopware()->Container()->get('shopware_plugininstaller.plugin_manager');
             $plugin        = $pluginManager->getPluginByName('SwagAdvancedCart');
 
+            if (empty($plugin)) {
+                return false;
+            }
+
             return $plugin->getInstalled() && $plugin->getActive();
         } catch (\Exception $error) {
             return false;
@@ -403,19 +407,19 @@ class Cart
             return;
         }
 
-        $permanentBasket = Shopware()->Db()->fetchRow('
+        $currentBasket = Shopware()->Db()->fetchRow('
                 SELECT id FROM s_order_basket_saved
                 WHERE cookie_value = ?
             ', array($sessionId)
         );
-        if (!isset($permanentBasket['id'])) {
+        if (!isset($currentBasket['id'])) {
             return;
         }
 
         Shopware()->Db()->query('
                 DELETE FROM s_order_basket_saved_items 
                 WHERE basket_id = ? and article_ordernumber = ?
-            ', array($permanentBasket['id'], $basketItem['ordernumber'])
+            ', array($currentBasket['id'], $basketItem['ordernumber'])
         );
     }
 
