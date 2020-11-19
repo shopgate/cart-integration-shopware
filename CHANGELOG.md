@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - products deleted from cart re-occuring in checkout when SwagAdvancedCart plugin is active
+- smarty exception: directory not allowed by security setting 
 
 ## [2.9.93]
 ### Fixed
