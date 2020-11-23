@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - aborting Paypal checkout 
 - products deleted from cart re-occuring in checkout when SwagAdvancedCart plugin is active
-- smarty exception: directory not allowed by security setting 
+- smarty exception: directory not allowed by security setting
+- app login via shop account not respecting customer scope
 
 ## [2.9.93]
 ### Fixed
@@ -27,14 +28,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [2.9.91] - 2020-07-24
 ### Added
 - option to check the "always_select_payment" flag during checkout
-- Increased the JWT Token timeout from 60 seconds to 5 minutes
+- increased the JWT Token timeout from 60 seconds to 5 minutes
 - support for bonus points and account/documents page
-- Disabled the bot flag in the session during web checkout
+- disabled the bot flag in the session during web checkout
 
 ### Fixed
 - category image urls for Shopware 5.6
 - export of customer group specific prices
-- Fixed cart being emptied upon login
+- fixed empty cart upon login
 - missing article number for cart rule items in the order details
 
 ## [2.9.90] - 2020-01-14
