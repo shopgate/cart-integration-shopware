@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+## [2.9.94] - 2020-11-24
 ### Fixed
 - aborting Paypal checkout 
 - products deleted from cart re-occuring in checkout when SwagAdvancedCart plugin is active
 - smarty exception: directory not allowed by security setting
 - app login via shop account not respecting customer scope
 
-## [2.9.93]
+## [2.9.93] - 2020-09-21
 ### Fixed
 - item not added to cart if its "laststock" is 0 but "InstockInfo" flag is set in the settings
 - coupon code getting lost after login
@@ -853,7 +854,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.93...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.94...HEAD
+[2.9.94]: https://github.com/shopgate/interface-shopware/compare/2.9.93...2.9.94
 [2.9.93]: https://github.com/shopgate/interface-shopware/compare/2.9.92...2.9.93
 [2.9.92]: https://github.com/shopgate/interface-shopware/compare/2.9.91...2.9.92
 [2.9.91]: https://github.com/shopgate/interface-shopware/compare/2.9.90...2.9.91
