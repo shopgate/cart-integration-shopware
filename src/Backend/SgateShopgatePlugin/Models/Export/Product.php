@@ -743,7 +743,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         if ($this->getPurchaseSteps($detail)) {
             $steps = round($this->getPurchaseSteps($detail), 0);
             if ($steps > 1) {
-                $properties[$this->propertiesLabels['qty']][] = $steps . ' ' . $detail->getUnit()->getName();
+                $unit = $detail->getUnit();
+                $unitName = is_object($unit) ? ' ' . $unit->getName() : 'er Packung';
+                $properties[$this->propertiesLabels['qty']][] = $steps . $unitName;
             }
         }
 

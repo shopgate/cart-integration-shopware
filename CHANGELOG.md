@@ -10,6 +10,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - The coupon code got lost after login
 - The cart getting lost after a user returns from checkout too quickly
 
+## [2.9.94] - 2020-11-24
+### Fixed
+- aborting Paypal checkout 
+- products deleted from cart re-occuring in checkout when SwagAdvancedCart plugin is active
+- smarty exception: directory not allowed by security setting
+- app login via shop account not respecting customer scope
+
+## [2.9.93] - 2020-09-21
+### Fixed
+- item not added to cart if its "laststock" is 0 but "InstockInfo" flag is set in the settings
+- coupon code getting lost after login
+- cart getting lost when returning from check out too quickly
+- product export aborting on some items with package units
+
 ## [2.9.92] - 2020-09-17
 ### Fixed
 - empty cart in web checkout after visiting the bonus points page
@@ -20,14 +34,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [2.9.91] - 2020-07-24
 ### Added
 - option to check the "always_select_payment" flag during checkout
-- Increased the JWT Token timeout from 60 seconds to 5 minutes
+- increased the JWT Token timeout from 60 seconds to 5 minutes
 - support for bonus points and account/documents page
-- Disabled the bot flag in the session during web checkout
+- disabled the bot flag in the session during web checkout
 
 ### Fixed
 - category image urls for Shopware 5.6
 - export of customer group specific prices
-- Fixed cart being emptied upon login
+- fixed empty cart upon login
 - missing article number for cart rule items in the order details
 
 ## [2.9.90] - 2020-01-14
@@ -845,7 +859,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.92...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.94...HEAD
+[2.9.94]: https://github.com/shopgate/interface-shopware/compare/2.9.93...2.9.94
+[2.9.93]: https://github.com/shopgate/interface-shopware/compare/2.9.92...2.9.93
 [2.9.92]: https://github.com/shopgate/interface-shopware/compare/2.9.91...2.9.92
 [2.9.91]: https://github.com/shopgate/interface-shopware/compare/2.9.90...2.9.91
 [2.9.90]: https://github.com/shopgate/interface-shopware/compare/2.9.89...2.9.90

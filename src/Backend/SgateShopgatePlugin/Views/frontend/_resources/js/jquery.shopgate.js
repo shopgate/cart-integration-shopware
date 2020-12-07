@@ -24,7 +24,7 @@
                     form,
                     urlToken = getUrlParameter('token');
 
-                if (urlToken && urlToken.length > 1) {
+                if (window.location.href.includes('/token/') || (urlToken && urlToken.length > 1)) {
                     var commands = [
                         {
                             'c': 'broadcastEvent',
