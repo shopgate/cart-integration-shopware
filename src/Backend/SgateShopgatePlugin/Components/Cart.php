@@ -107,7 +107,6 @@ class Cart
             $this->session->offsetSet('sUserId', $customer->getId());
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
             $this->session->offsetSet('sUserGroup', $customer->getGroupKey());
-            $this->admin->sCheckUser();
         }
 
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
@@ -120,6 +119,7 @@ class Cart
             exit();
         }
 
+        $view->assign('sUserData', $this->getUserData());
         $shippingcosts = $this->getShippingCosts($request, $view);
         $currency = Shopware()->Shop()->getCurrency();
 
@@ -463,6 +463,25 @@ class Cart
         if ($voucher) {
             $response['promotionVouchers'] = json_encode($this->session->get('promotionVouchers'));
 
+            // Check if we have an error while adding the voucher and that error has a message we can parse
+            if ($response['addVoucher'] && @$response['addVoucher']['sErrorMessages'][0]) {
+                // If the error message has a number in it, it's likely that the minimum charge wasn't reached
+                if (preg_match('/\b\d+[\,\.]?\d*\b/', $response['addVoucher']['sErrorMessages'][0])) {
+
+                    // Get that voucher from the db
+                    $voucherDetails = Shopware()->Db()->fetchRow(
+                        'SELECT minimumcharge FROM s_emarketing_vouchers WHERE vouchercode = ? LIMIT 1',
+                        strtolower(trim(stripslashes($code)))
+                    );
+
+                    // And add the minimum charge to the response if it has one
+                    if ($voucherDetails && $voucherDetails['minimumcharge'] > 0) {
+                        $response['addVoucher']['minimumcharge'] = $voucherDetails['minimumcharge'];
+                    }
+                }
+            }
+
+
             $httpResponse->setBody(html_entity_decode(json_encode($response)));
             $httpResponse->sendResponse();
             exit();
@@ -534,6 +553,32 @@ class Cart
         }
 
         return $userData;
+    }
+
+    /**
+     * Validates if the provided customer should get a tax free delivery
+     *
+     * @param array $userData
+     *
+     * @return bool
+     */
+    protected function isTaxFreeDelivery($userData)
+    {
+        if (!empty($userData['additional']['countryShipping']['taxfree'])) {
+            return true;
+        }
+
+        if (empty($userData['additional']['countryShipping']['taxfree_ustid'])) {
+            return false;
+        }
+
+        if (empty($userData['shippingaddress']['ustid'])
+            && !empty($userData['billingaddress']['ustid'])
+            && !empty($userData['additional']['country']['taxfree_ustid'])) {
+            return true;
+        }
+
+        return !empty($userData['shippingaddress']['ustid']);
     }
 
     /**
