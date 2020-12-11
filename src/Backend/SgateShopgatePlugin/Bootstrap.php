@@ -1561,8 +1561,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     {
         $shopgateAppCookie = $args->getSubject()->Request()->getCookie('sgWebView');
         $shopgateApp       = Shopware()->Session()->offsetGet('sgWebView');
+        $shopgateAgent     =  strpos($args->getSubject()->Request()->getHeader('user-agent'), 'libshopgate') !== false;
 
-        if ((isset($shopgateApp) && $shopgateApp) || (isset($shopgateAppCookie) && $shopgateAppCookie)) {
+        if ($shopgateAgent || (isset($shopgateApp) && $shopgateApp) || (isset($shopgateAppCookie) && $shopgateAppCookie)) {
             return true;
         }
 
