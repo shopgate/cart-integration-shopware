@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+## [2.9.95]
 ### Added
 - minimum charge to the addCoupon error message
 
@@ -861,7 +862,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.94...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.95...HEAD
+[2.9.95]: https://github.com/shopgate/interface-shopware/compare/2.9.94...2.9.95
 [2.9.94]: https://github.com/shopgate/interface-shopware/compare/2.9.93...2.9.94
 [2.9.93]: https://github.com/shopgate/interface-shopware/compare/2.9.92...2.9.93
 [2.9.92]: https://github.com/shopgate/interface-shopware/compare/2.9.91...2.9.92
