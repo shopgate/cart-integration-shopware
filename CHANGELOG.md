@@ -6,10 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 ### Fixed
-- Item not added to cart if its "laststock" = 0 but "InstockInfo" flag was set in the settings
-- The coupon code got lost after login
-- The cart getting lost after a user returns from checkout too quickly
-- Paypal redirect in checkout
+- PayPal redirect in checkout
 
 ## [2.9.94] - 2020-11-24
 ### Fixed
