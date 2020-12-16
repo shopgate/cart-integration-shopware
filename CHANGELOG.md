@@ -6,14 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 ### Added
-- Added the minimum charge to the addCoupon error message for easier parsing
+- minimum charge to the addCoupon error message
 
 ### Fixed
-- Incorrect shipping costs were shown for customers with a shipping address in another country
-- Item not added to cart if its "laststock" = 0 but "InstockInfo" flag was set in the settings
-- The coupon code got lost after login
-- The cart getting lost after a user returns from checkout too quickly
-- Paypal redirect in checkout
+- showing incorrect shipping costs for customers with a shipping address in another country
+- PayPal redirect in checkout
 
 ## [2.9.94] - 2020-11-24
 ### Fixed
