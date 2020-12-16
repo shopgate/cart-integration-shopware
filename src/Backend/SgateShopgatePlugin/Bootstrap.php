@@ -155,7 +155,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      */
     public function getVersion()
     {
-        return '2.9.95-alpha.2';
+        return '2.9.95-beta.1';
     }
 
     /**
