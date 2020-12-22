@@ -53,7 +53,7 @@ class Cart
     /**
      * Reference to Shopware session object (Shopware()->Session)
      *
-     * @var Enlight_Components_Session_Namespace
+     * @var \Enlight_Components_Session_Namespace
      */
     protected $session;
 
@@ -72,9 +72,9 @@ class Cart
     /**
      * Custom function to get the cart
      *
-     * @param Enlight_Controller_Request_Request       $request
-     * @param Enlight_Controller_Response_ResponseHttp $httpResponse
-     * @param Enlight_View_Default                     $view
+     * @param \Enlight_Controller_Request_Request       $request
+     * @param \Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param \Enlight_View_Default                     $view
      */
     public function getCart($request, $httpResponse, $view)
     {
@@ -82,8 +82,11 @@ class Cart
         $customerId        = $request->getCookie('customer_id');
         $promotionVouchers = json_decode($request->getCookie('sg_promotion'), true);
 
-        $this->session->offsetSet('sessionId', $sessionId);
+        session_commit();
         session_id($sessionId);
+        session_start();
+        $this->session->offsetSet('sessionId', $sessionId);
+        Shopware()->Container()->get('shopware_storefront.context_service')->initializeShopContext();
 
         if (isset($promotionVouchers)) {
             $this->session->offsetSet('promotionVouchers', $promotionVouchers);
@@ -171,8 +174,8 @@ class Cart
     /**
      * Custom function to add items to cart
      *
-     * @param Enlight_Controller_Request_Request       $request
-     * @param Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param \Enlight_Controller_Request_Request       $request
+     * @param \Enlight_Controller_Response_ResponseHttp $httpResponse
      */
     public function addCartItems($request, $httpResponse)
     {
@@ -198,6 +201,7 @@ class Cart
 
         if (!empty($customerId) && $customerId !== 'null') {
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sUserId', $customer->getId());
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
@@ -222,8 +226,8 @@ class Cart
     /**
      * Custom function to update a cart item
      *
-     * @param Enlight_Controller_Request_Request       $request
-     * @param Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param \Enlight_Controller_Request_Request       $request
+     * @param \Enlight_Controller_Response_ResponseHttp $httpResponse
      */
     public function updateCartItem($request, $httpResponse)
     {
@@ -243,6 +247,7 @@ class Cart
 
         if (!empty($customerId) && $customerId !== 'null') {
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sUserId', $customer->getId());
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
@@ -273,8 +278,8 @@ class Cart
     /**
      * Custom function to delete item from cart
      *
-     * @param Enlight_Controller_Request_Request       $request
-     * @param Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param \Enlight_Controller_Request_Request       $request
+     * @param \Enlight_Controller_Response_ResponseHttp $httpResponse
      */
     public function deleteCartItem($request, $httpResponse)
     {
@@ -300,6 +305,7 @@ class Cart
 
         if (!empty($customerId) && $customerId !== 'null') {
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            $this->session->offsetSet('sUserId', $customer->getId());
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
 
@@ -426,9 +432,9 @@ class Cart
     /**
      * Custom function to add coupon to cart
      *
-     * @param Enlight_Controller_Request_Request       $request
-     * @param Enlight_Controller_Response_ResponseHttp $httpResponse
-     * @param Enlight_View_Default                     $view
+     * @param \Enlight_Controller_Request_Request       $request
+     * @param \Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param \Enlight_View_Default                     $view
      */
     public function addCouponsCode($request, $httpResponse, $view)
     {
@@ -690,8 +696,8 @@ class Cart
     /**
      * Get shipping costs as an array (brutto / netto) depending on selected country / payment
      *
-     * @param Enlight_Controller_Request_Request $request
-     * @param Enlight_View_Default               $view
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_View_Default               $view
      *
      * @return array
      */
@@ -723,7 +729,7 @@ class Cart
      * Get current selected country - if no country is selected, choose first one from list
      * of available countries
      *
-     * @param Enlight_View_Default $view
+     * @param \Enlight_View_Default $view
      *
      * @return array with country information
      */
@@ -752,8 +758,8 @@ class Cart
     /**
      * Get selected payment or do payment mean selection automatically
      *
-     * @param Enlight_Controller_Request_Request $request
-     * @param Enlight_View_Default               $view
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_View_Default               $view
      *
      * @return array
      */
