@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 ### Fixed
-- taxes in cart view
+- tax calculation during web checkout when ordering to a country different from the shop's country
 
-## [2.9.95]
+## [2.9.95] - 2020-12-16
 ### Added
 - minimum charge to the addCoupon error message
 
