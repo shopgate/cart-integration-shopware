@@ -751,7 +751,7 @@ class Cart
             if (empty($countries)) {
                 unset($this->session['sCountry']);
 
-                return [];
+                return array();
             }
             $country                   = reset($countries);
             $this->session['sCountry'] = (int)$country['id'];
@@ -799,7 +799,7 @@ class Cart
         if (empty($paymentMethods)) {
             unset($this->session['sPaymentID']);
 
-            return [];
+            return array();
         }
 
         $payment = $this->getDefaultPaymentMethod($paymentMethods);
