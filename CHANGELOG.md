@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - tax calculation during web checkout when ordering to a country different from the shop's country
+- shipping costs calculation when the address has been changed in the web checkout
 
 ## [2.9.95] - 2020-12-16
 ### Added

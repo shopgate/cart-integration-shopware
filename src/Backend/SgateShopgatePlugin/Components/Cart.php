@@ -34,14 +34,14 @@ class Cart
     /**
      * Reference to sBasket object (core/class/sBasket.php)
      *
-     * @var sBasket
+     * @var \sBasket
      */
     protected $basket;
 
     /**
      * Reference to sAdmin object (core/class/sAdmin.php)
      *
-     * @var sAdmin
+     * @var \sAdmin
      */
     protected $admin;
 
@@ -336,6 +336,9 @@ class Cart
         exit();
     }
 
+    /**
+     * @return bool
+     */
     private function isAdvancedCartActive()
     {
         try {
@@ -532,6 +535,9 @@ class Cart
      */
     private function getUserData()
     {
+        // sGetUserData only uses the session data (instead of the user's default address) in the checkout
+        Shopware()->Front()->Request()->setControllerName('checkout');
+
         $system   = Shopware()->System();
         $userData = $this->admin->sGetUserData();
         if (!empty($userData['additional']['countryShipping'])) {
@@ -745,7 +751,7 @@ class Cart
             if (empty($countries)) {
                 unset($this->session['sCountry']);
 
-                return false;
+                return array();
             }
             $country                   = reset($countries);
             $this->session['sCountry'] = (int)$country['id'];
@@ -793,7 +799,7 @@ class Cart
         if (empty($paymentMethods)) {
             unset($this->session['sPaymentID']);
 
-            return false;
+            return array();
         }
 
         $payment = $this->getDefaultPaymentMethod($paymentMethods);

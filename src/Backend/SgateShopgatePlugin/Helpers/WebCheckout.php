@@ -177,7 +177,7 @@ class WebCheckout
     /**
      * @param $customerId
      *
-     * @return Shopware\\Models\\Customer\\Customer $customer
+     * @return \Shopware\Models\Customer\Customer $customer
      */
     public function getCustomer($customerId)
     {
