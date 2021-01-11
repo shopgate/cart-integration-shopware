@@ -3,20 +3,17 @@
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.3/engine/Shopware/Components/Plugin/schema/plugin.xsd">
     <label lang="de">Swag Plugin System</label>
     <label lang="en">Swag plugin system</label>
-    <version>2.9.95</version>
+    <version>2.9.96</version>
     <copyright>(c) by Shopgate GmbH</copyright>
     <license>Apache</license>
     <link>https://store.shopware.com/sgate00633f/shopgate-mobile-commerce-fuer-shopware.html</link>
     <author>Shopgate GmbH</author>
     <compatibility minVersion="5.3.0"/>
-    <changelog version="2.9.95">
+    <changelog version="2.9.96">
         <changes lang="en">
-            ### Added
-            - minimum charge to the addCoupon error message
-
             ### Fixed
-            - showing incorrect shipping costs for customers with a shipping address in another country
-            - PayPal redirect in checkout
+            - tax calculation during web checkout when ordering to a country different from the shop's country
+            - shipping costs calculation when the address has been changed in the web checkout
         </changes>
     </changelog>
     <description>
