@@ -520,6 +520,11 @@ class Cart
             }
         }
 
+        if ($this->basket->sGetAmount() === array() && !isset($response['addVoucher']['sErrorFlag'])) {
+            $response['addVoucher']['sErrorFlag']        = true;
+            $response['addVoucher']['minimumcharge'] = 0.01;
+        }
+
         $response['promotionVouchers'] = json_encode($promotions);
 
         $httpResponse->setHeader('Content-Type', 'application/json');
