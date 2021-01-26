@@ -163,6 +163,10 @@ class Cart
 
             $basket['sAmountTax'] = round($basket['AmountNumeric'] - $basket['AmountNetNumeric'], 2);
         }
+        $voucher = Shopware()->Modules()->Basket()->sGetVoucher();
+        if (!empty($voucher)) {
+            $basket['voucherCode'] = $voucher['code'];
+        }
 
         $httpResponse->setHttpResponseCode(200);
         $httpResponse->setHeader('Content-Type', 'application/json');
