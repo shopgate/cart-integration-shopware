@@ -122,6 +122,7 @@ class Cart
             exit();
         }
 
+        $this->session->offsetSet('sBasketQuantity', $this->basket->sCountBasket());
         $view->assign('sUserData', $this->getUserData());
         $shippingcosts = $this->getShippingCosts($request, $view);
         $currency = Shopware()->Shop()->getCurrency();
