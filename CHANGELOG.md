@@ -5,10 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.97] - 2021-03-02
 ### Fixed
 - error handling when adding a coupon to an empty cart
-- validation of payment rules for app-user carts
-- coupon removal from app-user carts
+- validation of payment rules for app user carts
+- coupon removal from app user carts
 
 ## [2.9.96] - 2021-01-11
 ### Fixed
@@ -872,7 +874,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.96...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.97...HEAD
+[2.9.97]: https://github.com/shopgate/interface-shopware/compare/2.9.96...2.9.97
 [2.9.96]: https://github.com/shopgate/interface-shopware/compare/2.9.95...2.9.96
 [2.9.95]: https://github.com/shopgate/interface-shopware/compare/2.9.94...2.9.95
 [2.9.94]: https://github.com/shopgate/interface-shopware/compare/2.9.93...2.9.94
