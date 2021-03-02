@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - error handling when adding a coupon to an empty cart
 - validation of payment rules for app-user carts
+- coupon removal from app-user carts
 
 ## [2.9.96] - 2021-01-11
 ### Fixed

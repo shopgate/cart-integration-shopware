@@ -332,7 +332,7 @@ class Cart
                 }
             }
         }
-        $response['deleteArticle']     = $this->basket->sDeleteArticle($articleId);
+        $response['deleteArticle']     = $this->basket->sDeleteArticle($voucher ? 'voucher' : $articleId);
         $response['promotionVouchers'] = json_encode($this->session->get('promotionVouchers'));
 
         $httpResponse->setHeader('Content-Type', 'application/json');
