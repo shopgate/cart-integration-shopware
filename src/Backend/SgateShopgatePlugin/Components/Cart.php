@@ -110,6 +110,7 @@ class Cart
             $this->session->offsetSet('sUserId', $customer->getId());
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
             $this->session->offsetSet('sUserGroup', $customer->getGroupKey());
+            Shopware()->Modules()->Basket()->sSYSTEM->sUSERGROUP = $customer->getGroupKey();
         }
 
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
