@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - customer group specific prices in mobile app cart view
+- performance problems with favorite synchronisation
 
 ## [2.9.97] - 2021-03-02
 ### Fixed
