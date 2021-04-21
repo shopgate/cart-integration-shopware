@@ -11,14 +11,14 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 7.2
+      - name: Install dependencies (for CS fixer)
+        run: composer install
       - name: Audit
         run: |
           curl -L https://github.com/fabpot/local-php-security-checker/releases/download/v1.0.0/local-php-security-checker_1.0.0_linux_amd64 -o php-dependency-checker
           chmod +x ./php-dependency-checker
           ./php-dependency-checker
           rm php-dependency-checker
-      - name: Install dependencies (for CS fixer)
-        run: composer install
       - name: Code Style
         run: composer check
 
@@ -43,7 +43,7 @@ jobs:
 
   deploy:
     name: Deploy to GitHub
-    needs: [check]
+    needs: [check, test]
     runs-on: ubuntu-20.04
     if: startsWith(github.ref, 'refs/tags/') # only tags
     steps:
