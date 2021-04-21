@@ -89,7 +89,16 @@ class Favorites
             $nodes = $this->prepareCartItems($carts[0]);
         }
 
-        return $nodes;
+        $nodesLight = [];
+        foreach ($nodes as $node) {
+            $nodesLight[] = [
+                'articleID' => $node['articleID'],
+                'ordernumber' => $node['ordernumber'],
+                'sConfigurator' => (bool) $node['sConfigurator']
+            ];
+        }
+
+        return $nodesLight;
     }
 
     /**
