@@ -1,6 +1,6 @@
 /.buildpath
 /.project
-/*.zip
+/release/*.zip
 /.php_cs.cache
 /nbproject
 /.settings

@@ -11,7 +11,7 @@ rsync -av ./LICENSE.md release/package/Backend/SgateShopgatePlugin/
 rsync -av ./CONTRIBUTING.md release/package/Backend/SgateShopgatePlugin/
 rsync -av ./CHANGELOG.md release/package/Backend/SgateShopgatePlugin/
 cd release/package
-zip -r ../../$ZIP_FILE_NAME .
+zip -r ../$ZIP_FILE_NAME .
 cd ..
 rm -rf package
 cd ..
