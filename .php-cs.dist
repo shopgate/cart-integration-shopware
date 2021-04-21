@@ -11,9 +11,6 @@ use PhpCsFixer\Finder;
 $fixers = array(
     '@PSR1' => true,
     '@PSR2' => true,
-    'array_syntax' => array(
-        'syntax' => 'long',
-    ),
     'blank_line_after_opening_tag' => true,
     'method_argument_space' => false,
 );
