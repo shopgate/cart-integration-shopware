@@ -1,7 +1,7 @@
 # Shopgate Shopware Integration
 
 [![GitHub license](http://dmlc.github.io/img/apache2.svg)](LICENSE.md)
-[![Build Status](https://travis-ci.org/shopgate/cart-integration-shopware.svg?branch=master)](https://travis-ci.org/shopgate/cart-integration-shopware)
+[![Run CS fixer & deploy](https://github.com/shopgate/cart-integration-shopware/actions/workflows/check_and_deploy.yml/badge.svg)](https://github.com/shopgate/cart-integration-shopware/actions/workflows/check_and_deploy.yml)
 
 The Shopgate Shopware integration allows you to connect your Shopware store with the Shopgate backend.
 
