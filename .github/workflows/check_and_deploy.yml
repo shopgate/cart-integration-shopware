@@ -1,4 +1,4 @@
-name: Run CS fixer & deploy
+name: Run tests, dependency audit, CS fixer & deploy
 on: [push]
 jobs:
   check:
