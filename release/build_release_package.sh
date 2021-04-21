@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ZIP_FILE_NAME=shopgate-shopware-integration.zip
+ZIP_FILE_NAME=shopgate-shopware-integration-${TAG_NAME}.zip
 
 rm -rf src/Backend/SgateShopgatePlugin/vendor release/package $ZIP_FILE_NAME
 mkdir release/package
