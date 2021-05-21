@@ -733,13 +733,33 @@ class Cart
         if (empty($dispatches)) {
             unset($this->session['sDispatch']);
         } else {
-            $dispatch                   = reset($dispatches);
-            $this->session['sDispatch'] = (int)$dispatch['id'];
+            $this->session['sDispatch'] = $this->getValidDispatchId((int)$this->session['sDispatch'], $dispatches);
         }
 
         $shippingcosts = $this->admin->sGetPremiumShippingcosts($country);
 
         return empty($shippingcosts) ? array('brutto' => 0, 'netto' => 0) : $shippingcosts;
+    }
+
+    /**
+     * Get the id of a valid shipping method, preferably the current one
+     *
+     * @param int $currentDispatchId
+     * @param array $validDispatches cannot be empty
+     *
+     * @return int
+     */
+    private function getValidDispatchId($currentDispatchId, $validDispatches)
+    {
+        foreach ($validDispatches as $validDispatch) {
+            if ($currentDispatchId === (int)$validDispatch['id']) {
+                return $currentDispatchId;
+            }
+        }
+
+        $fallbackDispatch = reset($validDispatches);
+
+        return (int)$fallbackDispatch['id'];
     }
 
     /**

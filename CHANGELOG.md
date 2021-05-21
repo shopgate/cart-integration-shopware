@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - customer group specific prices in mobile app cart view
 - performance issues in the favorite list synchronization
+- orders with non-default shipping methods
 
 ## [2.9.97] - 2021-03-02
 ### Fixed
