@@ -438,6 +438,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             );
 
             $this->subscribeEvent(
+              'Enlight_Controller_Action_Frontend_Bewertungen',
+              'onFrontendCustom'
+            );
+
+            $this->subscribeEvent(
                 'Enlight_Controller_Action_Frontend_Account_Password',
                 'onFrontendPassword'
             );
@@ -1388,35 +1393,37 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
         $view->assign('sgCustomCss', $customCss);
 
-        if ($request->getPathInfo() !== '/account/documents') {
-            $sgCloudCallbackData = Shopware()->Session()->offsetGet('sgCloudCallbackData');
-            $sgAccountView       = $this->isAccountView();
-
-            $view->assign('sgAccountView', $sgAccountView);
-
-            $forgotPassword = $view->getAssign('sgForgotPassword');
-            if (empty($forgotPassword)) {
-                $view->assign('sgForgotPassword', false);
-            }
-            $view->assign('sgFrontendAccount', true);
-            $view->assign('sgFrontendRegister', false);
-            $view->assign('sgActionName', false);
-
-            $user  = Shopware()->Modules()->Admin()->sGetUserData();
-            $user  = $user['additional']['user'];
-            $hash  = $user['password'];
-            $email = $user['email'];
-
-            $view->assign('sgCloudCallbackData', $sgCloudCallbackData);
-            $view->assign('sgHash', $hash);
-            $view->assign('sgEmail', $email);
-            $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
-        } else {
+        $nonSgPaths = array('/account/documents', '/bewertungen');
+        if (in_array($request->getPathInfo(), $nonSgPaths)) {
             $view->assign('sgAccountView', false);
             $view->assign('sgForgotPassword', false);
             $view->assign('sgFrontendAccount', false);
             $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+            return;
         }
+
+        $sgCloudCallbackData = Shopware()->Session()->offsetGet('sgCloudCallbackData');
+        $sgAccountView       = $this->isAccountView();
+
+        $view->assign('sgAccountView', $sgAccountView);
+
+        $forgotPassword = $view->getAssign('sgForgotPassword');
+        if (empty($forgotPassword)) {
+            $view->assign('sgForgotPassword', false);
+        }
+        $view->assign('sgFrontendAccount', true);
+        $view->assign('sgFrontendRegister', false);
+        $view->assign('sgActionName', false);
+
+        $user  = Shopware()->Modules()->Admin()->sGetUserData();
+        $user  = $user['additional']['user'];
+        $hash  = $user['password'];
+        $email = $user['email'];
+
+        $view->assign('sgCloudCallbackData', $sgCloudCallbackData);
+        $view->assign('sgHash', $hash);
+        $view->assign('sgEmail', $email);
+        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
     }
 
     public function onFrontendPassword(\Enlight_Event_EventArgs $args)
