@@ -438,6 +438,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             );
 
             $this->subscribeEvent(
+              'Enlight_Controller_Action_Frontend_Account_Ruecksendungen',
+              'onFrontendCustom'
+            );
+
+            $this->subscribeEvent(
               'Enlight_Controller_Action_Frontend_Bewertungen',
               'onFrontendCustom'
             );
@@ -1393,7 +1398,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
         $view->assign('sgCustomCss', $customCss);
 
-        $nonSgPaths = array('/account/documents', '/bewertungen');
+        $nonSgPaths = array('/account/documents', '/account/ruecksendungen', '/bewertungen');
         if (in_array($request->getPathInfo(), $nonSgPaths)) {
             $view->assign('sgAccountView', false);
             $view->assign('sgForgotPassword', false);
