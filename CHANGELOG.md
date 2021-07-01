@@ -7,10 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 
 ### Added
-- Support for Shopware 5.7
-
-### Removed
-- Support for Shopware 5.6 and below
+- support for Shopware 5.7
 
 ## [2.9.97] - 2021-03-02
 ### Fixed
