@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### Added
+- Support for Shopware 5.7
+
+### Removed
+- Support for Shopware 5.6 and below
+
 ## [2.9.97] - 2021-03-02
 ### Fixed
 - error handling when adding a coupon to an empty cart

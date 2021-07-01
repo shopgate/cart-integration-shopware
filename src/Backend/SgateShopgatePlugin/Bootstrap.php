@@ -1068,14 +1068,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      * @throws Enlight_Exception
      */
     public static function onGetControllerPathFrontend(
-        /** @noinspection PhpUnusedParameterInspection */
         Enlight_Event_EventArgs $args
     ) {
         // Aktueller Shop
-        $shop   = Shopware()->Shop()->getId();
-        $locale = Shopware()->Locale()->getRegion();
+        $shop = Shopware()->Shop()->getId();
 
-        if (empty($shop) || empty($locale)) {
+        if (empty($shop)) {
             throw new Enlight_Exception('Plugin Error - Shop-Id or Locale-Id is empty');
         }
 

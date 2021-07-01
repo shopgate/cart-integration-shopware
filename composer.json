@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "config": {
     "platform": {
-      "php": "5.6"
+      "php": "7.4"
     },
     "vendor-dir": "src/Backend/SgateShopgatePlugin/vendor"
   },
@@ -16,8 +16,8 @@
     }
   ],
   "require": {
-    "php": ">=5.6",
-    "shopgate/cart-integration-sdk" : "~2.9.78",
+    "php": ">=7.4",
+    "shopgate/cart-integration-sdk" : "~2.9.80",
     "phpfastcache/phpfastcache": "^4.3",
     "firebase/php-jwt": "^5.0"
   },

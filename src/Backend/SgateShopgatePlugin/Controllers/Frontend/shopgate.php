@@ -326,10 +326,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->View()->setTemplate();
 
         ### Shopinformation / Pluginconfiguration ###
-        $shop   = Shopware()->Shop()->getId();
-        $locale = Shopware()->Locale()->getRegion();
+        $shop = Shopware()->Shop()->getId();
 
-        if (empty($shop) || empty($locale)) {
+        if (empty($shop)) {
             throw new Enlight_Exception('Plugin-Fehler! Shop oder Locale-ID leer!');
         }
 
