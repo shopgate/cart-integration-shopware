@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- support for Shopware 5.7
+
 ### Fixed
 - customer group specific prices in mobile app cart view
 - performance issues in the favorite list synchronization

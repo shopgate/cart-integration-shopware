@@ -1073,10 +1073,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     ) {
         // Aktueller Shop
         $shop   = Shopware()->Shop()->getId();
-        $locale = Shopware()->Locale()->getRegion();
 
-        if (empty($shop) || empty($locale)) {
-            throw new Enlight_Exception('Plugin Error - Shop-Id or Locale-Id is empty');
+        if (empty($shop)) {
+            throw new Enlight_Exception('Plugin Error - Shop ID is empty');
         }
 
         return dirname(__FILE__) . '/Controllers/Frontend/shopgate.php';
