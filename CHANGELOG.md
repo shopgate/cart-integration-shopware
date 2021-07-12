@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.98] - 2021-07-12
 ### Added
 - support for Shopware 5.7
 
@@ -881,7 +883,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.97...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.98...HEAD
+[2.9.98]: https://github.com/shopgate/interface-shopware/compare/2.9.97...2.9.98
 [2.9.97]: https://github.com/shopgate/interface-shopware/compare/2.9.96...2.9.97
 [2.9.96]: https://github.com/shopgate/interface-shopware/compare/2.9.95...2.9.96
 [2.9.95]: https://github.com/shopgate/interface-shopware/compare/2.9.94...2.9.95
