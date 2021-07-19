@@ -443,7 +443,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             );
 
             $this->subscribeEvent(
-              'Enlight_Controller_Action_Frontend_Bewertungen',
+              'Enlight_Controller_Action_PostDispatchSecure_Frontend_Bewertungen',
               'onFrontendCustom'
             );
 
