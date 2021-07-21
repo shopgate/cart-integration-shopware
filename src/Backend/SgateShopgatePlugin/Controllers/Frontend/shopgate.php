@@ -496,6 +496,30 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     }
 
     /**
+     * Custom action to login user and redirect to account reviews
+     */
+    public function reviewsAction()
+    {
+        if ($this->loginHelper()) {
+            $this->redirect('bewertungen');
+        } else {
+            $this->redirect('shopgate/error');
+        }
+    }
+
+    /**
+     * Custom action to login user and redirect to account Ruecksendungen
+     */
+    public function retoureAction()
+    {
+        if ($this->loginHelper()) {
+            $this->redirect('account/ruecksendungen');
+        } else {
+            $this->redirect('shopgate/error');
+        }
+    }
+
+    /**
      * Custom function to add coupon to cart
      */
     public function addCouponsCodeAction()
