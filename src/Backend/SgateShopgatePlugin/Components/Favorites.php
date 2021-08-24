@@ -187,7 +187,7 @@ class Favorites
      */
     private function getCartItems($userId)
     {
-        $builder = $this->container->get('Models')->createQueryBuilder();
+        $builder = Shopware()->Models()->createQueryBuilder();
         $builder->select(array('cart', 'items', 'details'))
                 ->from('SwagAdvancedCart\Models\Cart\Cart', 'cart')
                 ->leftJoin('cart.customer', 'customer')
@@ -388,7 +388,7 @@ class Favorites
                         return false;
                     }
 
-                    $builder = $this->container->get('Models')->createQueryBuilder();
+                    $builder = Shopware()->Models()->createQueryBuilder();
                     $builder->select('item')
                             ->from('SwagAdvancedCart\Models\Cart\CartItem', 'item')
                             ->where('item.productOrderNumber = :itemId')
@@ -408,7 +408,7 @@ class Favorites
 
                     $cart->setModified(date('Y-m-d H:i:s'));
 
-                    $modelManager = $this->container->get('Models');
+                    $modelManager = Shopware()->Models();
                     $modelManager->remove($cartItem);
                     $modelManager->flush();
                 } else {
