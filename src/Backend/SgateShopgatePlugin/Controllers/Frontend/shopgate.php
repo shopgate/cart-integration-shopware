@@ -60,12 +60,12 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     public $subshopId;
 
     /**
-     * @var StoreFrontBundle\Service\ProductServiceInterface
+     * @var Shopware\Bundle\StoreFrontBundle\Service\ProductServiceInterface
      */
     private $productService;
 
     /**
-     * @var StoreFrontBundle\Service\ContextServiceInterface
+     * @var Shopware\Bundle\StoreFrontBundle\Service\ContextServiceInterface
      */
     private $contextService;
 
@@ -460,8 +460,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function checkoutAction()
     {
+        $country = $this->contextService->getShopContext()->getCountry();
         if ($this->loginHelper()) {
-            if (Shopware()->Config()->get('always_select_payment')) {
+            if (($country && $country->getIso() !== 'DE') || Shopware()->Config()->get('always_select_payment')) {
                 $this->redirect('checkout/shippingPayment');
             } else {
                 $this->redirect('checkout/confirm');
