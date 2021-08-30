@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- tax calculation in checkout for countries other than Germany
+- cart session issues in Shopware 5.7
+- compatibility of the favorite list sync in Shopware 5.7
 
 ## [2.9.98] - 2021-07-12
 ### Added
