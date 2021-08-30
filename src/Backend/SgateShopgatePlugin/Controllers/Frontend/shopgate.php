@@ -306,11 +306,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $sessionId = $this->Request()->getParam('sessionId');
 
         if (isset($sessionId)) {
-            session_write_close();
-            session_id($sessionId);
-            session_start(array(
-              'sessionId' => $sessionId
-            ));
+            $this->session->save();
+            $this->session->setId($sessionId);
+            $this->session->start();
+            $this->session->offsetSet('sessionId', $sessionId);
         }
 
         $token = $this->Request()->getParam('token');
@@ -677,11 +676,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $sessionId = $segments[2];
 
         if (isset($sessionId)) {
-            session_write_close();
-            session_id($sessionId);
-            session_start(array(
-                'sessionId' => $sessionId
-            ));
+            $this->session->save();
+            $this->session->setId($sessionId);
+            $this->session->start();
+            $this->session->offsetSet('sessionId', $sessionId);
         }
 
         $sgCloud = $this->Request()->getParam('sgcloud_checkout');

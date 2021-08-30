@@ -90,9 +90,10 @@ class User
              * is recreated with the desired id.
              */
             $oldSession = array_merge(array(), $_SESSION);
-            session_commit(); // Ends the current session
-            session_id($sessionId); // Sets the ID for the new session
-            session_start(); // Stars a fresh session with the new ID
+            $this->session->save();
+            $this->session->setId($sessionId);
+            $this->session->start();
+            $this->session->offsetSet('sessionId', $sessionId);
             $_SESSION = array_merge(array(), $oldSession); // Replace old session variables
 
             $this->session->offsetSet('sessionId', $sessionId);
