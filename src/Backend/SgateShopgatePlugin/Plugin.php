@@ -435,15 +435,6 @@ class ShopgatePluginShopware extends ShopgatePlugin
         /* @var $oCustomer \Shopware\Models\Customer\Customer */
         /* @var $oBilling \Shopware\Models\Customer\Billing */
         /* @var $oShipping \Shopware\Models\Customer\Shipping */
-
-        /**
-         * @see \sAdmin::__construct
-         * @var Shopware\Models\Shop\Shop $mainShop
-         */
-        $shop = Shopware()->Shop();
-        $mainShop = $shop->getMain() !== null ? $shop->getMain() : $shop;
-        $scopedRegistration = $mainShop->getCustomerScope();
-
         $userId = null;
 
         if (!$this->config->assertMinimumVersion('4.1')) {
@@ -456,12 +447,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $userId    = $userData["id"];
         } else {
             $sql      = "SELECT id, password, encoder, customergroup FROM `s_user` WHERE email = ? AND accountmode = 0";
-            $params = array($user);
-            if ($scopedRegistration) {
-                $sql .= " AND subshopID = ?";
-                $params[] = $shop->getId();
-            }
-
+            $params   = array($user);
             $userData = Shopware()->Db()->fetchRow($sql, $params);
             if (!empty($userData['id'])) {
                 $encoder        = strtolower($userData["encoder"]);
