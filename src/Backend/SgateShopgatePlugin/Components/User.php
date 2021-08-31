@@ -383,9 +383,9 @@ class User
         $scopedRegistration = $mainShop->getCustomerScope();
 
         $addScopeSql = '';
-//        if ($scopedRegistration == true) {
-//            $addScopeSql = Shopware()->Db()->quoteInto(' AND subshopID = ? ', $this->subshopId);
-//        }
+        if ($scopedRegistration == true) {
+            $addScopeSql = Shopware()->Db()->quoteInto(' AND subshopID = ? ', $mainShop->getId());
+        }
 
         $preHashedSql = Shopware()->Db()->quoteInto(' AND password = ? ', $hash);
 
