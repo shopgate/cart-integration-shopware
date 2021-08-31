@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - tax calculation in checkout for countries other than Germany
 - cart session issues in Shopware 5.7
 - compatibility of the favorite list sync in Shopware 5.7
+- failure to log in after registration in some cases
 
 ## [2.9.98] - 2021-07-12
 ### Added
