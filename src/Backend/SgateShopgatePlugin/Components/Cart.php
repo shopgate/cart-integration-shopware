@@ -297,6 +297,11 @@ class Cart
 
         if (isset($sessionId)) {
             $this->webCheckoutHelper->startSessionWithId($sessionId);
+            if ($this->isAdvancedCartActive()) {
+                $this->deleteItemFromPermanentBasket($sessionId, $articleId);
+                $this->deleteItemFromCurrentBasket($sessionId, $articleId);
+            }
+
         }
 
         if (!empty($customerId) && $customerId !== 'null') {
