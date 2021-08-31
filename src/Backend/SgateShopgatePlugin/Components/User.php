@@ -90,10 +90,7 @@ class User
              * is recreated with the desired id.
              */
             $oldSession = array_merge(array(), $_SESSION);
-            $this->session->save();
-            $this->session->setId($sessionId);
-            $this->session->start();
-            $this->session->offsetSet('sessionId', $sessionId);
+            $this->webCheckoutHelper->startSessionWithId($sessionId);
             $_SESSION = array_merge(array(), $oldSession); // Replace old session variables
 
             $this->session->offsetSet('sessionId', $sessionId);

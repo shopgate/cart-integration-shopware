@@ -82,10 +82,7 @@ class Cart
         $customerId        = $request->getCookie('customer_id');
         $promotionVouchers = json_decode($request->getCookie('sg_promotion'), true);
 
-        $this->session->save();
-        $this->session->setId($sessionId);
-        $this->session->start();
-        $this->session->offsetSet('sessionId', $sessionId);
+        $this->webCheckoutHelper->startSessionWithId($sessionId);
         Shopware()->Container()->get('shopware_storefront.context_service')->initializeShopContext();
 
         if (isset($promotionVouchers)) {
@@ -201,10 +198,7 @@ class Cart
         }
 
         if (isset($sessionId)) {
-            $this->session->save();
-            $this->session->setId($sessionId);
-            $this->session->start();
-            $this->session->offsetSet('sessionId', $sessionId);
+            $this->webCheckoutHelper->startSessionWithId($sessionId);
         }
 
         if (!empty($customerId) && $customerId !== 'null') {
@@ -249,10 +243,7 @@ class Cart
         $promotionVouchers = json_decode($params['promotionVouchers'], true);
 
         if (isset($sessionId)) {
-            $this->session->save();
-            $this->session->setId($sessionId);
-            $this->session->start();
-            $this->session->offsetSet('sessionId', $sessionId);
+            $this->webCheckoutHelper->startSessionWithId($sessionId);
         }
 
         if (!empty($customerId) && $customerId !== 'null') {
@@ -305,10 +296,7 @@ class Cart
         $response['oldPromotionVouchers'] = $promotionVouchers;
 
         if (isset($sessionId)) {
-            $this->session->save();
-            $this->session->setId($sessionId);
-            $this->session->start();
-            $this->session->offsetSet('sessionId', $sessionId);
+            $this->webCheckoutHelper->startSessionWithId($sessionId);
             if ($this->isAdvancedCartActive()) {
                 $this->deleteItemFromPermanentBasket($sessionId, $articleId);
                 $this->deleteItemFromCurrentBasket($sessionId, $articleId);
@@ -468,10 +456,7 @@ class Cart
         }
 
         if (isset($sessionId)) {
-            $this->session->save();
-            $this->session->setId($sessionId);
-            $this->session->start();
-            $this->session->offsetSet('sessionId', $sessionId);
+            $this->webCheckoutHelper->startSessionWithId($sessionId);
         }
 
         if (isset($promotionVouchers)) {
