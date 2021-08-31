@@ -301,7 +301,6 @@ class Cart
                 $this->deleteItemFromPermanentBasket($sessionId, $articleId);
                 $this->deleteItemFromCurrentBasket($sessionId, $articleId);
             }
-
         }
 
         if (!empty($customerId) && $customerId !== 'null') {
