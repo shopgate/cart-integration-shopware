@@ -188,4 +188,25 @@ class WebCheckout
 
         return Shopware()->Models()->find("Shopware\\Models\\Customer\\Customer", $userId['id']);
     }
+
+    /**
+     * @param $sessionId
+     */
+    public function startSessionWithId($sessionId)
+    {
+        if ($this->getConfig()->assertMinimumVersion('5.7.0')) {
+            Shopware()->Session()->save();
+            Shopware()->Session()->setId($sessionId);
+            Shopware()->Session()->start();
+            Shopware()->Session()->offsetSet('sessionId', $sessionId);
+
+            return;
+        }
+
+        session_commit();
+        session_id($sessionId);
+        session_start(array(
+            'sessionId' => $sessionId
+        ));
+    }
 }
