@@ -385,7 +385,7 @@ class User
 
         $addScopeSql = '';
         if ($scopedRegistration == true) {
-            $addScopeSql = Shopware()->Db()->quoteInto(' AND subshopID = ? ', $this->subshopId);
+            $addScopeSql = Shopware()->Db()->quoteInto(' AND subshopID = ? ', $mainShop->getId());
         }
 
         $preHashedSql = Shopware()->Db()->quoteInto(' AND password = ? ', $hash);
