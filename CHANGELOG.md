@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.99] - 2021-09-08
 ### Fixed
 - tax calculation in checkout for countries other than Germany
 - cart session issues in Shopware 5.7
@@ -888,7 +890,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.98...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.99...HEAD
+[2.9.99]: https://github.com/shopgate/interface-shopware/compare/2.9.98...2.9.99
 [2.9.98]: https://github.com/shopgate/interface-shopware/compare/2.9.97...2.9.98
 [2.9.97]: https://github.com/shopgate/interface-shopware/compare/2.9.96...2.9.97
 [2.9.96]: https://github.com/shopgate/interface-shopware/compare/2.9.95...2.9.96
