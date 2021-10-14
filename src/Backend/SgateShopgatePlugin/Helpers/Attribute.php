@@ -48,15 +48,17 @@ class Attribute
         $attributes = array_filter(
             $attributes,
             function (ConfigurationStruct $column) {
-                return $column->isConfigured() == true && $column->isIdentifier() == false;
+                return $column->isConfigured() === true && $column->isIdentifier() === false;
             }
         );
 
         foreach ($attributes as $attribute) {
+            $label = $attribute->getLabel();
+            $name = empty($label) ? $attribute->getColumnName() : $label;
             if ($useFlatLabel) {
-                $configuredAttributes[$attribute->getColumnName()] = $attribute->getLabel();
+                $configuredAttributes[$attribute->getColumnName()] = $name;
             } else {
-                $configuredAttributes[] = array($attribute->getLabel(), $attribute->getLabel());
+                $configuredAttributes[] = array($name, $name);
             }
         }
 
