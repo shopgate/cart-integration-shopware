@@ -33,6 +33,7 @@ require_once __DIR__ . '/Helpers/FormElementTextfield.php';
 require_once __DIR__ . '/Helpers/WebCheckout.php';
 require_once dirname(__FILE__) . '/Plugin.php';
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Shopgate\Helpers\Attribute as AttributeHelper;
 use Shopgate\Helpers\FormElement;
 use Shopgate\Helpers\FormElementCheckbox;
@@ -43,13 +44,14 @@ use Shopgate\Helpers\FormElementOptionsContainerTextfield;
 use Shopgate\Helpers\FormElementSelect;
 use Shopgate\Helpers\FormElementText;
 use Shopgate\Helpers\FormElementTextfield;
+use Shopware\CustomModels\Shopgate\Order;
 use Shopware\Models\Category\Category;
+use Shopware\Models\Config\Element;
 use Shopware\Models\Config\Form;
 use Shopware\Models\Dispatch\Dispatch;
 use Shopware\Models\Order\Status;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config as ShopwareShopgatePluginConfig;
-use Doctrine\Common\Collections\ArrayCollection;
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -398,6 +400,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             450
         );
 
+
+        // events that hook into freeText attribute manipulations
+        $this->subscribeEvent('Shopware\Models\Attribute\Configuration::postPersist', 'handleAttributeUpdate');
+        $this->subscribeEvent('Shopware\Models\Attribute\Configuration::postRemove', 'handleAttributeUpdate');
+
         $config = new ShopwareShopgatePluginConfig();
         if ($config->assertMinimumVersion("5.2.0")) {
 
@@ -508,11 +515,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     }
 
     /**
-     * @param Form        $form
+     * @param Form $form
      * @param FormElement $formElement
-     * @param int         $position
+     * @param int $position
      *
-     * @return \Shopware\Models\Config\Element
+     * @return Element
      */
     protected function setupConfigFormElement(Form $form, FormElement $formElement, $position = null)
     {
@@ -550,7 +557,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     /**
      * @param string $key
      *
-     * @return \Shopware\Models\Config\Element|null
+     * @return Element|null
      */
     protected function loadHiddenConfigFormElement($key)
     {
@@ -1158,7 +1165,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
     public static function confirmOrderShipping($orderId)
     {
-        /* @var $order \Shopware\CustomModels\Shopgate\Order */
+        /* @var $order Order */
 
         $order = Shopware()->Models()
                            ->getRepository("\\Shopware\\CustomModels\\Shopgate\\Order")
@@ -1174,7 +1181,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
     public static function cancelOrder($orderId)
     {
-        /* @var $order \Shopware\CustomModels\Shopgate\Order */
+        /* @var $order Order */
 
         $order = Shopware()->Models()
                            ->getRepository("\\Shopware\\CustomModels\\Shopgate\\Order")
@@ -1239,7 +1246,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      *
      * @param Enlight_Event_EventArgs $args
      */
-    public function onCustomEvent(\Enlight_Event_EventArgs $args)
+    public function onCustomEvent(Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
@@ -1260,7 +1267,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      *
      * @param Enlight_Event_EventArgs $args
      */
-    public function onFrontendCheckout(\Enlight_Event_EventArgs $args)
+    public function onFrontendCheckout(Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
@@ -1348,7 +1355,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     /**
      * @param Enlight_Event_EventArgs $args
      */
-    public function onFrontendRegister(\Enlight_Event_EventArgs $args)
+    public function onFrontendRegister(Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
@@ -1367,7 +1374,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     /**
      * @param Enlight_Event_EventArgs $args
      */
-    public function onFrontendAddress(\Enlight_Event_EventArgs $args)
+    public function onFrontendAddress(Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->addTemplateDir(__DIR__ . '/Views/');
@@ -1386,7 +1393,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     /**
      * @param Enlight_Event_EventArgs $args
      */
-    public function onFrontendAccount(\Enlight_Event_EventArgs $args)
+    public function onFrontendAccount(Enlight_Event_EventArgs $args)
     {
         $request = $args->getSubject()->Request();
         $view = $args->getSubject()->View();
@@ -1430,7 +1437,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
     }
 
-    public function onFrontendPassword(\Enlight_Event_EventArgs $args)
+    public function onFrontendPassword(Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->assign('sgForgotPassword', true);
@@ -1439,7 +1446,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgCustomCss', $customCss);
     }
 
-    public function onFrontendCustom(\Enlight_Event_EventArgs $args)
+    public function onFrontendCustom(Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->addTemplateDir($this->Path() . 'Views/');
@@ -1550,9 +1557,23 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      *
      * @param Enlight_Event_EventArgs $args
      */
-    public function registerViewDir(\Enlight_Event_EventArgs $args)
+    public function registerViewDir(Enlight_Event_EventArgs $args)
     {
         $args->getSubject()->View()->addTemplateDir($this->Path() . 'Views/');
+    }
+
+    /**
+     * Updates our plugin configuration page list of export attributes
+     *
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function handleAttributeUpdate(Enlight_Event_EventArgs $args)
+    {
+        try {
+            $this->setupConfigStorage();
+        } catch (Exception $exception) {
+            ShopgateLogger::getInstance()->log('Issue updating attribute via event: ' . $exception->getMessage());
+        }
     }
 
     /**

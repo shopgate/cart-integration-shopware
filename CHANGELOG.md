@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 ### Fixed
 - issues with empty or `null` labels in attribute export list
+- Shopgate configuration page > export attribute list update whenever SW `FreeText` attributes are manipulated
 
 ## [2.9.99] - 2021-09-08
 ### Fixed
