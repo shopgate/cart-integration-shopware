@@ -19,6 +19,7 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
+use phpFastCache\Core\Pool\ExtendedCacheItemPoolInterface;
 use Shopgate\Helpers\Attribute as AttributeHelper;
 use Shopware\Bundle\SearchBundle\Condition\CategoryCondition;
 use Shopware\Bundle\SearchBundle\Condition\CustomerGroupCondition;
@@ -57,7 +58,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     /** @var AttributeHelper */
     protected $attributeHelper;
 
-    /** @var null|phpFastCache\Core\DriverAbstract */
+    /** @var null|phpFastCache\Core\Pool\ExtendedCacheItemPoolInterface */
     protected $cacheInstance = null;
 
     /**
@@ -238,7 +239,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     }
 
     /**
-     * @return phpFastCache\Core\DriverAbstract
+     * @return ExtendedCacheItemPoolInterface
      */
     protected function getCacheInstance()
     {
@@ -259,7 +260,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     protected function initCache()
     {
         if (!isset($this->requestParams['offset']) || $this->requestParams['offset'] == 0) {
-            $this->getCacheInstance()->clean();
+            $this->getCacheInstance()->clear();
         }
     }
 
@@ -270,7 +271,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     protected function setExportCache($key, $value)
     {
         $instance   = $this->getCacheInstance();
-        $cachedData = $instance->get($key);
+        $cachedItem = $instance->getItem($key);
+        $cachedData = $cachedItem->isHit() ? $cachedItem->get() : [];
 
         if ($cachedData && is_array($value)) {
             $cachedData[key($value)] = $value[key($value)];
@@ -278,7 +280,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             $cachedData = $value;
         }
 
-        $instance->set($key, $cachedData);
+        $cachedItem->set($cachedData);
+        $instance->save($cachedItem);
     }
 
     /**
@@ -290,17 +293,17 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     protected function getExportCache($key, $subKey = null)
     {
         $instance   = $this->getCacheInstance();
-        $cachedData = $instance->get($key);
-
-        if ($cachedData) {
-            return $subKey
-                ? isset($cachedData[$subKey])
-                    ? $cachedData[$subKey]
-                    : null
-                : $cachedData;
+        $cachedItem = $instance->getItem($key);
+        if (!$cachedItem->isHit()) {
+            return null;
         }
 
-        return null;
+        $cachedData = $cachedItem->get();
+        return $subKey
+            ? isset($cachedData[$subKey])
+                ? $cachedData[$subKey]
+                : null
+            : $cachedData;
     }
 
     /**

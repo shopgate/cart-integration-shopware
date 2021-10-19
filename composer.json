@@ -23,7 +23,7 @@
   "require": {
     "php": ">=5.6",
     "shopgate/cart-integration-sdk" : "~2.9.78",
-    "phpfastcache/phpfastcache": "^4.3",
+    "phpfastcache/phpfastcache": "~6.1.5",
     "firebase/php-jwt": "^5.0"
   },
   "require-dev": {

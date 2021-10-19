@@ -24,21 +24,13 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
     const CACHE_KEY_STREAM_CATEGORY_ = 'stream_categories_children_';
     const CACHE_KEY_CATEGORY_ = 'categories_children_';
 
-    /** @var null|\phpFastCache\Core\DriverAbstract */
-    private $cacheInstance = null;
+    /** @var null|phpFastCache\Core\Pool\ExtendedCacheItemPoolInterface */
+    private $cacheInstance;
 
-    /** @param \phpFastCache\Core\DriverAbstract $cacheInstance */
+    /** @param null|phpFastCache\Core\Pool\ExtendedCacheItemPoolInterface $cacheInstance */
     public function __construct($cacheInstance = null)
     {
         $this->cacheInstance = $cacheInstance;
-    }
-
-    /**
-     * @return null|\phpFastCache\Core\DriverAbstract
-     */
-    private function getCacheInstace()
-    {
-        return $this->cacheInstance;
     }
 
     /**
@@ -51,10 +43,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
      */
     public function getCategories($categories = array(), $parentID = 1)
     {
-        $cacheKey = self::CACHE_KEY_CATEGORY_ . $parentID;
+        $cacheItem =  $this->cacheInstance
+            ? $this->cacheInstance->getItem(self::CACHE_KEY_CATEGORY_ . $parentID)
+            : null;
 
-        if ($this->getCacheInstace() !== null && $this->getCacheInstace()->get($cacheKey)) {
-            return $this->getCacheInstace()->get($cacheKey);
+        if ($cacheItem && $cacheItem->isHit()) {
+            return $cacheItem->get();
         }
 
         $sql = "
@@ -73,8 +67,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
             );
         }
 
-        if ($this->getCacheInstace()) {
-            $this->getCacheInstace()->set($cacheKey, $categories);
+        if ($cacheItem) {
+            $cacheItem->set($categories);
+            $this->cacheInstance->save($cacheItem);
         }
 
         return $categories;
@@ -90,10 +85,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
      */
     public function getStreamCategories($categories = array(), $parentID = 1)
     {
-        $cacheKey = self::CACHE_KEY_STREAM_CATEGORY_ . $parentID;
+        $cacheItem =  $this->cacheInstance
+            ? $this->cacheInstance->getItem(self::CACHE_KEY_STREAM_CATEGORY_ . $parentID)
+            : null;
 
-        if ($this->getCacheInstace() !== null && $this->getCacheInstace()->get($cacheKey)) {
-            return $this->getCacheInstace()->get($cacheKey);
+        if ($cacheItem && $cacheItem->isHit()) {
+            return $cacheItem->get();
         }
 
         $sql = "
@@ -110,8 +107,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
             $categories = $this->getStreamCategories($categories, $row['id']);
         }
 
-        if ($this->getCacheInstace()) {
-            $this->getCacheInstace()->set($cacheKey, $categories);
+        if ($cacheItem) {
+            $cacheItem->set($categories);
+            $this->cacheInstance->save($cacheItem);
         }
 
         return $categories;
