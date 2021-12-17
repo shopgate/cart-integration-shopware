@@ -209,4 +209,13 @@ class WebCheckout
             'sessionId' => $sessionId
         ));
     }
+
+    public function getSessionId()
+    {
+        if ($this->getConfig()->assertMinimumVersion('5.7.0')) {
+            return Shopware()->Session()->getId();
+        }
+
+        return session_id();
+    }
 }
