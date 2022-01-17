@@ -15,7 +15,7 @@
             - uses Shopgate Cart Integration SDK 2.9.84
 
             ### Added
-            - support for PHP 8.0 & 8.1
+            - support for PHP 8.0 &amp; 8.1
 
             ### Fixed
             - displaying empty or `null` labels in attribute export list
