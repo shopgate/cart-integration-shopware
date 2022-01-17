@@ -21,6 +21,7 @@
  */
 
 namespace unit\Models;
+
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 class VersionTest extends TestCase
