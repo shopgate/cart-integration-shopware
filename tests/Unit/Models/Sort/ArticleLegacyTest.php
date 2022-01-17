@@ -22,9 +22,10 @@
 
 namespace unit\Models;
 
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 use Shopware\Bundle\SearchBundle\StoreFrontCriteriaFactory;
 
-class ArticleLegacyTest extends \PHPUnit_Framework_TestCase
+class ArticleLegacyTest extends TestCase
 {
     /**
      * @param string $expectedResult

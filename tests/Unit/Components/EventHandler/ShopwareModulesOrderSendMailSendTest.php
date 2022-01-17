@@ -21,7 +21,9 @@
 
 namespace Unit\Components\EventHandler;
 
-class ShopwareModulesOrderSendMailSendTest extends \PHPUnit_Framework_TestCase
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+
+class ShopwareModulesOrderSendMailSendTest extends TestCase
 {
     /**
      * @param bool      $sendingEnabled

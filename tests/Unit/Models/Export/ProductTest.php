@@ -22,7 +22,9 @@
 
 namespace unit\Models\Export;
 
-class ProductTest extends \PHPUnit_Framework_TestCase
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+
+class ProductTest extends TestCase
 {
     /** @var \Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product|\PHPUnit_Framework_MockObject_MockObject */
     private $testClass;
@@ -30,7 +32,7 @@ class ProductTest extends \PHPUnit_Framework_TestCase
     /**
      * Initializing main test class as mock
      */
-    public function setUp()
+    public function set_up()
     {
         $this->testClass = $this->getMockBuilder('Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product')
             ->disableOriginalConstructor()

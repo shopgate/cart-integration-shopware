@@ -22,7 +22,9 @@
 
 namespace unit\Models;
 
-class TranslationTest extends \PHPUnit_Framework_TestCase
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+
+class TranslationTest extends TestCase
 {
     /** @var \Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Translation */
     private $subjectUnderTest;
@@ -30,7 +32,7 @@ class TranslationTest extends \PHPUnit_Framework_TestCase
     /** @var \Shopware_Components_Translation|\PHPUnit_Framework_MockObject_MockObject */
     private $translateComponentMock;
 
-    public function setUp()
+    public function set_up()
     {
         $this->translateComponentMock = $this->getMockBuilder('Shopware_Components_Translation')
             ->setMethods(array('read'))

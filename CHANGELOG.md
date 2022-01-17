@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Changed
+- uses Shopgate Cart Integration SDK 2.9.84
+
+### Added
+- support for PHP 8.0 & 8.1
+
 ### Fixed
 - displaying empty or `null` labels in attribute export list
 - attribute export list in the plugin configuration not updating when `FreeText` attributes are changed

@@ -21,15 +21,16 @@
  */
 
 namespace unit\Models;
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
-class VersionTest extends \PHPUnit_Framework_TestCase
+class VersionTest extends TestCase
 {
     const SHOPWARE_VERSION = '4.3.6';
 
     /** @var \Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Version */
     private $subjectUnderTest;
 
-    public function setUp()
+    public function set_up()
     {
         $this->subjectUnderTest =
             new \Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Version(self::SHOPWARE_VERSION);

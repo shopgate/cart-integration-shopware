@@ -21,12 +21,14 @@
 
 namespace Unit;
 
-class PluginTest extends \PHPUnit_Framework_TestCase
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+
+class PluginTest extends TestCase
 {
     /** @var \ShopgatePluginShopware */
     private $subjectUnderTest;
 
-    public function setUp()
+    public function set_up()
     {
         $this->subjectUnderTest = $this->getMockBuilder(
             'ShopgatePluginShopware'

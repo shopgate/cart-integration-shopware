@@ -22,9 +22,10 @@
 
 namespace unit\Models;
 
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 use Shopware\Models\Search\CustomSorting;
 
-class ArticleTest extends \PHPUnit_Framework_TestCase
+class ArticleTest extends TestCase
 {
     /** @var \Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_Article */
     private $subjectUnderTest;
@@ -44,7 +45,7 @@ class ArticleTest extends \PHPUnit_Framework_TestCase
     /** @var \Enlight_Controller_Request_Request | \PHPUnit_Framework_MockObject_MockObject */
     private $requestHttpMock;
 
-    public function setUp()
+    public function set_up()
     {
         $this->customSortingServiceMock =
             $this->getMockBuilder('Shopware\Bundle\StoreFrontBundle\Service\CustomSortingServiceInterface')
