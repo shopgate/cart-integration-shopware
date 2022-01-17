@@ -3,17 +3,23 @@
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.3/engine/Shopware/Components/Plugin/schema/plugin.xsd">
     <label lang="de">Swag Plugin System</label>
     <label lang="en">Swag plugin system</label>
-    <version>2.9.100-alpha.2</version>
+    <version>2.9.100-alpha.3</version>
     <copyright>(c) by Shopgate GmbH</copyright>
     <license>Apache</license>
     <link>https://store.shopware.com/sgate00633f/shopgate-mobile-commerce-fuer-shopware.html</link>
     <author>Shopgate GmbH</author>
     <compatibility minVersion="5.3.0"/>
-    <changelog version="2.9.100-alpha.2">
+    <changelog version="2.9.100-alpha.3">
         <changes lang="en">
+            ### Changed
+            - uses Shopgate Cart Integration SDK 2.9.84
+
+            ### Added
+            - support for PHP 8.0 & 8.1
+
             ### Fixed
-            - tax calculation during web checkout when ordering to a country different from the shop's country
-            - shipping costs calculation when the address has been changed in the web checkout
+            - displaying empty or `null` labels in attribute export list
+            - attribute export list in the plugin configuration not updating when `FreeText` attributes are changed
         </changes>
     </changelog>
     <description>
