@@ -6,7 +6,9 @@
 The Shopgate Shopware integration allows you to connect your Shopware store with the Shopgate backend.
 
 ## Getting Started
-Download and unzip the [latest releases](https://github.com/shopgate/cart-integration-shopware/releases/latest) into the root folder of your Shopware installation.
+Download and unzip the [latest release](https://github.com/shopgate/cart-integration-shopware/releases/latest) for your PHP version into the root folder of your Shopware installation.
+
+Note: If you're on PHP 8 use the PHP 7 package.
 
 ## Installation and Documentation
 

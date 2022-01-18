@@ -41,8 +41,8 @@ jobs:
       - name: Test
         run: composer test
 
-  deploy:
-    name: Deploy to GitHub
+  deploy-php-5:
+    name: Deploy PHP 5.6 compatible package to GitHub
     needs: [check, test]
     runs-on: ubuntu-20.04
     if: startsWith(github.ref, 'refs/tags/') # only tags
@@ -55,11 +55,51 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.2
+          php-version: 5.6
       - name: Build ZIP
         run: ./release/build_release_package.sh
         env:
           TAG_NAME: ${{ steps.set-tag.outputs.TAG_NAME }}
+          PHP_VERSION: 'php-5.6'
+      - name: Create GitHub release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Shopgate Cart Integration Shopware 5 ${{ github.ref }}
+          draft: true
+      - name: Upload ZIP to GitHub release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}.zip
+          asset_name: shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}.zip
+          asset_content_type: application/zip
+
+  deploy-php-7:
+    name: Deploy PHP 7/8 compatible package to GitHub
+    needs: [check, test]
+    runs-on: ubuntu-20.04
+    if: startsWith(github.ref, 'refs/tags/') # only tags
+    steps:
+      - name: Get tag name
+        id: set-tag
+        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.0
+      - name: Build ZIP
+        run: ./release/build_release_package.sh
+        env:
+          TAG_NAME: ${{ steps.set-tag.outputs.TAG_NAME }}
+          PHP_VERSION: 'php-7'
       - name: Create GitHub release
         id: create_release
         uses: actions/create-release@v1
