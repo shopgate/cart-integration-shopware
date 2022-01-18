@@ -155,7 +155,6 @@ jobs:
         with:
           tag_name: ${{ steps.set-tag.outputs.TAG_NAME }}
           name: Shopgate Cart Integration Shopware 5 ${{ steps.set-tag.outputs.TAG_NAME }}
-          draft: true
           fail_on_unmatched_files: true
           files: |
             ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-5.6.zip
