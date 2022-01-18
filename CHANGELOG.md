@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - displaying empty or `null` labels in attribute export list
 - attribute export list in the plugin configuration not updating when `FreeText` attributes are changed
+- export of attributes with type Datetime
 
 ## [2.9.99] - 2021-09-08
 ### Fixed
