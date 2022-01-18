@@ -156,7 +156,7 @@ jobs:
           name: Shopgate Cart Integration Shopware 5 ${{ github.ref }}
           draft: true
           fail_on_unmatched_files: true
-          files:
+          files: |
             ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-5.6.zip
             ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-7.zip
 
