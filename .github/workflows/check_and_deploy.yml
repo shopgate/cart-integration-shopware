@@ -119,9 +119,9 @@ jobs:
           asset_name: shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}.zip
           asset_content_type: application/zip
 
-  notify-release-success:
+  notify-release-success-php-5:
     name: Notify developers of new release
-    needs: [deploy]
+    needs: [deploy-php-5]
     runs-on: ubuntu-20.04
     if: |
       success() &&
@@ -137,11 +137,31 @@ jobs:
           SLACK_USERNAME: 'GitHub Actions'
           SLACK_ICON_EMOJI: ':octocat:'
           SLACK_TITLE: New release for ${{ github.repository }}
-          SLACK_MESSAGE: Released version ${{ steps.set-tag.outputs.TAG_NAME }} of ${{ github.repository }}
+          SLACK_MESSAGE: Released version ${{ steps.set-tag.outputs.TAG_NAME }} (for PHP 5.6) of ${{ github.repository }}
 
-  notify-release-fail:
+  notify-release-success-php-7:
+    name: Notify developers of new release
+    needs: [deploy-php-7]
+    runs-on: ubuntu-20.04
+    if: |
+      success() &&
+      startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Get tag name
+        id: set-tag
+        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+      - name: Notify on Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_MERCHANT_UNIT }}
+          SLACK_USERNAME: 'GitHub Actions'
+          SLACK_ICON_EMOJI: ':octocat:'
+          SLACK_TITLE: New release for ${{ github.repository }}
+          SLACK_MESSAGE: Released version ${{ steps.set-tag.outputs.TAG_NAME }} (for PHP 7 & 8) of ${{ github.repository }}
+
+  notify-release-fail-php-5:
     name: Notify developers of failed release
-    needs: [deploy]
+    needs: [deploy-php-5]
     runs-on: ubuntu-20.04
     if: |
       failure() &&
@@ -158,4 +178,25 @@ jobs:
           SLACK_ICON_EMOJI: ':octocat:'
           SLACK_COLOR: '#A30200'
           SLACK_TITLE: Release failed for ${{ github.repository }}
-          SLACK_MESSAGE: Release failed for version ${{ steps.set-tag.outputs.TAG_NAME }} of ${{ github.repository }}
+          SLACK_MESSAGE: Release failed for version ${{ steps.set-tag.outputs.TAG_NAME }} (for PHP 5.6) of ${{ github.repository }}
+
+  notify-release-fail-php-7:
+    name: Notify developers of failed release
+    needs: [deploy-php-7]
+    runs-on: ubuntu-20.04
+    if: |
+      failure() &&
+      startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Get tag name
+        id: set-tag
+        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+      - name: Notify on Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_MERCHANT_UNIT }}
+          SLACK_USERNAME: 'GitHub Actions'
+          SLACK_ICON_EMOJI: ':octocat:'
+          SLACK_COLOR: '#A30200'
+          SLACK_TITLE: Release failed for ${{ github.repository }}
+          SLACK_MESSAGE: Release failed for version ${{ steps.set-tag.outputs.TAG_NAME }} (for PHP 7 & 8) of ${{ github.repository }}
