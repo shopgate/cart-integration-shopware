@@ -144,6 +144,9 @@ jobs:
         uses: actions/cache@v2
         with:
           key: ${{ steps.set-tag.outputs.TAG_NAME }}
+          path: |
+            ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-5.6.zip
+            ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-7.zip
       - name: Release & upload
         uses: softprops/action-gh-release@v1
         with:
