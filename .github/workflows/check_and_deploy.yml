@@ -74,10 +74,11 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PHP_VERSION: 'php-5.6'
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}.zip
-          asset_name: shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}.zip
+          asset_path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-${PHP_VERSION}.zip
+          asset_name: shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-${PHP_VERSION}.zip
           asset_content_type: application/zip
 
   deploy-php-7:
@@ -113,10 +114,11 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PHP_VERSION: 'php-7'
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}.zip
-          asset_name: shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}.zip
+          asset_path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-${PHP_VERSION}.zip
+          asset_name: shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-${PHP_VERSION}.zip
           asset_content_type: application/zip
 
   notify-release-success-php-5:
