@@ -19,14 +19,12 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
-use phpFastCache\Core\Pool\ExtendedCacheItemPoolInterface;
 use Shopgate\Helpers\Attribute as AttributeHelper;
 use Shopware\Bundle\SearchBundle\Condition\CategoryCondition;
 use Shopware\Bundle\SearchBundle\Condition\CustomerGroupCondition;
 use Shopware\Bundle\SearchBundle\Criteria;
 use Shopware\Bundle\StoreFrontBundle\Service\Core\ContextService;
 use Shopware\Bundle\StoreFrontBundle\Struct\ProductContext;
-use phpFastCache\CacheManager;
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
 {
@@ -239,12 +237,19 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     }
 
     /**
-     * @return ExtendedCacheItemPoolInterface
+     * @return phpFastCache\Core\Pool\ExtendedCacheItemPoolInterface
      */
     protected function getCacheInstance()
     {
         if (!$this->cacheInstance) {
-            $this->cacheInstance = CacheManager::getInstance(
+            $namespace = 'phpFastCache';
+            if (!class_exists('phpFastCache\CacheManager')) {
+                $namespace = 'Phpfastcache';
+            }
+
+            $cacheManagerClass = "{$namespace}\CacheManager";
+
+            $this->cacheInstance = $cacheManagerClass::getInstance(
                 'files', array(
                     'path' => rtrim($this->config->getCacheFolderPath())
                 )
