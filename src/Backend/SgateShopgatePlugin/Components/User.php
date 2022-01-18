@@ -377,12 +377,21 @@ class User
             $sErrorFlag['password'] = true;
         }
 
+        $mainShop = Shopware()->Shop()->getMain() !== null ? Shopware()->Shop()->getMain() : Shopware()->Shop();
+        $scopedRegistration = $mainShop->getCustomerScope();
+
+        $addScopeSql = '';
+        if ($scopedRegistration == true) {
+            $addScopeSql = Shopware()->Db()->quoteInto(' AND subshopID = ? ', $mainShop->getId());
+        }
+
         $preHashedSql = Shopware()->Db()->quoteInto(' AND password = ? ', $hash);
 
         $sql = '
                 SELECT id, customergroup, password, encoder
                 FROM s_user WHERE email = ? AND active=1
                 AND (lockeduntil < now() OR lockeduntil IS NULL) '
+            . $addScopeSql
             . $preHashedSql;
 
         $getUser = Shopware()->Db()->fetchRow($sql, array($email)) ? : array();

@@ -144,6 +144,9 @@
             {if $sgFrontendAccount && !$sgForgotPassword}
                 <script type="text/javascript">
                     function initPipelineCall () {ldelim}
+                        {if !$sgAccountView }
+                            window.location.href = '/account#show-registration';
+                        {/if}
                         window.SGAppConnector.sendPipelineRequest(
                             'onedot.checkout.updateSession.v1',
                             false,
