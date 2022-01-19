@@ -809,6 +809,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             }
         }
 
+        foreach ($properties as &$values) {
+            foreach ($values as &$value) {
+                if ($value instanceof DateTime) {
+                    $value = $value->format('Y-m-d');
+                }
+            }
+        }
+
         return $properties;
     }
 
