@@ -208,6 +208,7 @@ class WebCheckout
         session_start(array(
             'sessionId' => $sessionId
         ));
+        Shopware()->Session()->offsetSet('sessionId', $sessionId);
     }
 
     public function getSessionId()
