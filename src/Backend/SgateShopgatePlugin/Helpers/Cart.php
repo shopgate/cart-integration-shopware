@@ -73,11 +73,11 @@ class Cart
 
         /** @var \ShopgatePaymentMethod $paymentMethod */
         foreach ($paymentMethods as $paymentMethod) {
-            $paymentData = Shopware()->Db()->fetchOne(
+            $existingPaymentId = Shopware()->Db()->fetchOne(
                 'SELECT id FROM s_core_paymentmeans WHERE name = ?',
                 array($paymentMethod->getId())
             );
-            if ($paymentData['id'] == $paymentId) {
+            if ($existingPaymentId == $paymentId) {
                 return $paymentMethod;
             }
         }
