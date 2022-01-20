@@ -102,6 +102,10 @@ class Cart
                 exit();
             }
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            if ($this->webCheckoutHelper->getConfig()->assertMinimumVersion('5.7.0')) {
+                $sessionId = $customer->getSessionId();
+                $this->webCheckoutHelper->startSessionWithId($sessionId);
+            }
             $this->session->offsetSet('sUserMail', $customer->getEmail());
             $this->session->offsetSet('sUserPassword', $customer->getPassword());
             $this->session->offsetSet('sUserId', $customer->getId());
@@ -166,6 +170,7 @@ class Cart
         if (!empty($voucher)) {
             $basket['voucherCode'] = $voucher['code'];
         }
+        $basket['sessionId'] = $sessionId;
 
         $httpResponse->setHttpResponseCode(200);
         $httpResponse->setHeader('Content-Type', 'application/json');
@@ -197,12 +202,19 @@ class Cart
             );
         }
 
+        $customer = null;
+        if (!empty($customerId) && $customerId !== 'null') {
+            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+            if ($this->webCheckoutHelper->getConfig()->assertMinimumVersion('5.7.0')) {
+                $sessionId = $customer->getSessionId();
+            }
+        }
+
         if (isset($sessionId)) {
             $this->webCheckoutHelper->startSessionWithId($sessionId);
         }
 
-        if (!empty($customerId) && $customerId !== 'null') {
-            $customer = $this->webCheckoutHelper->getCustomer($customerId);
+        if ($customer) {
             $this->session->offsetSet('sUserId', $customer->getId());
             $this->session->offsetSet('sPaymentID', $customer->getPaymentId());
         }
@@ -216,7 +228,7 @@ class Cart
             $httpResponse->setHttpResponseCode(401);
             $httpResponse->setBody(json_encode($response));
         } else {
-            $sessionId = $this->session->get('sessionId');
+            $sessionId = $this->webCheckoutHelper->getSessionId();
             $httpResponse->setHttpResponseCode(201);
             $httpResponse->setBody(json_encode(array('sessionId' => $sessionId)));
         }
