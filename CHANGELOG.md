@@ -5,8 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.100]
 ### Changed
-- uses Shopgate Cart Integration SDK 2.9.84
+- uses Shopgate Cart Integration SDK 2.9.85
 
 ### Added
 - support for PHP 8.0 & 8.1
@@ -901,7 +903,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.99...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.100...HEAD
+[2.9.100]: https://github.com/shopgate/interface-shopware/compare/2.9.99...2.9.100
 [2.9.99]: https://github.com/shopgate/interface-shopware/compare/2.9.98...2.9.99
 [2.9.98]: https://github.com/shopgate/interface-shopware/compare/2.9.97...2.9.98
 [2.9.97]: https://github.com/shopgate/interface-shopware/compare/2.9.96...2.9.97
