@@ -26,6 +26,8 @@
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.18",
     "phpunit/phpunit": ">= 5",
-    "yoast/phpunit-polyfills": "^1.0"
+    "yoast/phpunit-polyfills": "^1.0",
+    "phpstan/phpstan": "^1.4",
+    "shopware/shopware": "~5.7.7"
   }
 }

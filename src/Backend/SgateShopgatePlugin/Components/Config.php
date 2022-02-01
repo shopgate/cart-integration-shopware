@@ -299,7 +299,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
 
         // since Shopware 5.6 for some setups the plugin configuration can't be loaded anymore the old way
         if (empty($pConfig)) {
-            return loadFormConfigurationValuesNew();
+            return $this->loadFormConfigurationValuesNew();
         }
 
         $shopgateConfig = array();

@@ -245,7 +245,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
      */
     public function getFormattedPrice($price, $precision = 2)
     {
-        return round(str_replace(",", ".", $price), $precision);
+        return round((int)str_replace(",", ".", $price), $precision);
     }
 
     /**
