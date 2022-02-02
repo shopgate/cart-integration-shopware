@@ -5,8 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- PHP 8 compatibility
 
-## [2.9.100]
+### Removed
+- support for PHP 5.6
+
+## [2.9.100] - 2022-01-27
 ### Changed
 - uses Shopgate Cart Integration SDK 2.9.85
 
