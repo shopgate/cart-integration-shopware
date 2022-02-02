@@ -71,8 +71,8 @@ class User
     }
 
     /**
-     * @param Enlight_Controller_Request_Request       $request
-     * @param Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param \Enlight_Controller_Request_Request   $request
+     * @param \Enlight_Controller_Response_Response $httpResponse
      */
     public function loginUser($request, $httpResponse)
     {
@@ -162,7 +162,7 @@ class User
     /**
      * Custom get user action
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
      */
     public function getUser($request)
     {
@@ -208,7 +208,7 @@ class User
                 'customerGroups' => $user->getGroupKey(),
                 'additional'     => $user->getAdditional()
             );
-        } catch (Exception $error) {
+        } catch (\Exception $error) {
             return array(
                 'error' => true,
                 'message' => $error->getMessage()
@@ -219,11 +219,12 @@ class User
     /**
      * Custom action to update user data
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
      *
      * @return array
      */
-    public function updateUser($request)
+    public function updateUser($request, $httpResponse)
     {
         $response = array(
             'success' => true,
@@ -231,7 +232,7 @@ class User
         );
 
         try {
-            $params  = $this->webCheckoutHelper->getJsonParams($request);
+            $params  = $this->webCheckoutHelper->getJsonParams($request, $httpResponse);
             $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
             if (isset($decoded['error']) && $decoded['error']) {
@@ -251,7 +252,7 @@ class User
 
             $response['success'] = true;
             $response['message'] = $decoded['email'];
-        } catch (Exception $error) {
+        } catch (\Exception $error) {
             $response['message'] = $error->getMessage();
         }
 
@@ -261,11 +262,12 @@ class User
     /**
      * Custom action to update user email
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
      *
      * @return array
      */
-    public function updateUserEmail($request)
+    public function updateUserEmail($request, $httpResponse)
     {
         $response = array(
             'success' => false,
@@ -273,7 +275,7 @@ class User
         );
 
         try {
-            $params  = $this->webCheckoutHelper->getJsonParams($request);
+            $params  = $this->webCheckoutHelper->getJsonParams($request, $httpResponse);
             $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
             if (isset($decoded['error']) && $decoded['error']) {
@@ -303,7 +305,7 @@ class User
                 }
                 $response['message'] = $string;
             }
-        } catch (Exception $error) {
+        } catch (\Exception $error) {
             $response['message'] = $error->getMessage();
         }
 
@@ -313,18 +315,19 @@ class User
     /**
      * Custom action to update user password
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $httpResponse
      *
      * @return array
      */
-    public function updateUserPassword($request)
+    public function updateUserPassword($request, $httpResponse)
     {
         $response = array(
             'success' => false,
             'message' => ''
         );
 
-        $params  = $this->webCheckoutHelper->getJsonParams($request);
+        $params  = $this->webCheckoutHelper->getJsonParams($request, $httpResponse);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
         if (isset($decoded['error']) && $decoded['error']) {

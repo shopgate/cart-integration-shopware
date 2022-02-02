@@ -289,7 +289,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
                 );
             }
             throw new ShopgateLibraryException(
-                ShopgateLibraryException::REGISTER_FAILED_TO_ADD_USER, print_r($errors, 1),
+                ShopgateLibraryException::REGISTER_FAILED_TO_ADD_USER, print_r($errors, true),
                 true
             );
         } catch (Exception $e) {
@@ -603,7 +603,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
                 );
             }
             throw new ShopgateLibraryException(
-                ShopgateLibraryException::REGISTER_FAILED_TO_ADD_USER, print_r($errors, 1),
+                ShopgateLibraryException::REGISTER_FAILED_TO_ADD_USER, print_r($errors, true),
                 true
             );
         } catch (Exception $e) {

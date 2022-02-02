@@ -21,6 +21,7 @@
 
 namespace Shopgate\Components;
 
+use http\Env\Response;
 use Shopgate\Helpers\WebCheckout;
 use Shopware\Bundle\StoreFrontBundle\Service\ContextServiceInterface;
 
@@ -182,13 +183,13 @@ class Cart
     /**
      * Custom function to add items to cart
      *
-     * @param \Enlight_Controller_Request_Request       $request
-     * @param \Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param \Enlight_Controller_Request_Request   $request
+     * @param \Enlight_Controller_Response_Response $httpResponse
      */
     public function addCartItems($request, $httpResponse)
     {
         // @Below code: Standard Shopware function to get JSON data from the POST array doesn't work
-        $params = $this->webCheckoutHelper->getJsonParams($request);
+        $params = $this->webCheckoutHelper->getJsonParams($request, $httpResponse);
 
         $articles          = $params['articles'];
         $sessionId         = $params['sessionId'];
@@ -240,13 +241,13 @@ class Cart
     /**
      * Custom function to update a cart item
      *
-     * @param \Enlight_Controller_Request_Request       $request
-     * @param \Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param \Enlight_Controller_Request_Request   $request
+     * @param \Enlight_Controller_Response_Response $httpResponse
      */
     public function updateCartItem($request, $httpResponse)
     {
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
-        $params = $this->webCheckoutHelper->getJsonParams($request);
+        $params = $this->webCheckoutHelper->getJsonParams($request, $httpResponse);
 
         $basketId          = $params['basketId'];
         $quantity          = $params['quantity'];
@@ -291,13 +292,13 @@ class Cart
     /**
      * Custom function to delete item from cart
      *
-     * @param \Enlight_Controller_Request_Request       $request
-     * @param \Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param \Enlight_Controller_Request_Request   $request
+     * @param \Enlight_Controller_Response_Response $httpResponse
      */
     public function deleteCartItem($request, $httpResponse)
     {
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
-        $params = $this->webCheckoutHelper->getJsonParams($request);
+        $params = $this->webCheckoutHelper->getJsonParams($request, $httpResponse);
 
         $articleId         = $params['articleId'];
         $sessionId         = $params['sessionId'];
@@ -447,14 +448,14 @@ class Cart
     /**
      * Custom function to add coupon to cart
      *
-     * @param \Enlight_Controller_Request_Request       $request
-     * @param \Enlight_Controller_Response_ResponseHttp $httpResponse
+     * @param \Enlight_Controller_Request_Request   $request
+     * @param \Enlight_Controller_Response_Response $httpResponse
      * @param \Enlight_View_Default                     $view
      */
     public function addCouponsCode($request, $httpResponse, $view)
     {
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
-        $params = $this->webCheckoutHelper->getJsonParams($request);
+        $params = $this->webCheckoutHelper->getJsonParams($request, $httpResponse);
 
         $code              = $params['couponCode'];
         $sessionId         = $params['sessionId'];

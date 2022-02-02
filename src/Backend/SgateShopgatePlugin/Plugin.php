@@ -3246,8 +3246,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
             == Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config::SHIPPING_SERVICE_PLUGIN_API
         ) {
             // check cart also returns the dispatchId per available dispatch
-            if (strlen($sgShippingInfo->getApiResponse()) > 0) {
-                $apiResponse        = $this->jsonDecode($sgShippingInfo->getApiResponse(), true);
+            $apiResponse = $sgShippingInfo->getApiResponse();
+            if (is_string($apiResponse) && strlen($apiResponse) > 0) {
+                $apiResponse        = $this->jsonDecode($apiResponse, true);
                 $oOrder->dispatchId = $apiResponse['id'];
             } else {
                 // search for a valid dispatch type per shipping name
@@ -3922,6 +3923,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         }
 
         foreach ($basket['content'] as $item) {
+            $tax = "0";
             if (!empty($item["tax_rate"])) {
                 // nothing to do
             } elseif (!empty($item['taxPercent'])) {
@@ -5296,7 +5298,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
     protected function createItems($limit = null, $offset = null, array $uids = array())
     {
         $this->log("[*] Export Start...", ShopgateLogger::LOGTYPE_DEBUG);
-        $start                = microtime(1);
+        $start                = microtime(true);
         $memoryUsageBegin     = memory_get_usage();
         $memoryUsageRealBegin = memory_get_usage(true);
 
@@ -5333,7 +5335,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $memoryUsageDiff     = memory_get_usage() - $memoryUsageBegin;
         $memoryUsageRealDiff = memory_get_usage(true) - $memoryUsageRealBegin;
         $memUsageDiffString  = $this->getFormatedMemoryDiffString($memoryUsageDiff, $memoryUsageRealDiff);
-        $end                 = microtime(1);
+        $end                 = microtime(true);
         $duration            = $end - $start;
         $this->log(
             "ShopgatePluginShopware::createItems() memory usage DIFFERENCE after creating the XML file: "

@@ -238,14 +238,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
      * Takes a string price value with a comma or dot and creates a float value out of it before converting to a price
      * format.
      *
-     * @param     $price
-     * @param int $precision
+     * @param mixed $price
+     * @param int   $precision
      *
      * @return float
      */
     public function getFormattedPrice($price, $precision = 2)
     {
-        return round((int)str_replace(",", ".", $price), $precision);
+        return round((float)str_replace(",", ".", (string)$price), $precision);
     }
 
     /**

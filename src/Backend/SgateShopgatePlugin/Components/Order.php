@@ -113,6 +113,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Order
         if ($e && defined("_SHOPGATE_API") && SHOPGATE_API) {
             throw $e;
         }
+
+        return true;
     }
 
     /**

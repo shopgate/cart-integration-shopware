@@ -187,7 +187,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Install
     {
         $sql = "SELECT IFNULL(AVG(invoice_amount), 0) FROM s_order WHERE subshopID = '" . $shopId . "'";
 
-        return round(Shopware()->Db()->fetchOne($sql), 2);
+        return round((float)Shopware()->Db()->fetchOne($sql), 2);
     }
 
     /**

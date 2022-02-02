@@ -82,7 +82,7 @@ class WebCheckout
             $checkUser = Shopware()->Modules()->Admin()->sLogin(true);
 
             if (isset($checkUser['sErrorFlag'])) {
-                throw new Exception($checkUser['sErrorMessages'][0], 400);
+                throw new \Exception($checkUser['sErrorMessages'][0], 400);
             }
 
             return true;
@@ -121,15 +121,17 @@ class WebCheckout
     }
 
     /**
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
      * @return mixed
      */
-    public function getJsonParams($request)
+    public function getJsonParams($request, $response)
     {
         $header = $request->getHeader('Content-Type');
 
         if ($header !== 'application/json') {
-            $this->Response()->setHttpResponseCode(404);
-            $this->Response()->sendResponse();
+            $response->setHttpResponseCode(404);
+            $response->sendResponse();
             exit();
         }
 
@@ -151,7 +153,7 @@ class WebCheckout
             $decoded     = JWT::decode($token, $key, array('HS256'));
 
             return json_decode(json_encode($decoded), true);
-        } catch (Exception $error) {
+        } catch (\Exception $error) {
             return array(
                 'error'   => true,
                 'message' => $error->getMessage()

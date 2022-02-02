@@ -141,8 +141,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Redirect
         }
 
         // redirect only if all necessary data is given
-        $customerNumber = trim($this->getConfig()->getCustomerNumber());
-        $shopNumber     = trim($this->getConfig()->getShopNumber());
+        $customerNumber = trim((string)$this->getConfig()->getCustomerNumber());
+        $shopNumber     = trim((string)$this->getConfig()->getShopNumber());
         $apiKey         = trim($this->getConfig()->getApikey());
         $alias          = trim($this->getConfig()->getAlias());
         $cname          = trim($this->getConfig()->getCname());

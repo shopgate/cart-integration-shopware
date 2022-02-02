@@ -57,7 +57,7 @@ class Address
     /**
      * Custom action to get the address data of an user
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
      *
      * @return array
      */
@@ -109,13 +109,14 @@ class Address
     /**
      * Custom action to add a new address
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
      *
      * @return array
      */
-    public function addAddressAction($request)
+    public function addAddressAction($request, $response)
     {
-        $data = $this->getAddressData($request);
+        $data = $this->getAddressData($request, $response);
 
         if (isset($data['error']) && $data['error']) {
             return $data;
@@ -139,13 +140,14 @@ class Address
     /**
      * Custom action to delete an address
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
      *
      * @return array
      */
-    public function deleteAddressAction($request)
+    public function deleteAddressAction($request, $response)
     {
-        $params = $this->webCheckoutHelper->getJsonParams($request);
+        $params = $this->webCheckoutHelper->getJsonParams($request, $response);
         $data   = $this->webCheckoutHelper->getJWT($params['token']);
 
         if (isset($data['error']) && $data['error']) {
@@ -165,13 +167,14 @@ class Address
     }
 
     /**
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
      *
      * @return array
      */
-    private function getAddressData($request)
+    private function getAddressData($request, $response)
     {
-        $params = $this->webCheckoutHelper->getJsonParams($request);
+        $params = $this->webCheckoutHelper->getJsonParams($request, $response);
         $data   = $this->webCheckoutHelper->getJWT($params['token']);
 
         if (isset($data['error']) && $data['error']) {

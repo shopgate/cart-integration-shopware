@@ -620,7 +620,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function updateUserAction()
     {
-        $response = $this->webCheckoutUserService->updateUser($this->Request());
+        $response = $this->webCheckoutUserService->updateUser($this->Request(), $this->Response());
 
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
@@ -637,7 +637,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             return;
         }
 
-        $response = $this->webCheckoutUserService->updateUserEmail($this->Request());
+        $response = $this->webCheckoutUserService->updateUserEmail($this->Request(), $this->Response());
 
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
@@ -654,7 +654,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             return;
         }
 
-        $response = $this->webCheckoutUserService->updateUserPassword($this->Request());
+        $response = $this->webCheckoutUserService->updateUserPassword($this->Request(), $this->Response());
 
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
@@ -704,9 +704,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $address = new Shopgate\Components\Address();
 
         if ($this->Request()->isPost() || $this->Request()->isPut()) {
-            $response = $address->addAddressAction($this->Request());
+            $response = $address->addAddressAction($this->Request(), $this->Response());
         } elseif ($this->Request()->isDelete()) {
-            $response = $address->deleteAddressAction($this->Request());
+            $response = $address->deleteAddressAction($this->Request(), $this->Response());
         } else {
             $response = $address->getAddressesAction($this->Request());
         }
@@ -725,9 +725,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $favoritesService = new Shopgate\Components\Favorites();
 
         if ($this->Request()->isPost()) {
-            $response = $favoritesService->addToFavoriteList($this->Request());
+            $response = $favoritesService->addToFavoriteList($this->Request(), $this->Response());
         } elseif ($this->Request()->isDelete()) {
-            $response = $favoritesService->deleteFromFavoriteList($this->Request());
+            $response = $favoritesService->deleteFromFavoriteList($this->Request(), $this->Response());
         } else {
             $response = $favoritesService->getFavorites($this->Request());
         }

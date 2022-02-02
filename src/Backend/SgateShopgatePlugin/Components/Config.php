@@ -21,6 +21,10 @@
 
 require_once dirname(__FILE__) . '/../vendor/autoload.php';
 
+/**
+ * @property string $export_product_description
+ * @property string $export_product_downloads
+ */
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends ShopgateConfig
 {
     const REDIRECT_TYPE_HTTP                             = 'http';
@@ -533,7 +537,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @return bool
      */
     public function getIsActive()
@@ -542,7 +545,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @param bool $value
      */
     public function setIsActive($value)
@@ -571,7 +573,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @return bool
      */
     public function getSendOrderMail()
@@ -580,7 +581,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @param bool $value
      */
     public function setSendOrderMail($value)
@@ -589,7 +589,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @return string http|js
      */
     public function getRedirectType()
@@ -598,7 +597,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @param string $value http|js
      */
     public function setRedirectType($value)
@@ -611,7 +609,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
      */
     public function getExportAttributes()
     {
-        /** @var Enlight_Config $value */
+        /** @var Enlight_Config|array $value */
         $value = $this->export_attributes;
 
         return is_object($value)
@@ -631,11 +629,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     * @return array | string
+     * @return array
      */
     public function getExportAttributesAsDescription()
     {
-        /** @var Enlight_Config $value */
+        /** @var Enlight_Config|array $value */
         $value = $this->export_attributes_as_description;
 
         return is_object($value)
@@ -664,7 +662,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @param string $value
      */
     public function setExportDimensionUnit($value)
@@ -673,7 +670,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @return string
      */
     public function getExportProductDescription()
@@ -682,7 +678,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @param string $value
      */
     public function setExportProductDescription($value)
@@ -691,7 +686,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @return string
      */
     public function getExportProductDownloads()

@@ -104,14 +104,15 @@ class Favorites
     /**
      * Custom favorite action to add a product to the favorite list of an user
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
      *
      * @return array
      */
-    public function addToFavoriteList($request)
+    public function addToFavoriteList($request, $response)
     {
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
-        $params  = $this->webCheckoutHelper->getJsonParams($request);
+        $params  = $this->webCheckoutHelper->getJsonParams($request, $response);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
         if (isset($decoded['error']) && $decoded['error']) {
@@ -133,14 +134,15 @@ class Favorites
     /**
      * Custom favorite action to delete a product from the favorite list of an user
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
      *
      * @return array
      */
-    public function deleteFromFavoriteList($request)
+    public function deleteFromFavoriteList($request, $response)
     {
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
-        $params  = $this->webCheckoutHelper->getJsonParams($request);
+        $params  = $this->webCheckoutHelper->getJsonParams($request, $response);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
 
         if (isset($decoded['error']) && $decoded['error']) {
@@ -312,7 +314,7 @@ class Favorites
      *
      * @param array                              $articles
      * @param int                                $userId
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
      *
      * @return bool
      */

@@ -532,7 +532,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                               ->setLabel($formElement->getLabel())
                               ->setDescription($formElement->getDescription())
                               ->setType($formElement->getType())
-                              ->setRequired($formElement->getRequired())
+                              ->setRequired((bool)$formElement->getRequired())
                               ->setPosition(
                                   isset($position)
                                       ? $position
