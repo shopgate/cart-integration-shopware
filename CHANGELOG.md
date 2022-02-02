@@ -5,11 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.101] - 2022-02-02
 ### Fixed
 - PHP 8 compatibility
-
-### Removed
-- support for PHP 5.6
 
 ## [2.9.100] - 2022-01-27
 ### Changed
@@ -908,7 +907,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.100...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.101...HEAD
+[2.9.101]: https://github.com/shopgate/interface-shopware/compare/2.9.100...2.9.101
 [2.9.100]: https://github.com/shopgate/interface-shopware/compare/2.9.99...2.9.100
 [2.9.99]: https://github.com/shopgate/interface-shopware/compare/2.9.98...2.9.99
 [2.9.98]: https://github.com/shopgate/interface-shopware/compare/2.9.97...2.9.98
