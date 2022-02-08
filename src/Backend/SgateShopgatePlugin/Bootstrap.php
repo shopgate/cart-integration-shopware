@@ -34,6 +34,7 @@ require_once __DIR__ . '/Helpers/WebCheckout.php';
 require_once dirname(__FILE__) . '/Plugin.php';
 
 use Doctrine\Common\Collections\ArrayCollection;
+use phpFastCache\Util\Directory as DirectoryHelper;
 use Shopgate\Helpers\Attribute as AttributeHelper;
 use Shopgate\Helpers\FormElement;
 use Shopgate\Helpers\FormElementCheckbox;
@@ -93,8 +94,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $this->registerSystem();
 
         $this->installCache();
-
-        $this->updateCache();
 
         return true;
     }
@@ -175,28 +174,36 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
     private function installCache()
     {
-        $cacheDir = Shopware()->DocPath() . DS . 'cache' . DS;
+        $shopwareDir = rtrim(Shopware()->DocPath(), DS) . DS;
 
         $dirs = array(
-            'shopgate' . DS . 'cache',
-            'shopgate' . DS . 'export',
-            'shopgate' . DS . 'log',
+            'var' . DS . 'cache' . DS . 'shopgate',
+            'var' . DS . 'log' . DS . 'shopgate',
+            'files' . DS . 'shopgate',
         );
 
         foreach ($dirs as $dir) {
-            $path = $cacheDir . $dir;
+            $path = $shopwareDir . $dir;
             @mkdir($path, 0777, true);
         }
     }
 
     private function updateCache($oldVersion = '1.0.0')
     {
-        if (version_compare($oldVersion, "2.9.84", "<=")) {
-            $shopgateCacheDir = Shopware()->DocPath() . DS . 'cache' . DS . 'shopgate' . DS;
-            $shopgateSdkDir   = __DIR__ . DS . 'vendor' . DS . 'shopgate' . DS . 'cart-integration-sdk' . DS;
+        if (version_compare($oldVersion, "2.9.101", "<=")) {
+            $this->installCache();
+            $shopwareDir = rtrim(Shopware()->DocPath(), DS) . DS;
+            $oldCacheDir = $shopwareDir . 'cache' . DS . 'shopgate' . DS;
+            $oldLogDir   = $oldCacheDir . 'log' . DS;
+            $newLogDir   = $shopwareDir . 'var' . DS . 'log' . DS . 'shopgate' . DS;
 
-            @copy($shopgateSdkDir . '.htaccess', $shopgateCacheDir . '.htaccess');
-            @unlink($shopgateCacheDir . 'log' . DS . 'shopgate_access.log');
+            $files = scandir($oldLogDir);
+            foreach ($files as $file) {
+                if (strpos($file, '.log') !== false) {
+                    rename($oldLogDir . $file, $newLogDir . $file);
+                }
+            }
+            DirectoryHelper::rrmdir($oldCacheDir);
         }
     }
 
