@@ -203,7 +203,15 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
                     rename($oldLogDir . $file, $newLogDir . $file);
                 }
             }
-            DirectoryHelper::rrmdir($oldCacheDir);
+
+            $namespace = 'phpFastCache';
+            if (!class_exists('phpFastCache\DirectoryHelper')) {
+                $namespace = 'Phpfastcache';
+            }
+
+            $DirectoryHelper = "{$namespace}\DirectoryHelper";
+
+            $DirectoryHelper::rrmdir($oldCacheDir);
         }
     }
 
