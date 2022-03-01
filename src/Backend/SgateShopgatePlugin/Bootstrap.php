@@ -34,7 +34,6 @@ require_once __DIR__ . '/Helpers/WebCheckout.php';
 require_once dirname(__FILE__) . '/Plugin.php';
 
 use Doctrine\Common\Collections\ArrayCollection;
-use phpFastCache\Util\Directory as DirectoryHelper;
 use Shopgate\Helpers\Attribute as AttributeHelper;
 use Shopgate\Helpers\FormElement;
 use Shopgate\Helpers\FormElementCheckbox;
@@ -205,11 +204,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             }
 
             $namespace = 'phpFastCache';
-            if (!class_exists('phpFastCache\DirectoryHelper')) {
+            if (!class_exists('phpFastCache\Util\DirectoryHelper')) {
                 $namespace = 'Phpfastcache';
             }
 
-            $DirectoryHelper = "{$namespace}\DirectoryHelper";
+            $DirectoryHelper = "{$namespace}\Util\DirectoryHelper";
 
             $DirectoryHelper::rrmdir($oldCacheDir);
         }
