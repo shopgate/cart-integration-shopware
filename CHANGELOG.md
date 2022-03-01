@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- log, cache & other file paths are now set as per best practice defined by Shopware
 
 ## [2.9.101] - 2022-02-02
 ### Fixed
