@@ -122,16 +122,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
         );
         $this->setRedirectableGetParams(array_merge($this->getRedirectableGetParams(), array('sPartner')));
 
-        $cacheDir = rtrim(Shopware()->DocPath(), DS) . DS . 'cache' . DS . 'shopgate' . DS;
+        $shopwareDir = rtrim(Shopware()->DocPath(), DS) . DS;
 
         $shopgateHiddenConfiguration = $this->loadHiddenConfigurationValues();
         $shopgateConfiguration       = array_merge($shopgateHiddenConfiguration, $this->loadFormConfigurationValues());
 
         // add additional (fixed) settings (that are not saved into the database)
         $shopgateConfiguration['plugin_name']        = 'shopware4';
-        $shopgateConfiguration['cache_folder_path']  = $cacheDir . 'cache' . DS;
-        $shopgateConfiguration['log_folder_path']    = $cacheDir . 'log' . DS;
-        $shopgateConfiguration['export_folder_path'] = $cacheDir . 'export' . DS;
+        $shopgateConfiguration['cache_folder_path']  = $shopwareDir . 'var' . DS . 'cache' . DS. 'shopgate' . DS;
+        $shopgateConfiguration['log_folder_path']    = $shopwareDir . 'var' . DS . 'log' . DS . 'shopgate' . DS;
+        $shopgateConfiguration['export_folder_path'] = $shopwareDir . 'files' . DS . 'shopgate' . DS;
 
         $this->loadArray($shopgateConfiguration);
 
@@ -445,7 +445,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
 
         // prepare data to store into config object
         $settingMap = $this->getFormConfigurationMapping();
-        $cacheDir   = Shopware()->DocPath() . DS . 'cache' . DS . 'shopgate' . DS;
+        $shopwareDir   = rtrim(Shopware()->DocPath(), DS) . DS;
 
         // create config-array from configuration forms
         $shopgate_config = array();
@@ -455,9 +455,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
 
         // add additional (fixed) settings (that are not saved into the database)
         $shopgate_config['plugin_name']        = 'shopware4';
-        $shopgate_config['cache_folder_path']  = $cacheDir . 'cache' . DS;
-        $shopgate_config['log_folder_path']    = $cacheDir . 'log' . DS;
-        $shopgate_config['export_folder_path'] = $cacheDir . 'export' . DS;
+        $shopgate_config['cache_folder_path']  = $shopwareDir . 'var' . DS . 'cache' . DS . 'shopgate' . DS;
+        $shopgate_config['log_folder_path']    = $shopwareDir . 'var' . DS . 'log' . DS . 'shopgate' . DS;
+        $shopgate_config['export_folder_path'] = $shopwareDir . 'files' . DS . 'shopgate' . DS;
 
         // overwrite local object data by settings from subshop that owns the order
         $this->loadArray($shopgate_config);
