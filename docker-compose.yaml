@@ -1,0 +1,25 @@
+version: "2"
+services:
+  php5:
+    build:
+      context: .
+      args:
+        BASE_IMAGE: 5.6-cli
+    volumes:
+      - .:/app
+
+  php7:
+    build:
+      context: .
+      args:
+        BASE_IMAGE: 7.4-cli
+    volumes:
+      - .:/app
+
+  php8:
+    build:
+      context: .
+      args:
+        BASE_IMAGE: 8.1-cli
+    volumes:
+      - .:/app
