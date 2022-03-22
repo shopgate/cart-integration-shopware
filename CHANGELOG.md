@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - log, cache & other file paths are now set as per best practice defined by Shopware
 
-## Changed
+### Changed
 - uses Shopgate Cart Integration SDK 2.9.88
 
 ## [2.9.101] - 2022-02-02
