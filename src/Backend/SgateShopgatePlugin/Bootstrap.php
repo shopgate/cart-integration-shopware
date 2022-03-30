@@ -204,11 +204,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             }
 
             $namespace = 'phpFastCache';
-            if (!class_exists('phpFastCache\Util\DirectoryHelper')) {
+            if (!class_exists('phpFastCache\Util\Directory')) {
                 $namespace = 'Phpfastcache';
             }
 
-            $DirectoryHelper = "{$namespace}\Util\DirectoryHelper";
+            $DirectoryHelper = "{$namespace}\Util\Directory";
 
             $DirectoryHelper::rrmdir($oldCacheDir);
         }
