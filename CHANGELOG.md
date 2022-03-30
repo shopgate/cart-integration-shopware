@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [2.9.103] - 2022-03-30
+### Fixed
+- plugin update crashing when moving plugin log files to new destination
+
 ## [2.9.102] - 2022-03-22
 ### Fixed
 - log, cache & other file paths are now set as per best practice defined by Shopware
@@ -914,7 +918,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.102...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.103...HEAD
+[2.9.103]: https://github.com/shopgate/interface-shopware/compare/2.9.102...2.9.103
 [2.9.102]: https://github.com/shopgate/interface-shopware/compare/2.9.101...2.9.102
 [2.9.101]: https://github.com/shopgate/interface-shopware/compare/2.9.100...2.9.101
 [2.9.100]: https://github.com/shopgate/interface-shopware/compare/2.9.99...2.9.100
