@@ -63,30 +63,163 @@ class Favorites
     }
 
     /**
+     * Custom favoriteList action to create a favorite list
+     *
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
+     *
+     * @return array
+     */
+    public function createFavoriteList($request, $response)
+    {
+        if ($this->isWishList() === false) {
+            return array('success' => false);
+        }
+
+        // @Below code: Standard Shopware function to get JSON data from the POST array don't work
+        $params  = $this->webCheckoutHelper->getJsonParams($request, $response);
+        $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+        if (isset($decoded['error']) && $decoded['error']) {
+            return $decoded;
+        }
+
+        //set customerId to session
+        $this->webCheckoutHelper->getCustomerId($decoded['customerId']);
+        $name = $decoded['name'];
+
+        try {
+            $wishlistId = $this->container->get('swag_advanced_cart.cart_handler')->createWishList($name);
+        } catch (\Exception $error) {
+            // something went wrong, probably a list with that name already exists
+            return array('success' => false);
+        }
+
+        if ($wishlistId) {
+            return array('success' => true, 'id' => $wishlistId);
+        }
+
+        return array('success' => false);
+    }
+
+    /**
+     * Custom favoriteList action to rename a favorite list
+     *
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
+     *
+     * @return array
+     */
+    public function renameFavoriteList($request, $response)
+    {
+        if ($this->isWishList() === false) {
+            return array('success' => false);
+        }
+
+        // @Below code: Standard Shopware function to get JSON data from the POST array don't work
+        $params  = $this->webCheckoutHelper->getJsonParams($request, $response);
+        $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+        if (isset($decoded['error']) && $decoded['error']) {
+            return $decoded;
+        }
+        $customerId = $this->webCheckoutHelper->getCustomerId($decoded['customerId']);
+        $wishListId = $decoded['wishlistId'];
+        $name = $decoded['name'];
+
+        $wishList = $this->getWishlistById($customerId, $wishListId, false);
+
+        if ($wishList === null) {
+            return array('success' => false);
+        }
+
+        $wishList->setName($name);
+        $wishList->setModified(date('Y-m-d H:i:s'));
+        Shopware()->Models()->flush();
+
+        return array('success' => true);
+    }
+
+    /**
+     * Custom favoriteList action to delete a favorite list
+     *
+     * @param \Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Response_Response $response
+     *
+     * @return array
+     */
+    public function deleteFavoriteList($request, $response)
+    {
+        if ($this->isWishList() === false) {
+            return array('success' => false);
+        }
+
+        // @Below code: Standard Shopware function to get JSON data from the POST array don't work
+        $params  = $this->webCheckoutHelper->getJsonParams($request, $response);
+        $decoded = $this->webCheckoutHelper->getJWT($params['token']);
+        if (isset($decoded['error']) && $decoded['error']) {
+            return $decoded;
+        }
+        $customerId = $this->webCheckoutHelper->getCustomerId($decoded['customerId']);
+        $wishListId = $decoded['wishlistId'];
+
+        $sql = 'DELETE FROM s_order_basket_saved WHERE id = :wishlistId; AND user_id = :userId;';
+        $this->container->get('db')->executeQuery($sql, [
+            'wishlistId' => $wishListId,
+            'userId' => $customerId
+        ]);
+
+        return array('success' => true);
+    }
+
+    /**
+     * Custom favoriteList action to get the favorite lists of a user
+     *
+     * @param \Enlight_Controller_Request_Request $request
+     *
+     * @return array
+     */
+    public function getFavoriteLists($request)
+    {
+        if ($this->isWishList() === false) {
+            return array('success' => false);
+        }
+        $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
+        if (isset($decoded['error']) && $decoded['error']) {
+            return $decoded;
+        }
+        $customerId = $this->webCheckoutHelper->getCustomerId($decoded['customer_id']);
+
+        $wishlists = [];
+        foreach ($this->getWishlists($customerId) as $wishlist) {
+            $wishlists[] = [
+                'id' => $wishlist->getId(),
+                'name' => $wishlist->getName()
+            ];
+        }
+
+        return $wishlists;
+    }
+
+    /**
      * Custom favorite action to get the favorite list of an user
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param \Enlight_Controller_Request_Request $request
      *
      * @return array
      */
     public function getFavorites($request)
     {
         $decoded = $this->webCheckoutHelper->getJWT($request->getCookie('token'));
-
         if (isset($decoded['error']) && $decoded['error']) {
             return $decoded;
         }
-
-        $sql    =
-            ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-        $userId = $this->db->fetchRow($sql, array($decoded['customer_id'])) ? : array();
-        $this->session->offsetSet('sUserId', $userId['id']);
+        $customerId = $this->webCheckoutHelper->getCustomerId($decoded['customer_id']);
 
         $nodes = Shopware()->Modules()->Basket()->sGetNotes();
 
         if ($this->isWishList()) {
-            $carts = $this->getCartItems($userId['id']);
-            $nodes = $this->prepareCartItems($carts[0]);
+            $wishListId = $decoded['wishlist_id'];
+            $wishlist = $this->getWishlistById($customerId, $wishListId);
+            $nodes = $this->prepareCartItems($wishlist);
         }
 
         $nodesLight = [];
@@ -114,17 +247,16 @@ class Favorites
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
         $params  = $this->webCheckoutHelper->getJsonParams($request, $response);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
-
         if (isset($decoded['error']) && $decoded['error']) {
             return $decoded;
         }
-
-        $sql    =
-            ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ? : array();
-        $this->session->offsetSet('sUserId', $userId['id']);
-
-        if ($this->addArticleToWishList($decoded['articles'], $userId['id'], $request)) {
+        $customerId = $this->webCheckoutHelper->getCustomerId($decoded['customerId']);
+        $wishListId = $decoded['wishlistId'];
+        $wishlist = null;
+        if ($this->isWishList()) {
+            $wishlist = $this->getWishlistById($customerId, $wishListId);
+        }
+        if ($this->addArticleToWishList($decoded['articles'], $customerId, $request, $wishlist)) {
             return array('success' => true);
         }
 
@@ -144,17 +276,17 @@ class Favorites
         // @Below code: Standard Shopware function to get JSON data from the POST array don't work
         $params  = $this->webCheckoutHelper->getJsonParams($request, $response);
         $decoded = $this->webCheckoutHelper->getJWT($params['token']);
-
         if (isset($decoded['error']) && $decoded['error']) {
             return $decoded;
         }
+        $customerId = $this->webCheckoutHelper->getCustomerId($decoded['customerId']);
+        $wishListId = $decoded['wishlistId'];
 
-        $sql    =
-            ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-        $userId = $this->db->fetchRow($sql, array($decoded['customerId'])) ? : array();
-        $this->session->offsetSet('sUserId', $userId['id']);
-
-        if ($this->removeProductFromWishList($decoded['articles'], $userId['id'])) {
+        $wishlist = null;
+        if ($this->isWishList()) {
+            $wishlist = $this->getWishlistById($customerId, $wishListId);
+        }
+        if ($this->removeProductFromWishList($decoded['articles'], $customerId, $wishlist)) {
             return array('success' => true);
         }
 
@@ -181,13 +313,31 @@ class Favorites
     }
 
     /**
+     * @param $userId int
+     * @param $wishlistId int
+     * @param $fallback bool
+     * @return \SwagAdvancedCart\Models\Cart\Cart|null
+     */
+    private function getWishlistById($userId, $wishlistId, $fallback = true)
+    {
+        $wishlists = $this->getWishlists($userId);
+        foreach ($wishlists as $wishlist) {
+            if ($wishlist->getId() === $wishlistId) {
+                return $wishlist;
+            }
+        }
+
+        return $fallback ? $wishlists[0] : null;
+    }
+
+    /**
      * A helper function to get the carts of an user
      *
      * @param int $userId
      *
-     * @return null|array
+     * @return null|\SwagAdvancedCart\Models\Cart\Cart[]
      */
-    private function getCartItems($userId)
+    private function getWishlists($userId)
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder->select(array('cart', 'items', 'details'))
@@ -208,7 +358,7 @@ class Favorites
     /**
      * A helper function that prepares a single cart
      *
-     * @param Cart $cart
+     * @param \SwagAdvancedCart\Models\Cart\Cart|null $cart
      *
      * @return null|array
      */
@@ -216,11 +366,11 @@ class Favorites
     {
         $items = array();
 
-        if (empty($cart)) {
+        if ($cart === null) {
             return $items;
         }
 
-        /** @var CartItem $cartItem */
+        /** @var \SwagAdvancedCart\Models\Cart\CartItem $cartItem */
         foreach ($cart->getCartItems() as $cartItem) {
             if (!$cartItem->getDetail() || !$cartItem->getDetail()->getActive()) {
                 continue;
@@ -239,8 +389,8 @@ class Favorites
     /**
      * A helper function that returns a prepared product object ready to be displayed in the frontend
      *
-     * @param int      $orderNumber
-     * @param CartItem $cartItem
+     * @param int $orderNumber
+     * @param \SwagAdvancedCart\Models\Cart\CartItem $cartItem
      *
      * @return null|array
      */
@@ -312,13 +462,14 @@ class Favorites
     /**
      * A helper function that to add articles to wish list or note
      *
-     * @param array                              $articles
-     * @param int                                $userId
+     * @param array $articles
+     * @param int $userId
      * @param \Enlight_Controller_Request_Request $request
+     * @param \SwagAdvancedCart\Models\Cart\Cart|null $wishlist
      *
      * @return bool
      */
-    private function addArticleToWishList($articles, $userId, $request)
+    private function addArticleToWishList($articles, $userId, $request, $wishlist)
     {
         foreach ($articles as $article) {
             $articleId   = trim($article['product_id']);
@@ -331,13 +482,11 @@ class Favorites
                     $orderNumber = $product['ordernumber'];
                 }
 
-                if ($this->isWishList()) {
-                    $carts = $this->getCartItems($userId);
-
-                    if (empty($carts)) {
+                if ($wishlist) {
+                    if ($wishlist === null) {
                         $request->setPost('newlist', 'App');
                     } else {
-                        $request->setPost('lists', array($carts[0]->getId()));
+                        $request->setPost('lists', array($wishlist->getId()));
                     }
 
                     $request->setPost('ordernumber', $orderNumber);
@@ -365,10 +514,11 @@ class Favorites
      *
      * @param array $articles
      * @param int   $userId
+     * @param \SwagAdvancedCart\Models\Cart\Cart|null $wishlist
      *
      * @return bool
      */
-    private function removeProductFromWishList($articles, $userId)
+    private function removeProductFromWishList($articles, $userId, $wishlist)
     {
         foreach ($articles as $article) {
             $articleId   = trim($article['product_id']);
@@ -381,15 +531,7 @@ class Favorites
                     $orderNumber = $product['ordernumber'];
                 }
 
-                if ($this->isWishList()) {
-                    $carts  = $this->getCartItems($userId);
-                    $cart   = $carts[0];
-                    $cartId = $cart->getId();
-
-                    if (empty($cartId)) {
-                        return false;
-                    }
-
+                if ($wishlist) {
                     $builder = Shopware()->Models()->createQueryBuilder();
                     $builder->select('item')
                             ->from('SwagAdvancedCart\Models\Cart\CartItem', 'item')
@@ -399,7 +541,7 @@ class Favorites
                             ->innerJoin('cart.customer', 'customer')
                             ->andWhere('customer.id = :userId')
                             ->setParameter('itemId', $orderNumber)
-                            ->setParameter('basketId', $cartId)
+                            ->setParameter('basketId', $wishlist->getId())
                             ->setParameter('userId', $userId);
 
                     $cartItem = $builder->getQuery()->getOneOrNullResult();
@@ -408,7 +550,7 @@ class Favorites
                         return false;
                     }
 
-                    $cart->setModified(date('Y-m-d H:i:s'));
+                    $wishlist->setModified(date('Y-m-d H:i:s'));
 
                     $modelManager = Shopware()->Models();
                     $modelManager->remove($cartItem);

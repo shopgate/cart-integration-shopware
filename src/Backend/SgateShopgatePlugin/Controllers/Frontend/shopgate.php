@@ -139,7 +139,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             'updateUserEmail',
             'updateUser',
             'address',
-            'favorites'
+            'favorites',
+            'favoriteLists'
         );
     }
 
@@ -730,6 +731,29 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             $response = $favoritesService->deleteFromFavoriteList($this->Request(), $this->Response());
         } else {
             $response = $favoritesService->getFavorites($this->Request());
+        }
+
+        $this->Response()->setHeader('Content-Type', 'application/json');
+        $this->Response()->setBody(json_encode($response));
+        $this->Response()->sendResponse();
+        exit();
+    }
+
+    /**
+     * Custom favoriteLists action for favoriteLists request handling
+     */
+    public function favoriteListsAction()
+    {
+        $favoritesService = new Shopgate\Components\Favorites();
+
+        if ($this->Request()->isPost()) {
+            $response = $favoritesService->createFavoriteList($this->Request(), $this->Response());
+        } elseif ($this->Request()->isPut()) {
+            $response = $favoritesService->renameFavoriteList($this->Request(), $this->Response());
+        } elseif ($this->Request()->isDelete()) {
+            $response = $favoritesService->deleteFavoriteList($this->Request(), $this->Response());
+        } else {
+            $response = $favoritesService->getFavoriteLists($this->Request());
         }
 
         $this->Response()->setHeader('Content-Type', 'application/json');

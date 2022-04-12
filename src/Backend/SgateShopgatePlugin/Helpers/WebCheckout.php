@@ -177,18 +177,29 @@ class WebCheckout
     }
 
     /**
-     * @param $customerId
+     * @param $customerNumber
      *
      * @return \Shopware\Models\Customer\Customer $customer
      */
-    public function getCustomer($customerId)
+    public function getCustomer($customerNumber)
+    {
+        $customerId = $this->getCustomerId($customerNumber);
+
+        return Shopware()->Models()->find("Shopware\\Models\\Customer\\Customer", $customerId);
+    }
+
+    /**
+     * @param $customerNumber
+     * @return int
+     */
+    public function getCustomerId($customerNumber)
     {
         $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
 
-        $userId = Shopware()->Db()->fetchRow($sql, array($customerId)) ? : array();
+        $userId = Shopware()->Db()->fetchRow($sql, array($customerNumber)) ? : array();
         Shopware()->Session()->offsetSet('sUserId', $userId['id']);
 
-        return Shopware()->Models()->find("Shopware\\Models\\Customer\\Customer", $userId['id']);
+        return $userId['id'];
     }
 
     /**
