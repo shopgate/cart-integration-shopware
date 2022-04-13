@@ -807,6 +807,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             }
         }
 
+        if (isset($article['regulationPrice'])) {
+            $properties['regulationPrice'][] = $article['regulationPrice'];
+        }
+
         foreach ($properties as &$values) {
             foreach ($values as &$value) {
                 if ($value instanceof DateTime) {
