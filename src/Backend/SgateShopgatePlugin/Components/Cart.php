@@ -395,6 +395,7 @@ class Cart
         $permanentBaskets = Shopware()->Db()->fetchAll('
                 SELECT id FROM s_order_basket_saved
                 WHERE user_id = ?
+                AND name IS NULL
             ', array($user['id'])
         );
         if (empty($permanentBaskets)) {
