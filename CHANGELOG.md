@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 ### Added
-- support for wishlist Feature by third party plugin "Advanced Cart" 
+- export of regulation price
+- support for wishlist feature by third party plugin "Advanced Cart" 
 
 ## [2.9.103] - 2022-03-30
 ### Fixed
