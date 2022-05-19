@@ -21,8 +21,18 @@
 
 namespace Shopgate\Helpers;
 
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\TransactionRequiredException;
+use Enlight_Controller_Request_Request;
+use Enlight_Controller_Response_Response;
+use Enlight_Event_Exception;
+use Enlight_Exception;
+use Exception;
 use Firebase\JWT\JWT;
+use Shopware\Models\Customer\Customer;
 use Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config;
+use Zend_Db_Adapter_Exception;
 
 class WebCheckout
 {
@@ -33,6 +43,10 @@ class WebCheckout
      * @param Enlight_Controller_Request_Request $request
      *
      * @return bool
+     * @throws Enlight_Event_Exception
+     * @throws Enlight_Exception
+     * @throws Zend_Db_Adapter_Exception
+     * @throws Exception
      */
     public function loginAppUser($token, $request)
     {
@@ -51,8 +65,8 @@ class WebCheckout
                 Shopware()->Session()->offsetSet('promotionVouchers', $promotionVouchers);
             }
 
-            $sql = ' SELECT password, email FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
-            $user = Shopware()->Db()->fetchAll($sql, array($customerId)) ? : array();
+            $sql = ' SELECT id, password, email, password_change_date FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+            $user = Shopware()->Db()->fetchAll($sql, array($customerId)) ?: array();
 
             if (count($user) > 1) {
                 return false;
@@ -82,8 +96,10 @@ class WebCheckout
             $checkUser = Shopware()->Modules()->Admin()->sLogin(true);
 
             if (isset($checkUser['sErrorFlag'])) {
-                throw new \Exception($checkUser['sErrorMessages'][0], 400);
+                throw new Exception($checkUser['sErrorMessages'][0], 400);
             }
+            Shopware()->Session()->offsetSet('sUserId', $user[0]['id']);
+            Shopware()->Session()->offsetSet('sUserPasswordChangeDate', $user[0]['password_change_date']);
 
             return true;
         }
@@ -121,9 +137,10 @@ class WebCheckout
     }
 
     /**
-     * @param \Enlight_Controller_Request_Request $request
-     * @param \Enlight_Controller_Response_Response $response
+     * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_Controller_Response_Response $response
      * @return mixed
+     * @throws Exception
      */
     public function getJsonParams($request, $response)
     {
@@ -153,7 +170,7 @@ class WebCheckout
             $decoded     = JWT::decode($token, $key, array('HS256'));
 
             return json_decode(json_encode($decoded), true);
-        } catch (\Exception $error) {
+        } catch (Exception $error) {
             return array(
                 'error'   => true,
                 'message' => $error->getMessage()
@@ -177,9 +194,12 @@ class WebCheckout
     }
 
     /**
-     * @param $customerNumber
+     * @param string $customerNumber
      *
-     * @return \Shopware\Models\Customer\Customer $customer
+     * @return Customer $customer
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      */
     public function getCustomer($customerNumber)
     {
@@ -194,12 +214,13 @@ class WebCheckout
      */
     public function getCustomerId($customerNumber)
     {
-        $sql = ' SELECT id FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
+        $sql = ' SELECT id, password_change_date FROM s_user WHERE customernumber = ? AND active=1 AND (lockeduntil < now() OR lockeduntil IS NULL) ';
 
-        $userId = Shopware()->Db()->fetchRow($sql, array($customerNumber)) ? : array();
-        Shopware()->Session()->offsetSet('sUserId', $userId['id']);
+        $user = Shopware()->Db()->fetchRow($sql, array($customerNumber)) ?: array();
+        Shopware()->Session()->offsetSet('sUserId', $user['id']);
+        Shopware()->Session()->offsetSet('sUserPasswordChangeDate', $user['password_change_date']);
 
-        return $userId['id'];
+        return $user['id'];
     }
 
     /**

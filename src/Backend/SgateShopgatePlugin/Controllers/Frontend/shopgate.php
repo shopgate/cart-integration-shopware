@@ -19,8 +19,10 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
-use Shopware\Components\CSRFWhitelistAware;
+use Shopgate\Components\Cart;
 use Shopgate\Helpers\WebCheckout;
+use Shopware\Components\CSRFWhitelistAware;
+use Shopware\CustomModels\Shopgate\Order;
 
 class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action implements CSRFWhitelistAware
 {
@@ -70,7 +72,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     private $contextService;
 
     /**
-     * @var \Shopgate\Components\Cart
+     * @var Cart
      */
     private $webCheckoutCartService;
 
@@ -311,9 +313,17 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         }
 
         $token = $this->Request()->getParam('token');
-        $this->session->offsetSet('sgWebView', true);
+        Shopware()->Session()->offsetSet('sgWebView', true);
 
-        return $this->webCheckoutHelper->loginAppUser($token, $this->Request());
+        $loginAppUser = $this->webCheckoutHelper->loginAppUser($token, $this->Request());
+
+        // Assigns userID to cart. Mimics logic for after customer login, account page load causes cart merge
+        if ($loginAppUser && Shopware()->Plugins()) {
+            $stats = Shopware()->Plugins()->Frontend()->Statistics();
+            $stats->refreshBasket($this->Request());
+        }
+
+        return $loginAppUser;
     }
 
     public function pluginAction()
@@ -376,7 +386,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
                         ->findOneBy(array("number" => $orderNumbers[$sgOrder->getOrderNumber()]));
 
                     // create the database entry
-                    $data = new \Shopware\CustomModels\Shopgate\Order();
+                    $data = new Order();
                     $data->fromShopgateOrder($sgOrder);
                     $data->setOrder($oShopwareOrder);
 
@@ -597,7 +607,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     public function loginUserAction()
     {
         if (strtolower($this->Request()->getMethod()) !== 'post') {
-            throw new \LogicException('This action only admits post requests');
+            throw new LogicException('This action only admits post requests');
         }
 
         $this->webCheckoutUserService->loginUser($this->Request(), $this->Response());
