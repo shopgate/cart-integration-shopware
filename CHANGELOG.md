@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 - items disappearing from wishlist in some cases
+- web checkout blank pages due to cart items losing `userID` reference
 
 ## [2.9.103] - 2022-03-30
 ### Fixed
