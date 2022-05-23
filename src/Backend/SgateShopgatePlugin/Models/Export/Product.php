@@ -434,10 +434,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
     protected function getShopRootWS()
     {
         return (
-            "http://" .
-
-            // strip "http://" and "https://"; trim slashes and append a single one
-            trim(str_replace(array('http://', 'https://'), '', Shopware()->Shop()->getHost()), '/') . '/' .
+            // trim slashes and append a single one
+            trim(Shopware()->Shop()->getHost(), '/') . '/' .
 
             // append base path of the shop with slashes trimmed and a single one appended
             trim(Shopware()->Shop()->getBasePath(), '/') . '/'

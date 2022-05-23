@@ -11,7 +11,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 - items disappearing from wishlist in some cases
-- web checkout blank pages due to cart items losing `userID` reference
+- blank page during checkout in the app when using web checkout
+
+### Changed
+- images links were always exported using the plain `http` link; now using `https` if configured in Shopware
 
 ## [2.9.103] - 2022-03-30
 ### Fixed
