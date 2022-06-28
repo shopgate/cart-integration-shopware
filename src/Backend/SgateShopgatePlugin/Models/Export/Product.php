@@ -210,7 +210,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
     {
         $this->config = $config;
     }
-    
     /**
      * @param \Shopware\Models\Article\Detail  $detail
      *
