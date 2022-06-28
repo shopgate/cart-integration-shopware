@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- support for custom smarty plugins
+
 ## [2.9.104] - 2022-05-23
 ### Added
 - export of regulation price

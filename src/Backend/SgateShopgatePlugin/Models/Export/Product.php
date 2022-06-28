@@ -210,7 +210,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
     {
         $this->config = $config;
     }
-
     /**
      * @param \Shopware\Models\Article\Detail  $detail
      *
@@ -221,6 +220,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
         $template = $this->config->assertMinimumVersion('4.2')
             ? Shopware()->Container()->get('Template')
             : Enlight_Application::Instance()->Bootstrap()->getResource('Template');
+        
+        $pathResolver = Shopware()->Container()->get('theme_path_resolver');
+        $template->addPluginsDir($pathResolver->getSmartyDirectory(Shopware()->Shop()->getTemplate()));
 
         $view           = new Enlight_View_Default($template);
         $sArticle = Shopware()->Modules()->Articles()->sGetProductByOrdernumber($detail->getNumber());
