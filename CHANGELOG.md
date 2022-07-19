@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+## [2.9.105] - 2022-07-19
 ### Added
 - support for custom Smarty plugins
 
@@ -932,7 +933,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.104...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.105...HEAD
+[2.9.105]: https://github.com/shopgate/interface-shopware/compare/2.9.104...2.9.105
 [2.9.104]: https://github.com/shopgate/interface-shopware/compare/2.9.103...2.9.104
 [2.9.103]: https://github.com/shopgate/interface-shopware/compare/2.9.102...2.9.103
 [2.9.102]: https://github.com/shopgate/interface-shopware/compare/2.9.101...2.9.102
