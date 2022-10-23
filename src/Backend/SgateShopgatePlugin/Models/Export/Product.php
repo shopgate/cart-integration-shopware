@@ -812,6 +812,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             $properties['regulationPrice'][] = $article['regulationPrice'];
         }
 
+        if (Shopware()->Container()->has('shopware.api.extend_cross_selling')) {
+            $this->log('Exporting Wizmo CrossSelling sliders', ShopgateLogger::LOGTYPE_DEBUG);
+            /** @var \WizmoGmbHEnhancedCrossSelling\Components\Api\Resource\ExtendCrossSelling $apiRepo */
+            $apiRepo = Shopware()->Container()->get('shopware.api.extend_cross_selling');
+            $result = $apiRepo->getList(0, 9999, ['articleId' => $detail->getId(), 'assignment.active' => 1]);
+            foreach ($result['data'] as $entity) {
+                $properties[$entity['assignment']['name']][] = $entity['relatedArticleId'];
+            }
+        }
+
         foreach ($properties as &$values) {
             foreach ($values as &$value) {
                 if ($value instanceof DateTime) {

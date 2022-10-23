@@ -1,0 +1,227 @@
+{
+  "info": {
+    "_postman_id": "4048853c-24aa-43d6-9b82-103c975547b1",
+    "name": "Shopware 5 (Legacy)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "5289226"
+  },
+  "item": [
+    {
+      "name": "Init",
+      "item": [
+        {
+          "name": "SW: Get shop info",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// allowCookie=1\r",
+                  "const jar = pm.cookies.jar();\r",
+                  "jar.set(pm.environment.get(\"host\"), 'allowCookie', '1');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{sw_endpoint_api}}/shops/1",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "shops",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: Get main product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Get main product\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.data[0]).to.haveOwnProperty('id').to.be.a('number');\r",
+                  "    pm.environment.set(\"gen_product_main\", jsonData.data[0].id);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"property\": \"name\",\r\n            \"expression\": \"=\",\r\n            \"value\": \"Main product\"\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/articles",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "articles"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Wizmo CrossSell",
+      "item": [
+        {
+          "name": "SG: get main product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Not an error\", function () {",
+                  "    pm.response.to.not.have.jsonBody('error');",
+                  "});",
+                  "",
+                  "pm.test(\"Has 2 props\", function () {",
+                  "    var jsonObject = xml2Json(responseBody);",
+                  "    const props = jsonObject.items.item.properties.property.filter(item => item.label.includes(' Group'));",
+                  "    pm.expect(props).lengthOf(2);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_items}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shop_number",
+                  "value": "{{sg_shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "description": "\n",
+                  "type": "text"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "uids[]",
+                  "value": "{{gen_product_main}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sg_endpoint_api}}/getItems",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "getItems"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "password",
+        "value": "{{sw_api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "username",
+        "value": "demo",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "/**",
+          " *  SG Token generation",
+          " */",
+          "var tstamp = Math.floor(Date.now() / 1000);",
+          "",
+          "// Use the CryptoJS",
+          "var authUser = pm.environment.get('sg_customer_number') + \"-\" + tstamp;",
+          "var tokenData = \"SPA-\" + pm.environment.get('sg_customer_number') + \"-\" + tstamp + \"-\" + pm.environment.get('sg_api_key');",
+          "",
+          "var authToken = CryptoJS.SHA1(tokenData).toString();",
+          "",
+          "// Set the new header values",
+          "pm.environment.set(\"gen_sg_header_auth_user\", authUser);",
+          "pm.environment.set(\"gen_sg_header_auth_token\", authToken);"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
