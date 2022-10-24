@@ -49,7 +49,7 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Install PHP
@@ -75,7 +75,7 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Install PHP
@@ -101,7 +101,7 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Load from cache (PHP 5)
         uses: actions/cache@v2
         with:
@@ -134,7 +134,7 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Notify on Slack
         uses: rtCamp/action-slack-notify@v2
         env:
@@ -154,7 +154,7 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Notify on Slack
         uses: rtCamp/action-slack-notify@v2
         env:
