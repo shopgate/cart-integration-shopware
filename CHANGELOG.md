@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ## [Unreleased]
 
 ### Added
-- basic support for Wizmo's Enhanced CrossSelling / Erweitertes CrossSelling
+- events to product export
 
 ## [2.9.105] - 2022-07-19
 ### Added
