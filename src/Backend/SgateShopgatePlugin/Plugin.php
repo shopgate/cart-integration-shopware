@@ -184,7 +184,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $this->locale      = Shopware()->Models()
             ->find("Shopware\Models\Shop\Shop", Shopware()->Shop()->getId())->getLocale();
 
-        $this->eventManager = Shopware()->Container()->get('events'); // min SW 5.2.0
+        $this->eventManager = Shopware()->Container()->get('events');
         if ($this->config->assertMinimumVersion('5.6')) {
             $container         = Shopware()->Container();
             $connection        = Shopware()->Container()->get('dbal_connection');
