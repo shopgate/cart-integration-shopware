@@ -19,7 +19,11 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\TransactionRequiredException;
 use Shopgate\Helpers\Cart as CartHelper;
+use Shopware\Components\ContainerAwareEventManager;
 use Shopware\Models\Order\Order;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -139,6 +143,11 @@ class ShopgatePluginShopware extends ShopgatePlugin
      */
     private $nonInsertableOrderItems = array();
 
+    /**
+     * @var ContainerAwareEventManager
+     */
+    private $eventManager;
+
     public function startup()
     {
         if (!defined("SHOPGATE_PLUGIN_VERSION")) {
@@ -175,6 +184,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $this->locale      = Shopware()->Models()
             ->find("Shopware\Models\Shop\Shop", Shopware()->Shop()->getId())->getLocale();
 
+        $this->eventManager = Shopware()->Container()->get('events');
         if ($this->config->assertMinimumVersion('5.6')) {
             $container         = Shopware()->Container();
             $connection        = Shopware()->Container()->get('dbal_connection');
@@ -5291,9 +5301,10 @@ class ShopgatePluginShopware extends ShopgatePlugin
     /**
      * export items as xml
      *
-     * @param null  $limit
-     * @param null  $offset
+     * @param null $limit
+     * @param null $offset
      * @param array $uids
+     * @throws Enlight_Event_Exception
      */
     protected function createItems($limit = null, $offset = null, array $uids = array())
     {
@@ -5308,7 +5319,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
         );
         $this->log("ShopgatePluginShopware::createItems() loading article export ids", ShopgateLogger::LOGTYPE_DEBUG);
 
-        $articles = $this->getExportArticles($limit, $offset, $uids);
+        $list = $this->getExportArticles($limit, $offset, $uids);
+        $articles = $this->eventManager->filter('sgate.export.items.createItems.article_load_after', $list, ['data' => $list]);
 
         $this->log(
             'ShopgatePluginShopware::createItems() found ' . count($articles) . 'articles',
@@ -5398,6 +5410,10 @@ class ShopgatePluginShopware extends ShopgatePlugin
      * @param $data
      *
      * @return null|Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml
+     * @throws Enlight_Event_Exception
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      */
     public function buildItem($data)
     {
@@ -5476,7 +5492,12 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $articleData                 = $sArticlesObject->sGetArticleById($article->getId());
         }
 
-        $exportModel->setArticleData($articleData);
+        $filteredData = $this->eventManager->filter(
+            'sgate.export.items.buildItem.article_data',
+            $articleData,
+            ['data' => $articleData]
+        );
+        $exportModel->setArticleData($filteredData);
         $exportModel->setIsChild(false);
 
         $unit = $mainDetail->getUnit();
