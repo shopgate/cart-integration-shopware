@@ -1,0 +1,80 @@
+{
+  "id": "ce246018-7c1a-47cc-8e02-6ab28741465b",
+  "values": [
+    {
+      "key": "system_port",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_ping",
+      "value": "ping",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_get_items",
+      "value": "get_items",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_get_categories",
+      "value": "get_categories",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_get_orders",
+      "value": "get_orders",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_get_reviews",
+      "value": "get_reviews",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_get_settings",
+      "value": "get_settings",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_set_settings",
+      "value": "set_settings",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_cron",
+      "value": "cron",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_add_order",
+      "value": "add_order",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_update_order",
+      "value": "update_order",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_check_cart",
+      "value": "check_cart",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_get_customer",
+      "value": "get_customer",
+      "enabled": true
+    },
+    {
+      "key": "framework_action_register_customer",
+      "value": "register_customer",
+      "enabled": true
+    }
+  ],
+  "name": "Globals",
+  "_postman_variable_scope": "globals",
+  "_postman_exported_at": "2022-11-07T20:00:40.728Z",
+  "_postman_exported_using": "Postman/10.1.1"
+}

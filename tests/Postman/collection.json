@@ -1,0 +1,785 @@
+{
+  "info": {
+    "_postman_id": "4048853c-24aa-43d6-9b82-103c975547b1",
+    "name": "Shopware 5 (Go)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "5289226"
+  },
+  "item": [
+    {
+      "name": "Init",
+      "item": [
+        {
+          "name": "System",
+          "item": [
+            {
+              "name": "SW: Get shop info",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "// allowCookie=1\r",
+                      "const jar = pm.cookies.jar();\r",
+                      "jar.set(pm.environment.get(\"host\"), 'allowCookie', '1');"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/shops/1",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "shops",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Product",
+          "item": [
+            {
+              "name": "SW: Get main product",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get main product\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data).to.haveOwnProperty('id').to.be.a('number');\r",
+                      "    pm.environment.set(\"gen_product_main_id\", jsonData.data.id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/articles/SW10001?useNumberAsId=true",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "articles",
+                    "SW10001"
+                  ],
+                  "query": [
+                    {
+                      "key": "useNumberAsId",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: Get main category",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get main category\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data[0]).to.haveOwnProperty('id').to.be.a('number');\r",
+                      "    pm.environment.set(\"gen_category_main_id\", jsonData.data[0].id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"property\": \"parentId\",\r\n            \"expression\": \">\",\r\n            \"value\": \"1\"\r\n        }\r\n    ],\r\n    \"limit\": 1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/categories",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "categories"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create product",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get id of created product\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data.id).to.be.a(\"number\");\r",
+                      "    pm.environment.set('created_product1_id', jsonData.data.id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"API: disabled product\",\r\n    \"active\": false,\r\n    \"tax\": 19,\r\n    \"supplier\": \"Sport Shoes Inc.\",\r\n    \"categories\": [\r\n        {\r\n            \"id\": {{gen_category_main_id}}\r\n        }\r\n    ],\r\n    \"mainDetail\": {\r\n        \"number\": \"API-INACTIVE\",\r\n        \"active\": true,\r\n        \"prices\": [\r\n            {\r\n                \"customerGroupKey\": \"EK\",\r\n                \"price\": 999\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/articles",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "articles"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Export inactive",
+      "item": [
+        {
+          "name": "SG: try inactive export",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Make sure the product is not exported as it's inactive\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql(82);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{sg_shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_items}}",
+                  "type": "text"
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "type": "text"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "uids[]",
+                  "value": "{{created_product1_id}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sg_endpoint_api}}/getItems",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "getItems"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: set export inactive",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"enable inactive product export\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.shopgate_settings).lengthOf(1);",
+                  "    pm.expect(jsonData.shopgate_settings[0].new).to.eq(\"1\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{sg_shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_set_settings}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][name]",
+                  "value": "export_product_inactive",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][value]",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sg_endpoint_api}}/setSettings",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "setSettings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: config cache clear",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{sw_endpoint_api}}/caches/config",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "caches",
+                "config"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: try inactive export",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Not an error\", function () {",
+                  "    pm.response.to.not.have.jsonBody('error');",
+                  "});",
+                  "",
+                  "pm.test(\"Check product gets exported now\", function () {",
+                  "    var jsonObject = xml2Json(responseBody);",
+                  "    pm.expect(jsonObject.items.item.$.uid).to.eql(pm.environment.get('created_product1_id').toString());",
+                  "    pm.expect(jsonObject.items.item.stock.is_saleable).to.eq('0');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{sg_shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_items}}",
+                  "type": "text"
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "type": "text"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "uids[]",
+                  "value": "{{created_product1_id}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sg_endpoint_api}}/getItems",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "getItems"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: unset export inactive",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"disable inactive product export\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.shopgate_settings).lengthOf(1);",
+                  "    pm.expect(jsonData.shopgate_settings[0].new).to.eq(\"0\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{sg_shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_set_settings}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][name]",
+                  "value": "export_product_inactive",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][value]",
+                  "value": "0",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sg_endpoint_api}}/setSettings",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "setSettings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: config cache clear",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{sw_endpoint_api}}/caches/config",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "caches",
+                "config"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "SG-145 feature request. Exporting inactive products configuration."
+    },
+    {
+      "name": "Deactivate shop test",
+      "item": [
+        {
+          "name": "SG: try deactivate store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"de-activation via plugin is not implemented\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.shopgate_settings).lengthOf(1);",
+                  "    pm.expect(jsonData.shopgate_settings[0].old).to.eq(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{sg_shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_set_settings}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][name]",
+                  "value": "shop_is_active",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][value]",
+                  "value": "0",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sg_endpoint_api}}/setSettings",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "setSettings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: config cache clear",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{sw_endpoint_api}}/caches/config",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "caches",
+                "config"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: ping",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Ping works\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.pong).to.eq('OK');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{sg_shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_set_settings}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][name]",
+                  "value": "shop_is_active",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][value]",
+                  "value": "0",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sg_endpoint_api}}/ping",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "ping"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "SG runs a deactivation script after every import, so we need to make sure the store does not get deactivated by it\n\n```\n[shopgate_settings] => Array\n       (\n            [0] => Array\n                (\n                    [name] => shop_is_active\n                    [value] => 0\n                )\n\n        )\n\n\n```\n\nStartFragment"
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "password",
+        "value": "{{sw_api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "username",
+        "value": "demo",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "/**",
+          " *  SG Token generation",
+          " */",
+          "var tstamp = Math.floor(Date.now() / 1000);",
+          "",
+          "// Use the CryptoJS",
+          "var authUser = pm.environment.get('sg_customer_number') + \"-\" + tstamp;",
+          "var tokenData = \"SPA-\" + pm.environment.get('sg_customer_number') + \"-\" + tstamp + \"-\" + pm.environment.get('sg_api_key');",
+          "",
+          "var authToken = CryptoJS.SHA1(tokenData).toString();",
+          "",
+          "// Set the new header values",
+          "pm.environment.set(\"gen_sg_header_auth_user\", authUser);",
+          "pm.environment.set(\"gen_sg_header_auth_token\", authToken);"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
