@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## [Unreleased]
 
+### Added
+- configuration to export inactive products as non-saleable
+- `set_settings` support
+
 ## [2.9.106] - 2022-11-04
 ### Added
 - events to product export

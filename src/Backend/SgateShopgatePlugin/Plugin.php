@@ -5377,7 +5377,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 ->setMaxResults($limit);
         }
 
-        $builder->where('article.active = 1');
+        if (!$this->config->getExportProductInactive()) {
+            $builder->where('article.active = 1');
+        }
 
         // Currently we can only export stacking products which have minPurchase quantity to be a multiple of the purchaseSteps
         $builder->andWhere(
