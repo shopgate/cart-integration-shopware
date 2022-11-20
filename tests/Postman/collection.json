@@ -732,6 +732,53 @@
         }
       ],
       "description": "SG runs a deactivation script after every import, so we need to make sure the store does not get deactivated by it\n\n```\n[shopgate_settings] => Array\n       (\n            [0] => Array\n                (\n                    [name] => shop_is_active\n                    [value] => 0\n                )\n\n        )\n\n\n```\n\nStartFragment"
+    },
+    {
+      "name": "Cleanup",
+      "item": [
+        {
+          "name": "SW: remove prod 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Check success\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.success).to.eq(true);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{sw_endpoint_api}}/articles/:articleId",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "articles",
+                ":articleId"
+              ],
+              "variable": [
+                {
+                  "key": "articleId",
+                  "value": "{{created_product1_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "auth": {
