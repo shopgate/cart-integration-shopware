@@ -930,6 +930,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             ->setOptions(
                 $formElementOptionsContainerCheckbox
                     ->setLabel('Inaktive Produkte exportieren')
+                    ->setDescription('Inaktive Produkte werden standardm&auml;&szlig;ig nicht exportiert. Wird diese Einstellung auf "Ja" gesetzt, werden sie als "nicht verk&auml;uflich" exportiert.')
                     ->setValue(false)
                     ->setPosition($position++)
             );
