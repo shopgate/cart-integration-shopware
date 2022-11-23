@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -31,7 +31,7 @@ jobs:
         php-versions: [ '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1' ]
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -49,9 +49,9 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -75,9 +75,9 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -101,7 +101,7 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Load from cache (PHP 5)
         uses: actions/cache@v2
         with:
@@ -134,7 +134,7 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Notify on Slack
         uses: rtCamp/action-slack-notify@v2
         env:
@@ -154,7 +154,7 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo ::set-output name=TAG_NAME::${GITHUB_REF:10}
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Notify on Slack
         uses: rtCamp/action-slack-notify@v2
         env:
