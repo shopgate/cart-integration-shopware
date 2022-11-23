@@ -170,6 +170,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Translation
                     'label'       => 'Products downloads export',
                     'description' => 'Determines if and where product downloads are exported',
                 ),
+                'SGATE_EXPORT_PRODUCT_INACTIVE'    => array(
+                    'label'       => 'Export inactive products',
+                ),
+                'SGATE_EXPORT_DIMENSION_UNIT'      => array(
+                    'label'       => 'Product dimension units'
+                ),
+                'SGATE_EXPORT_ATTRIBUTES_AS_DESCRIPTION'      => array(
+                    'label'       => 'Append attributes to description',
+                    'description' => 'Select a list of attributes that should also be appended to the description.',
+                ),
                 'SGATE_CUSTOM_CSS'                  => array(
                     'label'       => 'Custom css',
                     'description' => 'Here you can save CSS customizations for the webcheckout of your Shopgate app',

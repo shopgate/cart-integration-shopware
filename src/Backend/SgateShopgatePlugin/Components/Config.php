@@ -65,6 +65,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
 
     protected $export_dimension_unit;
 
+    protected $export_product_inactive;
+
     protected $root_category;
 
     /**
@@ -487,6 +489,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
             'fixed_shipping_service'           => 'SGATE_FIXED_SHIPPING_SERVICE',
             'export_product_description'       => 'SGATE_EXPORT_PRODUCT_DESCRIPTION',
             'export_product_downloads'         => 'SGATE_EXPORT_PRODUCT_DOWNLOADS',
+            'export_product_inactive'          => 'SGATE_EXPORT_PRODUCT_INACTIVE',
             'root_category'                    => 'SGATE_ROOT_CATEGORY',
         );
     }
@@ -700,6 +703,23 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     public function setExportProductDownloads($value)
     {
         $this->export_product_downloads = $value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExportProductInactive()
+    {
+        return $this->export_product_inactive;
+    }
+
+    /**
+     *
+     * @param string $value
+     */
+    public function setExportProductInactive($value)
+    {
+        $this->export_product_inactive = $value;
     }
 
     /**

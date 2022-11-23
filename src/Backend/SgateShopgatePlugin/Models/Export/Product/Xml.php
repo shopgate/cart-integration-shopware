@@ -386,6 +386,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
             $stockModel->setUseStock(0);
         }
 
+        // inactive products should not be purchasable
+        if ($this->getConfig()->getExportProductInactive()) {
+            $stockModel->setIsSaleable(0);
+        }
+
         parent::setStock($stockModel);
     }
 

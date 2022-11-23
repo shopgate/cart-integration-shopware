@@ -128,6 +128,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             'clearCache',
             'checkCart',
             'redeemCoupons',
+            'setSettings',
             'getSettings',
             'plugin',
             'loginUser',
@@ -299,6 +300,14 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     public function getSettingsAction()
     {
         $action = 'get_settings';
+        $this->Request()->setParam('action', $action);
+        $this->Request()->setPost('action', $action);
+        $this->pluginAction();
+    }
+
+    public function setSettingsAction()
+    {
+        $action = 'set_settings';
         $this->Request()->setParam('action', $action);
         $this->Request()->setPost('action', $action);
         $this->pluginAction();
