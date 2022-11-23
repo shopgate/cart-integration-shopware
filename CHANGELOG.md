@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## [Unreleased]
 
+## [2.9.107] - 2022-11-23
 ### Added
 - configuration to export inactive products as non-saleable
 - `set_settings` support
@@ -942,7 +943,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.106...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.107...HEAD
+[2.9.107]: https://github.com/shopgate/interface-shopware/compare/2.9.106...2.9.107
 [2.9.106]: https://github.com/shopgate/interface-shopware/compare/2.9.105...2.9.106
 [2.9.105]: https://github.com/shopgate/interface-shopware/compare/2.9.104...2.9.105
 [2.9.104]: https://github.com/shopgate/interface-shopware/compare/2.9.103...2.9.104
