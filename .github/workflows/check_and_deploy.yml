@@ -75,7 +75,7 @@ jobs:
     steps:
       - name: Get tag name
         id: set-tag
-        run: echo "TAG_NAME=test-tag" >> $GITHUB_OUTPUT
+        run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Install PHP
