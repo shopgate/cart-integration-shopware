@@ -32,6 +32,12 @@ class ShopgatePluginShopware extends ShopgatePlugin
 {
     const MALE   = "mr";
     const FEMALE = "ms";
+    const NOT_DEFINED = 'not_defined';
+    const SALUTATION_GENDER_MAP = [
+        self::MALE => ShopgateCustomer::MALE,
+        self::FEMALE => ShopgateCustomer::FEMALE,
+        self::NOT_DEFINED => ShopgateCustomer::DIVERSE
+    ];
     const PAYMORROW_ORDERS_TABLE = 'pi_paymorrow_orders';
     const DEFAULT_PAYMENT_METHOD = 'mobile_payment';
     const CHECK_CART_PAYMENT_METHOD = 'prepayment';
@@ -508,11 +514,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $userData->setCustomerId($oCustomer->getId());
         $userData->setCustomerNumber($customerNumber);
 
-        $userData->setGender(
-            $oBilling->getSalutation() == self::MALE
-                ? ShopgateCustomer::MALE
-                : ShopgateCustomer::FEMALE
-        );
+        if (!empty(self::SALUTATION_GENDER_MAP[$oBilling->getSalutation()])) {
+            $userData->setGender(self::SALUTATION_GENDER_MAP[$oBilling->getSalutation()]);
+        }
         $userData->setFirstName($oBilling->getFirstName());
         $userData->setLastName($oBilling->getLastName());
 
@@ -563,11 +567,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $oInvoiceAddress = new ShopgateAddress();
         $oInvoiceAddress->setAddressType(ShopgateAddress::INVOICE);
         $oInvoiceAddress->setId($oBilling->getId());
-        $oInvoiceAddress->setGender(
-            $oBilling->getSalutation() == self::MALE
-                ? ShopgateCustomer::MALE
-                : ShopgateCustomer::FEMALE
-        );
+        if (!empty(self::SALUTATION_GENDER_MAP[$oBilling->getSalutation()])) {
+            $oInvoiceAddress->setGender(self::SALUTATION_GENDER_MAP[$oBilling->getSalutation()]);
+        }
         $oInvoiceAddress->setFirstName($oBilling->getFirstName());
         $oInvoiceAddress->setLastName($oBilling->getLastName());
         $oInvoiceAddress->setCompany($oBilling->getCompany());
@@ -615,11 +617,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $oShippingAddress = new ShopgateAddress();
         $oShippingAddress->setAddressType(ShopgateAddress::DELIVERY);
         $oShippingAddress->setId($oShipping->getId());
-        $oShippingAddress->setGender(
-            $oShipping->getSalutation() == self::MALE
-                ? ShopgateCustomer::MALE
-                : ShopgateCustomer::FEMALE
-        );
+        if (!empty(self::SALUTATION_GENDER_MAP[$oShipping->getSalutation()])) {
+            $oShippingAddress->setGender(self::SALUTATION_GENDER_MAP[$oShipping->getSalutation()]);
+        }
         $oShippingAddress->setFirstName($oShipping->getFirstName());
         $oShippingAddress->setLastName($oShipping->getLastName());
         $oShippingAddress->setCompany($oShipping->getCompany());
@@ -3537,9 +3537,13 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $aAddress["department"] = "";
         $aAddress["company"]    = $oOrderAddress->getCompany()
             ?: "";
-        $aAddress["salutation"] = ($oOrderAddress->getGender() == ShopgateAddress::MALE)
-            ? self::MALE
-            : self::FEMALE;
+
+        $gender = self::NOT_DEFINED;
+        $genderSalutationMap = array_flip(self::SALUTATION_GENDER_MAP);
+        if (!empty($genderSalutationMap[$oOrderAddress->getGender()])) {
+            $gender = $genderSalutationMap[$oOrderAddress->getGender()];
+        }
+        $aAddress["salutation"] = $gender;
         $aAddress["firstname"]  = $oOrderAddress->getFirstName();
         $aAddress["lastname"]   = $oOrderAddress->getLastName();
         if ($this->config->assertMinimumVersion('5.0.0')) {
