@@ -30,6 +30,7 @@ use Enlight_Event_Exception;
 use Enlight_Exception;
 use Exception;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Shopware\Models\Customer\Customer;
 use Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config;
 use Zend_Db_Adapter_Exception;
@@ -56,7 +57,7 @@ class WebCheckout
         if (isset($token)) {
             $key               = trim($this->getConfig()->getApikey());
             JWT::$leeway       = 300;
-            $decoded           = JWT::decode($token, $key, array('HS256'));
+            $decoded           = JWT::decode($token, new Key($key, 'HS256'));
             $decoded           = json_decode(json_encode($decoded), true);
             $customerId        = $decoded['customer_id'];
             $promotionVouchers = json_decode($decoded['promotion_vouchers'], true);
@@ -167,7 +168,7 @@ class WebCheckout
         try {
             $key         = trim($this->getConfig()->getApikey());
             JWT::$leeway = 300;
-            $decoded     = JWT::decode($token, $key, array('HS256'));
+            $decoded     = JWT::decode($token, new Key($key, 'HS256'));
 
             return json_decode(json_encode($decoded), true);
         } catch (Exception $error) {
