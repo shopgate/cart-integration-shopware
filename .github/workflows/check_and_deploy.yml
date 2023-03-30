@@ -14,8 +14,7 @@ jobs:
       - name: Install dependencies (for CS fixer)
         run: composer install
       - name: Audit
-        run: |
-          composer audit
+        run: composer audit
       - name: Code Style
         run: composer check
 
