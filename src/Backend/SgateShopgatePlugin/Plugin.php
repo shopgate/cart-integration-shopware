@@ -36,7 +36,13 @@ class ShopgatePluginShopware extends ShopgatePlugin
     const SALUTATION_GENDER_MAP = [
         self::MALE => ShopgateCustomer::MALE,
         self::FEMALE => ShopgateCustomer::FEMALE,
-        self::NOT_DEFINED => ShopgateCustomer::DIVERSE
+        self::NOT_DEFINED => null
+    ];
+    const GENDER_SALUTATION_MAP = [
+        ShopgateCustomer::MALE => self::MALE,
+        ShopgateCustomer::FEMALE => self::FEMALE,
+        ShopgateCustomer::DIVERSE => self::NOT_DEFINED,
+        '' => self::NOT_DEFINED
     ];
     const PAYMORROW_ORDERS_TABLE = 'pi_paymorrow_orders';
     const DEFAULT_PAYMENT_METHOD = 'mobile_payment';
@@ -3539,9 +3545,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
             ?: "";
 
         $gender = self::NOT_DEFINED;
-        $genderSalutationMap = array_flip(self::SALUTATION_GENDER_MAP);
-        if (!empty($genderSalutationMap[$oOrderAddress->getGender()])) {
-            $gender = $genderSalutationMap[$oOrderAddress->getGender()];
+        if (!empty(self::GENDER_SALUTATION_MAP[$oOrderAddress->getGender()])) {
+            $gender = self::GENDER_SALUTATION_MAP[$oOrderAddress->getGender()];
         }
         $aAddress["salutation"] = $gender;
         $aAddress["firstname"]  = $oOrderAddress->getFirstName();
