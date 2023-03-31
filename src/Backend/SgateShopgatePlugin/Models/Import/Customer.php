@@ -26,6 +26,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
 {
     const MALE   = "mr";
     const FEMALE = "ms";
+    const NOT_DEFINED = 'not_defined';
+    const GENDER_SALUTATION_MAP = [
+        ShopgateCustomer::MALE => self::MALE,
+        ShopgateCustomer::FEMALE => self::FEMALE,
+        ShopgateCustomer::DIVERSE => self::NOT_DEFINED
+    ];
     const DEFAULT_BIRTHDATE    = '';
     const DEFAULT_PHONE_NUMBER = '0-000-000-0000';
 
@@ -115,10 +121,13 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
         $country = $this->getCountryByIso($newAddress->getCountry());
         $state   = $this->getStateByIso($newAddress->getState());
 
+        $salutation = self::NOT_DEFINED;
+        if (!empty(self::GENDER_SALUTATION_MAP[$newAddress->getGender()])) {
+            $salutation = self::GENDER_SALUTATION_MAP[$newAddress->getGender()];
+        }
+
         $oldAddress['company']    = $newAddress->getCompany();
-        $oldAddress['salutation'] = ($newAddress->getGender() == ShopgateCustomer::MALE)
-            ? self::MALE
-            : self::FEMALE;
+        $oldAddress['salutation'] = $salutation;
         $oldAddress['firstname']  = $newAddress->getFirstName();
         $oldAddress['lastname']   = $newAddress->getLastName();
         if (!$this->config->assertMinimumVersion('5.0.0')) {
@@ -452,9 +461,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
         $addressArr = array();
 
         if ($address) {
-            $salutation = ($address->getGender() == ShopgateCustomer::MALE)
-                ? self::MALE
-                : self::FEMALE;
+            $salutation = self::NOT_DEFINED;
+            if (!empty(self::GENDER_SALUTATION_MAP[$address->getGender()])) {
+                $salutation = self::GENDER_SALUTATION_MAP[$address->getGender()];
+            }
 
             $country = $this->getCountryByIso($address->getCountry());
             $state   = $this->getStateByIso($address->getState());
@@ -526,10 +536,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
      */
     protected function createNewCustomerNew($email, $pass, $customer, $createGuest = false)
     {
-        $customerId = null;
-        $salutation = ($customer->getGender() == ShopgateCustomer::MALE)
-            ? self::MALE
-            : self::FEMALE;
+        $salutation = self::NOT_DEFINED;
+        if (!empty(self::GENDER_SALUTATION_MAP[$customer->getGender()])) {
+            $salutation = self::GENDER_SALUTATION_MAP[$customer->getGender()];
+        }
 
         $accountMode = $createGuest
             ? 1
@@ -553,9 +563,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Import_Customer
                 ? 'billing'
                 : 'shipping';
 
-            $salutation = ($shopgateCustomerAddress->getGender() == ShopgateCustomer::MALE)
-                ? self::MALE
-                : self::FEMALE;
+            $salutation = self::NOT_DEFINED;
+            if (!empty(self::GENDER_SALUTATION_MAP[$shopgateCustomerAddress->getGender()])) {
+                $salutation = self::GENDER_SALUTATION_MAP[$shopgateCustomerAddress->getGender()];
+            }
 
             $country = $this->getCountryByIso($shopgateCustomerAddress->getCountry());
             $state   = $this->getStateByIso($shopgateCustomerAddress->getState());

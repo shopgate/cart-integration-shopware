@@ -430,9 +430,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Order
         $config = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
         $config->reloadBySubShop($subShop);
 
-        $gender = $address->getSalutation() == ShopgatePluginShopware::MALE
-            ? ShopgateCustomer::MALE
-            : ShopgateCustomer::FEMALE;
+        $gender = null;
+        if (!empty(ShopgatePluginShopware::SALUTATION_GENDER_MAP[$address->getSalutation()])) {
+            $gender = ShopgatePluginShopware::SALUTATION_GENDER_MAP[$address->getSalutation()];
+        }
 
         $country = Shopware()->Models()
             ->find('\Shopware\Models\Country\Country', $address->getCountry());
