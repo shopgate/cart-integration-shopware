@@ -61,7 +61,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-5.6.zip
-          key: ${{ steps.set-tag.outputs.TAG_NAME }}-${GITHUB_SHA}-php-5
+          key: ${{ steps.set-tag.outputs.TAG_NAME }}-$GITHUB_SHA-php-5
 
   build-zip-php-7:
     name: Build the PHP 7 & 8 compatible ZIP
@@ -87,7 +87,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-7.zip
-          key: ${{ steps.set-tag.outputs.TAG_NAME }}-${GITHUB_SHA}-php-7
+          key: ${{ steps.set-tag.outputs.TAG_NAME }}-$GITHUB_SHA-php-7
 
   release:
     name: Create GitHub release & attach ZIP files
@@ -102,12 +102,12 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-5.6.zip
-          key: ${{ steps.set-tag.outputs.TAG_NAME }}-${GITHUB_SHA}-php-5
+          key: ${{ steps.set-tag.outputs.TAG_NAME }}-$GITHUB_SHA-php-5
       - name: Load from cache (PHP 7 & 8)
         uses: actions/cache@v3
         with:
           path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-7.zip
-          key: ${{ steps.set-tag.outputs.TAG_NAME }}-${GITHUB_SHA}-php-7
+          key: ${{ steps.set-tag.outputs.TAG_NAME }}-$GITHUB_SHA-php-7
       - name: Release & upload
         uses: softprops/action-gh-release@v1
         with:
