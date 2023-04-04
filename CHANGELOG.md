@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## [Unreleased]
 
-## [2.9.108] - 2023-04-03
+## [2.9.108] - 2023-04-04
 ### Added
 - support for a "diverse" gender option from Shopgate, mapped to the default 'not_specified' that came with Shopware 5.7.17
 
