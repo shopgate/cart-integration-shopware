@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- attribute group collisions in the Shopgate Omnichannel suite due to exported IDs not being globally (shop-wide) unique
 
 ## [2.9.108] - 2023-04-04
 ### Added
