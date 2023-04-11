@@ -505,13 +505,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
     public function setAttributeGroups()
     {
         if ($this->hasChildren() && $this->article->getConfiguratorSet()) {
-            $i      = 1;
             $result = array();
 
             /* @var $group Shopware\Models\Article\Configurator\Group */
             foreach ($this->article->getConfiguratorSet()->getGroups() as $group) {
                 $attributeItem = new Shopgate_Model_Catalog_AttributeGroup();
-                $attributeItem->setUid($i);
+                $attributeItem->setUid($group->getId());
                 $attributeItem->setLabel(
                     $this->translationModel->translate(
                         Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Translation::TRANSLATION_KEY_CONFIGURATION_GROUP,
@@ -520,7 +519,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
                     )
                 );
                 $result[] = $attributeItem;
-                $i++;
             }
 
             parent::setAttributeGroups($result);
@@ -636,28 +634,17 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
         $result = array();
 
         if ($this->article->getConfiguratorSet()) {
-            $map = array();
-            $i   = 1;
-
             if ($this->article->getConfiguratorSet()->getGroups()->isEmpty()) {
                 $this->validChild = false;
 
                 return;
             }
 
-            foreach ($this->article->getConfiguratorSet()->getGroups() as $group) {
-                $map[$group->getId()] = $i;
-                $i++;
-            }
-
             /* @var $option \Shopware\Models\Article\Configurator\Option */
             foreach ($this->detail->getConfiguratorOptions() as $option) {
                 $group         = $option->getGroup();
-                if (empty($map[$group->getId()])) {
-                    continue;
-                }
                 $itemAttribute = new Shopgate_Model_Catalog_Attribute();
-                $itemAttribute->setGroupUid($map[$group->getId()]);
+                $itemAttribute->setGroupUid($group->getId());
                 $itemAttribute->setLabel(
                     $this->translationModel->translate(
                         Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Translation::TRANSLATION_KEY_CONFIGURATION_OPTION,
