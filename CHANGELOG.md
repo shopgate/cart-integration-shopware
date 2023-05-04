@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- child products with two options for the same group (e.g. two colors) will now be exported with only the first option;
+  this is likely a case of inconsistent data because products can't be configured like that in the Shopware backend
 
 ## [2.9.109] - 2023-04-11
 ### Fixed
