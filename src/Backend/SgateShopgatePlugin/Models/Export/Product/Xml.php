@@ -44,6 +44,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
     /**@var bool */
     public $validChild = true;
 
+    /** @var array<int, bool> */
+    public $assignedAttributeGroups = array();
+
     /**
      * @param Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export  $exportComponent
      * @param Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Translation $translationModel
@@ -598,6 +601,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
     {
         $children = array();
 
+        // workaround for inconsistent data where one attribute group has multiple values assigned
+        $this->assignedAttributeGroups = [];
+
         if (!$this->getIsChild()) {
             $childProducts = $this->loadChildren();
 
@@ -643,6 +649,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
             /* @var $option \Shopware\Models\Article\Configurator\Option */
             foreach ($this->detail->getConfiguratorOptions() as $option) {
                 $group         = $option->getGroup();
+
+                // workaround for inconsistent data where one attribute group has multiple values assigned
+                if (isset($this->assignedAttributeGroups[$group->getId()])) {
+                    continue;
+                }
+
+                $this->assignedAttributeGroups[$group->getId()] = true;
+
                 $itemAttribute = new Shopgate_Model_Catalog_Attribute();
                 $itemAttribute->setGroupUid($group->getId());
                 $itemAttribute->setLabel(
