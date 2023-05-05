@@ -44,6 +44,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
     /**@var bool */
     public $validChild = true;
 
+    /** @var array<int, bool> */
+    public $assignedAttributeGroups = array();
+
     /**
      * @param Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export  $exportComponent
      * @param Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Translation $translationModel
@@ -505,13 +508,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
     public function setAttributeGroups()
     {
         if ($this->hasChildren() && $this->article->getConfiguratorSet()) {
-            $i      = 1;
             $result = array();
 
             /* @var $group Shopware\Models\Article\Configurator\Group */
             foreach ($this->article->getConfiguratorSet()->getGroups() as $group) {
                 $attributeItem = new Shopgate_Model_Catalog_AttributeGroup();
-                $attributeItem->setUid($i);
+                $attributeItem->setUid($group->getId());
                 $attributeItem->setLabel(
                     $this->translationModel->translate(
                         Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Translation::TRANSLATION_KEY_CONFIGURATION_GROUP,
@@ -520,7 +522,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
                     )
                 );
                 $result[] = $attributeItem;
-                $i++;
             }
 
             parent::setAttributeGroups($result);
@@ -600,6 +601,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
     {
         $children = array();
 
+        // workaround for inconsistent data where one attribute group has multiple values assigned
+        $this->assignedAttributeGroups = [];
+
         if (!$this->getIsChild()) {
             $childProducts = $this->loadChildren();
 
@@ -636,28 +640,25 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
         $result = array();
 
         if ($this->article->getConfiguratorSet()) {
-            $map = array();
-            $i   = 1;
-
             if ($this->article->getConfiguratorSet()->getGroups()->isEmpty()) {
                 $this->validChild = false;
 
                 return;
             }
 
-            foreach ($this->article->getConfiguratorSet()->getGroups() as $group) {
-                $map[$group->getId()] = $i;
-                $i++;
-            }
-
             /* @var $option \Shopware\Models\Article\Configurator\Option */
             foreach ($this->detail->getConfiguratorOptions() as $option) {
                 $group         = $option->getGroup();
-                if (empty($map[$group->getId()])) {
+
+                // workaround for inconsistent data where one attribute group has multiple values assigned
+                if (isset($this->assignedAttributeGroups[$group->getId()])) {
                     continue;
                 }
+
+                $this->assignedAttributeGroups[$group->getId()] = true;
+
                 $itemAttribute = new Shopgate_Model_Catalog_Attribute();
-                $itemAttribute->setGroupUid($map[$group->getId()]);
+                $itemAttribute->setGroupUid($group->getId());
                 $itemAttribute->setLabel(
                     $this->translationModel->translate(
                         Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Translation::TRANSLATION_KEY_CONFIGURATION_OPTION,
