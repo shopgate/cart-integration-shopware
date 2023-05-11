@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] - 2023-05-11
+### Fixed
+- Remove exit() after sending the response and use fastcgi_finish_request() instead
+
 ## [2.9.110] - 2023-05-05
 ### Fixed
 - child products with two options for the same group (e.g. two colors) will now be exported with only the first option;
