@@ -1,4 +1,4 @@
-<?php
+f<?php
 /**
  * Copyright Shopgate Inc.
  *
@@ -415,7 +415,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             )
         );
 
-        fastcgi_finish_request();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -632,7 +632,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        fastcgi_finish_request();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -645,7 +645,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        fastcgi_finish_request();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -662,7 +662,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        fastcgi_finish_request();
+        $this->Response()->send();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -679,7 +680,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        fastcgi_finish_request();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -734,7 +735,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        fastcgi_finish_request();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -755,7 +756,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        fastcgi_finish_request();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -778,6 +779,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        fastcgi_finish_request();
+        $this->webCheckoutHelper->closeRequest();
     }
 }

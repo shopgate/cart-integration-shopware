@@ -107,7 +107,7 @@ class User
                 $httpResponse->setHttpResponseCode(401);
                 $httpResponse->setBody(json_encode($user));
                 $httpResponse->sendResponse();
-                fastcgi_finish_request();
+                $this->webCheckoutHelper->closeRequest();
                 return;
             } else {
                 $httpResponse->setHttpResponseCode(200);
@@ -125,7 +125,7 @@ class User
                     )
                 );
                 $httpResponse->sendResponse();
-                fastcgi_finish_request();
+                $this->webCheckoutHelper->closeRequest();
                 return;
             }
         } else {
@@ -158,7 +158,7 @@ class User
         $this->basket->sRefreshBasket();
 
         $httpResponse->sendResponse();
-        fastcgi_finish_request();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
