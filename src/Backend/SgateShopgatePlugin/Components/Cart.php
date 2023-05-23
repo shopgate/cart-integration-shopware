@@ -100,7 +100,8 @@ class Cart
                 $httpResponse->setHeader('Content-Type', 'application/json');
                 $httpResponse->setBody('Invalid customer number');
                 $httpResponse->sendResponse();
-                exit();
+                $this->webCheckoutHelper->closeRequest();
+                return;
             }
             $customer = $this->webCheckoutHelper->getCustomer($customerId);
             if ($this->webCheckoutHelper->getConfig()->assertMinimumVersion('5.7.0')) {
@@ -122,7 +123,8 @@ class Cart
             $httpResponse->setHeader('Content-Type', 'application/json');
             $httpResponse->setBody(json_encode($basket));
             $httpResponse->sendResponse();
-            exit();
+            $this->webCheckoutHelper->closeRequest();
+            return;
         }
 
         $this->session->offsetSet('sBasketQuantity', $this->basket->sCountBasket());
@@ -177,7 +179,7 @@ class Cart
         $httpResponse->setHeader('Content-Type', 'application/json');
         $httpResponse->setBody(json_encode($basket));
         $httpResponse->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -235,7 +237,7 @@ class Cart
         }
         $httpResponse->setHeader('Content-Type', 'application/json');
         $httpResponse->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -286,7 +288,7 @@ class Cart
         }
 
         $httpResponse->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -346,7 +348,7 @@ class Cart
         $httpResponse->setHeader('Content-Type', 'application/json');
         $httpResponse->setBody(json_encode($response));
         $httpResponse->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -506,7 +508,8 @@ class Cart
 
             $httpResponse->setBody(html_entity_decode(json_encode($response)));
             $httpResponse->sendResponse();
-            exit();
+            $this->webCheckoutHelper->closeRequest();
+            return;
         }
 
         $this->basket->sGetBasket();
@@ -543,7 +546,7 @@ class Cart
         $httpResponse->setHeader('Content-Type', 'application/json');
         $httpResponse->setBody(html_entity_decode(json_encode($response)));
         $httpResponse->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**

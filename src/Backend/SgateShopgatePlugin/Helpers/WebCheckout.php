@@ -31,9 +31,12 @@ use Enlight_Exception;
 use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use http\Exception\BadHeaderException;
 use Shopware\Models\Customer\Customer;
 use Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config;
+
 use Zend_Db_Adapter_Exception;
+use function PHPUnit\Framework\throwException;
 
 class WebCheckout
 {
@@ -150,7 +153,8 @@ class WebCheckout
         if ($header !== 'application/json') {
             $response->setHttpResponseCode(404);
             $response->sendResponse();
-            exit();
+            $this->closeRequest();
+            throw new BadHeaderException('Invalid Content-Type given.');
         }
 
         $content = trim(file_get_contents("php://input"));
@@ -253,5 +257,17 @@ class WebCheckout
         }
 
         return session_id();
+    }
+
+    public function closeRequest()
+    {
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+            return;
+        }
+
+        ob_end_flush();
+        flush();
+        exit(); //NOSONAR
     }
 }

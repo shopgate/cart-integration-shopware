@@ -415,7 +415,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             )
         );
 
-        exit;
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -632,7 +632,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -645,7 +645,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -662,7 +662,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -679,7 +679,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -734,7 +734,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -755,7 +755,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
@@ -778,6 +778,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Content-Type', 'application/json');
         $this->Response()->setBody(json_encode($response));
         $this->Response()->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 }

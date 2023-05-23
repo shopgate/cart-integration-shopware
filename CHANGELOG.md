@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+### Fixed
+- restored compatibility with the Shopware market place review & release process
+
 ## [2.9.110] - 2023-05-05
 ### Fixed
 - child products with two options for the same group (e.g. two colors) will now be exported with only the first option;

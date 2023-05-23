@@ -107,7 +107,8 @@ class User
                 $httpResponse->setHttpResponseCode(401);
                 $httpResponse->setBody(json_encode($user));
                 $httpResponse->sendResponse();
-                exit();
+                $this->webCheckoutHelper->closeRequest();
+                return;
             } else {
                 $httpResponse->setHttpResponseCode(200);
                 $httpResponse->setBody(
@@ -124,7 +125,8 @@ class User
                     )
                 );
                 $httpResponse->sendResponse();
-                exit();
+                $this->webCheckoutHelper->closeRequest();
+                return;
             }
         } else {
             $error = $this->admin->sLogin();
@@ -156,7 +158,7 @@ class User
         $this->basket->sRefreshBasket();
 
         $httpResponse->sendResponse();
-        exit();
+        $this->webCheckoutHelper->closeRequest();
     }
 
     /**
