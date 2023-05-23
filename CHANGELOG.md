@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased] - 2023-05-11
+## [Unreleased]
 ### Fixed
-- Remove exit() after sending the response and use fastcgi_finish_request() instead
+- restored compatibility with the Shopware market place review & release process
 
 ## [2.9.110] - 2023-05-05
 ### Fixed
