@@ -259,7 +259,8 @@ class WebCheckout
         return session_id();
     }
 
-    public function closeRequest() {
+    public function closeRequest()
+    {
 
         if (function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
