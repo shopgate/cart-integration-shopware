@@ -261,7 +261,6 @@ class WebCheckout
 
     public function closeRequest()
     {
-
         if (function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
             return;
