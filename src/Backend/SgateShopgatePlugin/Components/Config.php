@@ -126,6 +126,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
 
         $shopwareDir = rtrim(Shopware()->DocPath(), DS) . DS;
 
+        $this->additionalSettings = ['skip_category_assignment' => '0'];
         $shopgateHiddenConfiguration = $this->loadHiddenConfigurationValues();
         $shopgateConfiguration       = array_merge($shopgateHiddenConfiguration, $this->loadFormConfigurationValues());
 
@@ -257,7 +258,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     {
         $shopgateConfiguration = array();
         foreach ($this->loadHiddenConfigurationValuesFromDatabase() as $key => $value) {
-            if (!isset($this->{$key})) {
+            if (!isset($this->{$key}) && !isset($this->additionalSettings[$key])) {
                 continue;
             }
 
@@ -272,7 +273,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
      */
     protected function loadHiddenConfigurationValuesFromDatabase()
     {
-        if (!$this->isResourceLoaded('Shop')) {
+        if (!$this->isShopLoaded()) {
             return array();
         }
 
@@ -528,6 +529,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
             'enable_mobile_website'          => 'SGATE_ENABLE_MOBILE_WEBSITE',
             'enable_get_orders'              => 'SGATE_ENABLE_GET_ORDERS',
             'enable_default_redirect'        => 'SGATE_DEFAULT_REDIRECT',
+            'skip_category_assignment'       => 'SGATE_SKIP_CATEGORY_ASSIGNMENT',
         );
     }
 
@@ -697,7 +699,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @param string $value
      */
     public function setExportProductDownloads($value)
@@ -788,11 +789,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
      */
     public function isResourceLoaded($resourceName)
     {
-        $resourceLoaded = $this->assertMinimumVersion('5.2.0')
+        return $this->assertMinimumVersion('5.2.0')
             ? Shopware()->Container()->initialized($resourceName)
             : Shopware()->Bootstrap()->issetResource($resourceName);
+    }
 
-        return $resourceLoaded;
+    public function isShopLoaded()
+    {
+        $tag = $this->assertMinimumVersion('5.6.0') ? 'shop' : 'Shop';
+
+        return $this->isResourceLoaded($tag);
     }
 
     /**
