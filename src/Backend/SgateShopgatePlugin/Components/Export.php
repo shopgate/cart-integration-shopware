@@ -153,17 +153,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         return $text;
     }
 
-    /**
-     *
-     */
     protected function initLanguageCategoryList()
     {
         $this->buildLanguageCategoryList($this->rootCategoryId);
     }
 
-    /**
-     *
-     */
     protected function initLanguageCompleteCategoryList()
     {
         $this->buildLanguageCompleteCategoryList($this->rootCategoryId);
@@ -175,18 +169,18 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     protected function buildLanguageCategoryList($parentID)
     {
         $qry = "
-			SELECT id
-			FROM s_categories
-			WHERE parent = {$parentID}
-			  AND active = 1";
+            SELECT id
+            FROM s_categories
+            WHERE parent = {$parentID}
+              AND active = 1";
 
         $result = Shopware()->Db()->fetchAll($qry);
 
         foreach ($result as $row) {
-            $this->languageCategoryList[] = $row["id"];
+            $this->languageCategoryList[$row['id']] = $row['id'];
 
-            if ($row["id"] != $parentID) {
-                $this->buildLanguageCategoryList($row["id"]);
+            if ($row['id'] != $parentID) {
+                $this->buildLanguageCategoryList($row['id']);
             }
         }
     }
@@ -197,17 +191,17 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     protected function buildLanguageCompleteCategoryList($parentID)
     {
         $qry = "
-			SELECT id
-			FROM s_categories
-			WHERE parent = {$parentID}";
+            SELECT id
+            FROM s_categories
+            WHERE parent = {$parentID}";
 
         $result = Shopware()->Db()->fetchAll($qry);
 
         foreach ($result as $row) {
-            $this->languageCompleteCategoryList[] = $row["id"];
+            $this->languageCompleteCategoryList[$row['id']] = $row['id'];
 
-            if ($row["id"] != $parentID) {
-                $this->buildLanguageCompleteCategoryList($row["id"]);
+            if ($row['id'] != $parentID) {
+                $this->buildLanguageCompleteCategoryList($row['id']);
             }
         }
     }
@@ -221,7 +215,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
      */
     public function checkCategory($categoryId)
     {
-        return in_array($categoryId, $this->languageCategoryList);
+        return isset($this->languageCategoryList[$categoryId]);
     }
 
     /**
@@ -233,7 +227,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
      */
     public function checkCompleteCategory($categoryId)
     {
-        return in_array($categoryId, $this->languageCompleteCategoryList);
+        return isset($this->languageCompleteCategoryList[$categoryId]);
     }
 
     /**
