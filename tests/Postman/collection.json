@@ -165,7 +165,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"name\": \"API: disabled product\",\r\n    \"active\": false,\r\n    \"tax\": 19,\r\n    \"supplier\": \"Sport Shoes Inc.\",\r\n    \"categories\": [\r\n        {\r\n            \"id\": {{gen_category_main_id}}\r\n        }\r\n    ],\r\n    \"mainDetail\": {\r\n        \"number\": \"API-INACTIVE\",\r\n        \"active\": true,\r\n        \"prices\": [\r\n            {\r\n                \"customerGroupKey\": \"EK\",\r\n                \"price\": 999\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"id\": 16,\r\n    \"name\": \"API: disabled product\",\r\n    \"active\": false,\r\n    \"tax\": 19,\r\n    \"supplier\": \"Sport Shoes Inc.\",\r\n    \"categories\": [\r\n        {\r\n            \"id\": {{gen_category_main_id}}\r\n        }\r\n    ],\r\n    \"mainDetail\": {\r\n        \"number\": \"API-INACTIVE\",\r\n        \"active\": true,\r\n        \"prices\": [\r\n            {\r\n                \"customerGroupKey\": \"EK\",\r\n                \"price\": 999\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -696,12 +696,6 @@
                   "key": "offset",
                   "value": "0",
                   "type": "text"
-                },
-                {
-                  "key": "uids[]",
-                  "value": "{{created_product1_id}}",
-                  "type": "text",
-                  "disabled": true
                 }
               ]
             },
@@ -930,12 +924,6 @@
                   "key": "offset",
                   "value": "0",
                   "type": "text"
-                },
-                {
-                  "key": "uids[]",
-                  "value": "{{created_product1_id}}",
-                  "type": "text",
-                  "disabled": true
                 }
               ]
             },
