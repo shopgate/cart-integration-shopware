@@ -11,3 +11,5 @@ composer.lock
 /vendor/
 /.php-cs.cache
 /.phpunit.result.cache
+tests/package-lock.json
+tests/node_modules

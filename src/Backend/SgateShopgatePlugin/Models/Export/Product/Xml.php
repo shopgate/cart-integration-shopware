@@ -419,13 +419,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
 
     public function setCategoryPaths()
     {
-        $result           = array();
-        $linkedCategories = $this->getCategories($this->article);
+        $result = [];
+        if ($this->getConfig()->shouldSkipCategoryAssignment()) {
+            parent::setCategoryPaths($result);
 
+            return;
+        }
+
+        $linkedCategories = $this->getCategories($this->article);
         foreach ($linkedCategories as $category) {
-            $sortOrder = $category['sort_order']
-                ? $category['sort_order']
-                : '';
+            $sortOrder = $category['sort_order'] ?: '';
 
             $categoryItemObject = new Shopgate_Model_Catalog_CategoryPath();
             $categoryItemObject->setUid($category['id']);
