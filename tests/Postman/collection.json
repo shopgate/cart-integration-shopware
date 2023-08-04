@@ -140,7 +140,7 @@
               "response": []
             },
             {
-              "name": "SW: create product",
+              "name": "SW: create inactive prod",
               "event": [
                 {
                   "listen": "test",
@@ -165,7 +165,52 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"id\": 16,\r\n    \"name\": \"API: disabled product\",\r\n    \"active\": false,\r\n    \"tax\": 19,\r\n    \"supplier\": \"Sport Shoes Inc.\",\r\n    \"categories\": [\r\n        {\r\n            \"id\": {{gen_category_main_id}}\r\n        }\r\n    ],\r\n    \"mainDetail\": {\r\n        \"number\": \"API-INACTIVE\",\r\n        \"active\": true,\r\n        \"prices\": [\r\n            {\r\n                \"customerGroupKey\": \"EK\",\r\n                \"price\": 999\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"name\": \"API: disabled product\",\r\n    \"active\": false,\r\n    \"tax\": 19,\r\n    \"supplier\": \"Sport Shoes Inc.\",\r\n    \"categories\": [\r\n        {\r\n            \"id\": {{gen_category_main_id}}\r\n        }\r\n    ],\r\n    \"mainDetail\": {\r\n        \"number\": \"API-INACTIVE\",\r\n        \"active\": true,\r\n        \"prices\": [\r\n            {\r\n                \"customerGroupKey\": \"EK\",\r\n                \"price\": 999\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/articles",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "articles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create price grp",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get id of created product\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data.id).to.be.a(\"number\");\r",
+                      "    pm.environment.set('created_product2_id', jsonData.data.id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"API: price grp product\",\r\n    \"active\": true,\r\n    \"tax\": 19,\r\n    \"supplier\": \"Active Runners LLC\",\r\n    \"categories\": [\r\n        {\r\n            \"id\": {{gen_category_main_id}}\r\n        }\r\n    ],\r\n    \"lastStock\": true, // stock cannot go into negatives (saleable)\r\n    \"priceGroupActive\": true,\r\n    \"priceGroupId\": 500,\r\n    \"mainDetail\": {\r\n        \"number\": \"API-PRICE-GRP\",\r\n        \"active\": true,\r\n        \"prices\": [\r\n            {\r\n                \"customerGroupKey\": \"EK\",\r\n                \"from\": \"1\",\r\n                \"to\": \"3\",\r\n                \"price\": 200,\r\n                \"pseudoPrice\": 250, // fake price to cross out\r\n                \"basePrice\": 90\r\n            },\r\n            {\r\n                \"customerGroupKey\": \"EK\",\r\n                \"from\": \"4\",\r\n                \"to\": \"7\",\r\n                \"price\": 100,\r\n                \"pseudoPrice\": 250,\r\n                \"basePrice\": 90\r\n            }\r\n        ],\r\n        \"inStock\": 500,\r\n        \"minPurchase\": 2,\r\n        \"maxPurchase\": 10,\r\n        \"purchaseSteps\": 2,\r\n        \"position\": 5\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1119,6 +1164,120 @@
       "description": "SG runs a deactivation script after every import, so we need to make sure the store does not get deactivated by it\n\n```\n[shopgate_settings] => Array\n       (\n            [0] => Array\n                (\n                    [name] => shop_is_active\n                    [value] => 0\n                )\n\n        )\n\n\n```\n\nStartFragment"
     },
     {
+      "name": "Check Prices (grps)",
+      "item": [
+        {
+          "name": "SG: check prices",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Not an error\", function () {",
+                  "    pm.response.to.not.have.jsonBody('error');",
+                  "});",
+                  "",
+                  "var jsonObject = xml2Json(responseBody);",
+                  "pm.test(\"Check products have categories exported\", () => {",
+                  "    pm.expect(jsonObject.items.item.prices).to.not.be.undefined;",
+                  "    const price = jsonObject.items.item.prices;",
+                  "    pm.expect(price.price).to.eq('500');",
+                  "    pm.expect(price.sale_price).to.eq('400');",
+                  "    pm.expect(price.base_price).to.contain('200');",
+                  "    pm.expect(price.price).to.eq('500');",
+                  "});",
+                  "",
+                  "pm.test(\"Check tier prices\", () => {",
+                  "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price).to.not.be.undefined;",
+                  "    const tiers = jsonObject.items.item.prices.tier_prices.tier_price;",
+                  "    checkGrp(tiers[0], '10', '5', 'percent', '1');",
+                  "    checkGrp(tiers[1], '20', '10', 'percent', '1');",
+                  "    checkGrp(tiers[2], '50', '15', 'percent', '1');",
+                  "    checkFixedDiscount(tiers[3], '200', '2', 'fixed', '3');",
+                  "});",
+                  "",
+                  "function checkGrp(tier, discount, min, type, customerGrpId) {",
+                  "    pm.expect(tier._, 'incorrect discount').to.eq(discount);",
+                  "    pm.expect(tier.$.threshold, 'incorrect threshold').to.eq(min);",
+                  "    pm.expect(tier.$.type, 'icnorrect type').to.eq(type);",
+                  "    if (customerGrpId) {",
+                  "        pm.expect(tier.$.customer_group_uid, 'incorrect customer grp').to.eq(customerGrpId);",
+                  "    }",
+                  "}",
+                  "function checkFixedDiscount(tier, discount, min, type, max) {",
+                  "    checkGrp(tier, discount, min, type, null);",
+                  "    pm.expect(tier.$.max_quantity, 'incorrect max').to.eq(max);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{sg_shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_items}}",
+                  "type": "text"
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "type": "text"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "uids[]",
+                  "value": "{{created_product2_id}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sg_endpoint_api}}/getItems",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "getItems"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Cleanup",
       "item": [
         {
@@ -1157,6 +1316,48 @@
                 {
                   "key": "articleId",
                   "value": "{{created_product1_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: remove prod 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Check success\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.success).to.eq(true);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{sw_endpoint_api}}/articles/:articleId",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "articles",
+                ":articleId"
+              ],
+              "variable": [
+                {
+                  "key": "articleId",
+                  "value": "{{created_product2_id}}"
                 }
               ]
             }

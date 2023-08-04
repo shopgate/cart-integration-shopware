@@ -1,3 +1,16 @@
+### Preparation
+
+The tests will require the Shopware `SwagDemoDataEN` (or DE) plugin to be installed.
+
+We've added some sample data via SQL statements as the Shopware API does
+not allow to add certain data. Copy the .sql files from `tests/assets` folder
+to the installation folder of the `SwagDemoData` plugin:
+```shell
+cp assets/*.sql [root]/engine/Shopware/Plugins/Community/Frontend/SwagDemoDataEN/resources/data/
+cd [root]
+bin/console sw:plugin:reinstall -r SwagDemoDataEN
+```
+
 ### Postman tests
 
 * Go to `SW admin -> Config -> User Admin -> Edit -> enable API`
