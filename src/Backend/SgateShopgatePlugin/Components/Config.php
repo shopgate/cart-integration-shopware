@@ -44,6 +44,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     /** configuration form id for hidden fields */
     const HIDDEN_CONFIGURATION_FORM_ID = 0;
     const HIDDEN_CONFIG_SKIP_CAT_ASSIGNMENT = 'skip_category_assignment';
+    const HIDDEN_CONFIG_SKIP_ADV_PRICE_EXPORT = 'skip_advanced_price_export';
 
     protected $is_active;
 
@@ -127,7 +128,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
 
         $shopwareDir = rtrim(Shopware()->DocPath(), DS) . DS;
 
-        $this->additionalSettings = [self::HIDDEN_CONFIG_SKIP_CAT_ASSIGNMENT => '0'];
+        $this->additionalSettings = [
+            self::HIDDEN_CONFIG_SKIP_CAT_ASSIGNMENT => '0',
+            self::HIDDEN_CONFIG_SKIP_ADV_PRICE_EXPORT => '0'
+        ];
         $shopgateHiddenConfiguration = $this->loadHiddenConfigurationValues();
         $shopgateConfiguration       = array_merge($shopgateHiddenConfiguration, $this->loadFormConfigurationValues());
 
@@ -762,7 +766,22 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
 
     public function shouldSkipCategoryAssignment()
     {
-        return $this->additionalSettings[self::HIDDEN_CONFIG_SKIP_CAT_ASSIGNMENT] === '1';
+        return $this->isAdditionalSettingEnabled(self::HIDDEN_CONFIG_SKIP_CAT_ASSIGNMENT);
+    }
+
+    public function shouldSkipAdvancedPriceExport()
+    {
+        return $this->isAdditionalSettingEnabled(self::HIDDEN_CONFIG_SKIP_ADV_PRICE_EXPORT);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    private function isAdditionalSettingEnabled($key)
+    {
+        return $this->additionalSettings[$key] === '1';
     }
 
     /**

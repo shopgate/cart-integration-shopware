@@ -179,8 +179,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
      */
     public function setPrice()
     {
-        $priceModel = new Shopgate_Model_Catalog_Price();
-
+        $priceModel    = new Shopgate_Model_Catalog_Price();
         $basePrice     = $this->getFormattedPrice($this->articleData['price']);
         $pseudoPrice   = $this->getFormattedPrice($this->articleData['pseudoprice']);
         $articleDetail = $this->detail;
@@ -231,7 +230,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
             $priceModel->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_NET);
         }
 
-        // todo: add skip check here
+        if ($this->config->shouldSkipAdvancedPriceExport()) {
+            parent::setPrice($priceModel);
+
+            return;
+        }
+
         if ($priceGroup = $this->article->getPriceGroup()) {
             foreach ($priceGroup->getDiscounts() as $discount) {
                 $tierPrice = new Shopgate_Model_Catalog_TierPrice();
