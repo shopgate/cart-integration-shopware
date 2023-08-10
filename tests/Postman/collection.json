@@ -619,7 +619,7 @@
                       "    pm.response.to.have.status(200);",
                       "});",
                       "",
-                      "pm.test(\"enable inactive product export\", function () {",
+                      "pm.test(\"enable setting\", function () {",
                       "    var jsonData = pm.response.json();",
                       "    pm.expect(jsonData.shopgate_settings).lengthOf(1);",
                       "    pm.expect(jsonData.shopgate_settings[0].old).to.eq(\"0\");",
@@ -993,6 +993,252 @@
         {
           "name": "Check Prices (grps)",
           "item": [
+            {
+              "name": "SG: disable adv price export",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"enable setting\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.shopgate_settings).lengthOf(1);",
+                      "    pm.expect(jsonData.shopgate_settings[0].old).to.eq(\"0\");",
+                      "    pm.expect(jsonData.shopgate_settings[0].new).to.eq(\"1\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{sg_shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_set_settings}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][name]",
+                      "value": "skip_advanced_price_export",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][value]",
+                      "value": "1",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{sg_endpoint_api}}/setSettings",
+                  "host": [
+                    "{{sg_endpoint_api}}"
+                  ],
+                  "path": [
+                    "setSettings"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check no price export",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "var jsonObject = xml2Json(responseBody);",
+                      "pm.test(\"Check products have categories exported\", () => {",
+                      "    pm.expect(jsonObject.items.item.prices).to.not.be.undefined;",
+                      "    const price = jsonObject.items.item.prices;",
+                      "    pm.expect(price.price).to.eq('500');",
+                      "    pm.expect(price.sale_price).to.eq('400');",
+                      "    pm.expect(price.base_price).to.contain('200');",
+                      "    pm.expect(price.price).to.eq('500');",
+                      "});",
+                      "",
+                      "pm.test(\"Check tier prices\", () => {",
+                      "    pm.expect(jsonObject.items.item.prices.tier_prices).to.be.undefined;",
+                      "});",
+                      "",
+                      "function checkGrp(tier, discount, min, type, customerGrpId) {",
+                      "    pm.expect(tier._, 'incorrect discount').to.eq(discount);",
+                      "    pm.expect(tier.$.threshold, 'incorrect threshold').to.eq(min);",
+                      "    pm.expect(tier.$.type, 'icnorrect type').to.eq(type);",
+                      "    if (customerGrpId) {",
+                      "        pm.expect(tier.$.customer_group_uid, 'incorrect customer grp').to.eq(customerGrpId);",
+                      "    }",
+                      "}",
+                      "function checkFixedDiscount(tier, discount, min, type, max) {",
+                      "    checkGrp(tier, discount, min, type, null);",
+                      "    pm.expect(tier.$.max_quantity, 'incorrect max').to.eq(max);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{sg_shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "5",
+                      "type": "text"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[]",
+                      "value": "{{created_product2_id}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{sg_endpoint_api}}/getItems",
+                  "host": [
+                    "{{sg_endpoint_api}}"
+                  ],
+                  "path": [
+                    "getItems"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: enable adv price export",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"disable setting\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.shopgate_settings).lengthOf(1);",
+                      "    pm.expect(jsonData.shopgate_settings[0].old).to.eq(\"1\");",
+                      "    pm.expect(jsonData.shopgate_settings[0].new).to.eq(\"0\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{sg_shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_set_settings}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][name]",
+                      "value": "skip_advanced_price_export",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][value]",
+                      "value": "0",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{sg_endpoint_api}}/setSettings",
+                  "host": [
+                    "{{sg_endpoint_api}}"
+                  ],
+                  "path": [
+                    "setSettings"
+                  ]
+                }
+              },
+              "response": []
+            },
             {
               "name": "SG: check prices",
               "event": [
