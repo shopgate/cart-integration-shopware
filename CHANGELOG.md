@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- exporting invalid URLs for product images with missing protocol in some configurations; falling back to "https://" if missing 
 
 ## [2.9.111] - 2023-05-23
 ### Fixed
