@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+
+## [2.9.112] - 2023-08-24
 ### Fixed
 - exporting invalid URLs for product images with missing protocol in some configurations; falling back to "https://" if missing 
 
@@ -965,7 +967,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.111...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.112...HEAD
+[2.9.112]: https://github.com/shopgate/interface-shopware/compare/2.9.111...2.9.112
 [2.9.111]: https://github.com/shopgate/interface-shopware/compare/2.9.110...2.9.111
 [2.9.110]: https://github.com/shopgate/interface-shopware/compare/2.9.109...2.9.110
 [2.9.109]: https://github.com/shopgate/interface-shopware/compare/2.9.108...2.9.109
