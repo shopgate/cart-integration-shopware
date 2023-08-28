@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## [Unreleased]
 
+## [2.9.113] - 2023-08-28
+### Fixed
+- removed unused reference to a PHPUnit class or function in production code
+
 ## [2.9.112] - 2023-08-24
 ### Fixed
 - exporting invalid URLs for product images with missing protocol in some configurations; falling back to "https://" if missing 
@@ -967,7 +971,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.112...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.113...HEAD
+[2.9.113]: https://github.com/shopgate/interface-shopware/compare/2.9.112...2.9.113
 [2.9.112]: https://github.com/shopgate/interface-shopware/compare/2.9.111...2.9.112
 [2.9.111]: https://github.com/shopgate/interface-shopware/compare/2.9.110...2.9.111
 [2.9.110]: https://github.com/shopgate/interface-shopware/compare/2.9.109...2.9.110
