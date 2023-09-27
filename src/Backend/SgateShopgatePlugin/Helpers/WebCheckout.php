@@ -36,7 +36,6 @@ use Shopware\Models\Customer\Customer;
 use Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config;
 
 use Zend_Db_Adapter_Exception;
-use function PHPUnit\Framework\throwException;
 
 class WebCheckout
 {

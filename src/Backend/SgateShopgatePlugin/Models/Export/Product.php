@@ -437,13 +437,20 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
      */
     protected function getShopRootWS()
     {
-        return (
+        $baseUrl = (
             // trim slashes and append a single one
             trim(Shopware()->Shop()->getHost(), '/') . '/' .
 
             // append base path of the shop with slashes trimmed and a single one appended
             trim(Shopware()->Shop()->getBasePath(), '/') . '/'
         );
+
+        // apparently sometimes the protocol is missing; fall back to https:// in that case
+        if (mb_strpos($baseUrl, 'http') !== 0) {
+            $baseUrl = 'https://' . $baseUrl;
+        }
+
+        return $baseUrl;
     }
 
     /**
