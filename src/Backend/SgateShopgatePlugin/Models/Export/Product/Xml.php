@@ -201,7 +201,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
             if (!empty($childPriceModel)) {
                 $articleDetail = $childPriceModel->getDetail();
                 $taxFactor     = 1 + $this->articleData['tax'] / 100;
-                $basePrice         = $childPriceModel->getPrice() * $taxFactor;
+                $basePrice     = $childPriceModel->getPrice() * $taxFactor;
                 $pseudoPrice   = $this->getFormattedPrice(
                     $childPriceModel->getPseudoPrice() * $taxFactor
                 );

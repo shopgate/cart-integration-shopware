@@ -128,7 +128,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
 
         $shopwareDir = rtrim(Shopware()->DocPath(), DS) . DS;
 
-        $this->additionalSettings = [
+        $this->additionalSettings    = [
             self::HIDDEN_CONFIG_SKIP_CAT_ASSIGNMENT => '0',
             self::HIDDEN_CONFIG_SKIP_ADV_PRICE_EXPORT => '0'
         ];
@@ -819,6 +819,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
             : Shopware()->Bootstrap()->issetResource($resourceName);
     }
 
+    /**
+     * Checks if the Shop object is loaded in the DI
+     *
+     * @return bool
+     */
     public function isShopLoaded()
     {
         $tag = $this->assertMinimumVersion('5.6.0') ? 'shop' : 'Shop';
