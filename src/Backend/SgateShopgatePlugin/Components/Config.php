@@ -510,7 +510,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
         // return a mapping to real shopgate config keys that can be transmitted via set_settings
         // all hidden configs are saved as serialized and encoded string in a shopware form element with
         // a key that is determined by self::HIDDEN_CONFIG_IDENTIFIER
-        return array(
+        return [
             'shop_is_active'                 => 'SGATE_SHOP_IS_ACTIVE',
             'enable_ping'                    => 'SGATE_ENABLE_PING',
             'enable_add_order'               => 'SGATE_ENABLE_ADD_ORDER',
@@ -533,9 +533,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
             'enable_redirect_keyword_update' => 'SGATE_ENABLE_REDIRECT_KEYWORD_UPDATE',
             'enable_mobile_website'          => 'SGATE_ENABLE_MOBILE_WEBSITE',
             'enable_get_orders'              => 'SGATE_ENABLE_GET_ORDERS',
-            'enable_default_redirect'        => 'SGATE_DEFAULT_REDIRECT',
-            'skip_category_assignment'       => 'SGATE_SKIP_CATEGORY_ASSIGNMENT',
-        );
+            'enable_default_redirect'        => 'SGATE_DEFAULT_REDIRECT'
+        ];
     }
 
     /**
