@@ -1474,6 +1474,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
     public function onFrontendCustom(Enlight_Event_EventArgs $args)
     {
+        // todo: possibly create event to post back guest session to App on product page
         $view = $args->getSubject()->View();
         $view->addTemplateDir($this->Path() . 'Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
@@ -1543,7 +1544,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      */
     private function getAttributesStore()
     {
-        if (version_compare(Shopware()->Config()->version, '5.2', '>=')) {
+        if ($this->assertMinimumVersion('5.2')) {
             $attributeHelper = new AttributeHelper();
             $attributesStore = $attributeHelper->getConfiguredAttributes(false);
         } else {

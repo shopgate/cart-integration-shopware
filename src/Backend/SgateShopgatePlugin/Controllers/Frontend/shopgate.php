@@ -111,7 +111,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
     public function getWhitelistedCSRFActions()
     {
-        return array(
+        return [
             'index',
             'ping',
             'cron',
@@ -143,8 +143,8 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
             'updateUser',
             'address',
             'favorites',
-            'favoriteLists'
-        );
+            'favoriteLists',
+        ];
     }
 
     public function indexAction()
@@ -316,18 +316,18 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     private function loginHelper()
     {
         $sessionId = $this->Request()->getParam('sessionId');
+        $guest = $this->Request()->getParam('guest', false);
 
         if (isset($sessionId)) {
             $this->webCheckoutHelper->startSessionWithId($sessionId);
         }
 
-        $token = $this->Request()->getParam('token');
+        $token = $this->webCheckoutHelper->getTokenFromCall($this->Request());
         Shopware()->Session()->offsetSet('sgWebView', true);
 
-        $loginAppUser = $this->webCheckoutHelper->loginAppUser($token, $this->Request());
-
+        $loginAppUser = !$guest && $this->webCheckoutHelper->loginAppUser($token, $this->Request());
         // Assigns userID to cart. Mimics logic for after customer login, account page load causes cart merge
-        if ($loginAppUser && Shopware()->Plugins()) {
+        if (($loginAppUser || $guest) && Shopware()->Plugins()) {
             $stats = Shopware()->Plugins()->Frontend()->Statistics();
             $stats->refreshBasket($this->Request());
         }
@@ -342,15 +342,15 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->View()->setTemplate();
 
         ### Shopinformation / Pluginconfiguration ###
-        $shop   = Shopware()->Shop()->getId();
+        $shop = Shopware()->Shop()->getId();
 
         if (empty($shop)) {
             throw new Enlight_Exception('Plugin-Fehler - Shop-ID leer!');
         }
 
-        $config  = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
+        $config = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
         $builder = new ShopgateBuilder($config);
-        $plugin  = new ShopgatePluginShopware($builder);
+        $plugin = new ShopgatePluginShopware($builder);
 
         $orderMailEventHandler =
             new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_EventHandler_ShopwareModulesOrderSendMailSend(
@@ -367,9 +367,9 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $recreateMissingSGData = $this->Request()->getPost('recreate_missing_sg_data');
         if (!empty($recreateMissingSGData) && $recreateMissingSGData) {
             $orderNumbers = array();
-            $sql          =
+            $sql =
                 "SELECT `o`.`ordernumber`, `o`.`transactionId` FROM `s_order` AS `o` LEFT JOIN `s_shopgate_orders` AS `so` ON(`o`.`id` = `so`.`orderID`) WHERE `o`.`remote_addr` LIKE 'shopgate.com.' AND `o`.`transactionId` LIKE '101%' AND `so`.`id` IS NULL";
-            $query        = Shopware()->Db()->query($sql);
+            $query = Shopware()->Db()->query($sql);
             while ($row = $query->fetch()) {
                 // create a mapping from shopgate order number to shopware order number (link via shopgate order number as transactionId)
                 $orderNumbers[substr($row['transactionId'], 0, 10)] = $row['ordernumber'];
@@ -377,10 +377,10 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
 
             if (!empty($orderNumbers)) {
                 $oShopgateMerchantApi = $builder->buildMerchantApi();
-                $sgOrderResponseObj   = $oShopgateMerchantApi->getOrders(
+                $sgOrderResponseObj = $oShopgateMerchantApi->getOrders(
                     array(
                         "order_numbers" => array_keys($orderNumbers),
-                        "with_items"    => true,
+                        "with_items" => true,
                     )
                 ); // use the transactionId here because this is the shopgate order number
             }
@@ -462,7 +462,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
      */
     public function payPalExpressAction()
     {
-        $token = $this->Request()->getParam('token');
+        $token = $this->webCheckoutHelper->getTokenFromCall($this->Request());
 
         if (empty($token) || $this->loginHelper()) {
             $this->redirect('checkout/cart');
@@ -623,6 +623,25 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     }
 
     /**
+     * @return void
+     * @throws \Exception
+     */
+    public function loginAction()
+    {
+        if (!$this->Request()->isGet()) {
+            return;
+        }
+        $redirect = $this->Request()->get('redirectTo', 'index');
+
+        if (str_contains($redirect, 'http')) {
+            return;
+        }
+
+        $this->loginHelper();
+        $redirect && $this->redirect(str_replace('.', '/', $redirect));
+    }
+
+    /**
      * Custom get user action
      */
     public function getUserAction()
@@ -702,7 +721,7 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $this->Response()->setHeader('Set-Cookie', 'sgWebView=true; path=/; HttpOnly');
 
         if (isset($sgCloud)) {
-            $this->Response()->setHeader('Set-Cookie', 'session-1='.$sessionId.'; path=/; HttpOnly');
+            $this->Response()->setHeader('Set-Cookie', 'session-1=' . $sessionId . '; path=/; HttpOnly');
             $this->redirect('checkout/confirm#show-registration');
         } else {
             if ($this->admin->sCheckUser()) {
