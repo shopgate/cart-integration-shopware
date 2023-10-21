@@ -623,21 +623,27 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
     }
 
     /**
+     * Logs in someone & redirects them to a SW5 page,
+     * not meant to be used by API, but for WebCheckout
+     *
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function loginAction()
     {
         if (!$this->Request()->isGet()) {
             return;
         }
-        $redirect = $this->Request()->get('redirectTo', 'index');
 
+        $redirect = $this->Request()->get('redirectTo', 'index');
+        // to prevent malicious off-site redirect usage
         if (str_contains($redirect, 'http')) {
             return;
         }
 
         $this->loginHelper();
+        // forward 'libshopgate' user-agent if it exists
+        $this->Response()->setHeader('User-Agent', $this->Request()->getHeader('User-Agent'));
         $redirect && $this->redirect(str_replace('.', '/', $redirect));
     }
 

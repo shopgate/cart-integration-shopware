@@ -468,6 +468,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
               'onFrontendCustom'
             );
 
+            // WebCheckout for product view
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatchSecure_Frontend_Detail',
+                'onFrontendCustom'
+            );
+
             $this->subscribeEvent(
                 'Enlight_Controller_Action_Frontend_Account_Password',
                 'onFrontendPassword'
@@ -1474,7 +1480,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
     public function onFrontendCustom(Enlight_Event_EventArgs $args)
     {
-        // todo: possibly create event to post back guest session to App on product page
         $view = $args->getSubject()->View();
         $view->addTemplateDir($this->Path() . 'Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
