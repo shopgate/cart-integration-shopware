@@ -17,17 +17,16 @@
             }
         }
 
-        function closeBrowser (redirect = '/') {
-            const commands = [
-                {
-                    'c': 'broadcastEvent',
-                    'p': {
-                        'event': 'closeInAppBrowser',
-                        'parameters': [{ 'redirectTo': redirect }]
-                    }
-                }
-            ]
-            window.SGAppConnector.sendAppCommands(commands);
+        function closeBrowser () {
+            window.SGAppConnector.sendAppCommand(
+              {
+                  'c': 'broadcastEvent',
+                  'p': {
+                      'event': 'closeInAppBrowser',
+                      'parameters': [{'redirectTo': '/cart'}]
+                  }
+              }
+            );
         }
 
         function payPalPayment(event, me) {
@@ -38,7 +37,7 @@
                     urlToken = getUrlParameter('token');
 
                 if (window.location.href.includes('/token/') || (urlToken && urlToken.length > 1)) {
-                    closeBrowser('/cart');
+                    closeBrowser();
                 } else {
                     if (CSRF.checkToken()) {
                         token = CSRF.getToken();
