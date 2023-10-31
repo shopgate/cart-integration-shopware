@@ -36,7 +36,8 @@
                 {/literal}
             </script>
             <style type="text/css">
-                .is--act-cart {ldelim}display: none{rdelim}
+                .is--act-cart,
+                .content--breadcrumb {ldelim}display: none{rdelim}
                 {$sgCustomCss}
             </style>
             {if $sgSessionId || $sgActionName === 'confirm' || $sgActionName === 'shippingPayment' ||  $sgActionName === 'cart'}
