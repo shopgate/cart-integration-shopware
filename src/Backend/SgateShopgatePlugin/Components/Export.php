@@ -19,12 +19,21 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
+use Doctrine\ORM\NonUniqueResultException;
+use Phpfastcache\Exceptions\PhpfastcacheDriverCheckException;
+use Phpfastcache\Exceptions\PhpfastcacheDriverException;
+use Phpfastcache\Exceptions\PhpfastcacheDriverNotFoundException;
+use Phpfastcache\Exceptions\PhpfastcacheInvalidArgumentException;
+use Phpfastcache\Exceptions\PhpfastcacheInvalidConfigurationException;
 use Shopgate\Helpers\Attribute as AttributeHelper;
 use Shopware\Bundle\SearchBundle\Condition\CategoryCondition;
 use Shopware\Bundle\SearchBundle\Condition\CustomerGroupCondition;
 use Shopware\Bundle\SearchBundle\Criteria;
 use Shopware\Bundle\StoreFrontBundle\Service\Core\ContextService;
 use Shopware\Bundle\StoreFrontBundle\Struct\ProductContext;
+use Shopware\Models\Article\Price;
+use Shopware\Models\Customer\Group;
+use Shopware\Models\Shop\Shop;
 
 class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
 {
@@ -32,7 +41,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     const CACHE_KEY_CATEGORY_PRODUCT_SORTING        = 'categories_product_sort_';
     const CACHE_KEY_STREAM_CATEGORY_PRODUCT_SORTING = 'stream_categories_product_sort_';
 
-    /** @var \Shopware\Models\Shop\Shop */
+    /** @var Shop */
     protected $shop;
 
     /** @var \Shopware\Models\Shop\Locale */
@@ -113,15 +122,18 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $this->system           = Shopware()->System();
         $this->attributeHelper  = new AttributeHelper();
         $this->config           = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config();
-        $this->initLanguageCategoryList();
-        $this->initLanguageCompleteCategoryList();
-        $this->initCache();
 
-        $this->logger->log(
-            "languageCategorylist entries: " . count($this->languageCategoryList)
-            . ' languageCompleteCategoryList entries: ' . count($this->languageCompleteCategoryList),
-            Shopgate_Helper_Logging_Strategy_LoggingInterface::LOGTYPE_DEBUG
-        );
+        // initialize only when exporting
+        $supportedTypes = $this->config->getSupportedResponseTypes();
+        if (isset($supportedTypes[$this->requestParams['action']])) {
+            $this->initCategoryList();
+            $this->initCache();
+            $this->logger->log(
+                'languageCategorylist entries: '.count($this->languageCategoryList)
+                .' languageCompleteCategoryList entries: '.count($this->languageCompleteCategoryList),
+                Shopgate_Helper_Logging_Strategy_LoggingInterface::LOGTYPE_DEBUG
+            );
+        }
     }
 
     /**
@@ -153,91 +165,55 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         return $text;
     }
 
-    /**
-     *
-     */
-    protected function initLanguageCategoryList()
-    {
-        $this->buildLanguageCategoryList($this->rootCategoryId);
-    }
-
-    /**
-     *
-     */
-    protected function initLanguageCompleteCategoryList()
-    {
-        $this->buildLanguageCompleteCategoryList($this->rootCategoryId);
-    }
-
-    /**
-     * @param $parentID
-     */
-    protected function buildLanguageCategoryList($parentID)
+    protected function initCategoryList()
     {
         $qry = "
-			SELECT id
-			FROM s_categories
-			WHERE parent = {$parentID}
-			  AND active = 1";
+            SELECT id, active
+            FROM s_categories
+            WHERE parent IS NOT NULL";
 
         $result = Shopware()->Db()->fetchAll($qry);
-
         foreach ($result as $row) {
-            $this->languageCategoryList[] = $row["id"];
-
-            if ($row["id"] != $parentID) {
-                $this->buildLanguageCategoryList($row["id"]);
+            $this->languageCompleteCategoryList[$row['id']] = $row['id'];
+            if ($row['active'] === '1') {
+                $this->languageCategoryList[$row['id']] = $row['id'];
             }
         }
     }
 
     /**
-     * @param $parentID
-     */
-    protected function buildLanguageCompleteCategoryList($parentID)
-    {
-        $qry = "
-			SELECT id
-			FROM s_categories
-			WHERE parent = {$parentID}";
-
-        $result = Shopware()->Db()->fetchAll($qry);
-
-        foreach ($result as $row) {
-            $this->languageCompleteCategoryList[] = $row["id"];
-
-            if ($row["id"] != $parentID) {
-                $this->buildLanguageCompleteCategoryList($row["id"]);
-            }
-        }
-    }
-
-    /**
-     * checks if category is associated to the current shop and active
+     * Checks if category is associated to the current shop and active.
+     * Note that these are built on export calls only
      *
-     * @param $categoryId
+     * @param string $categoryId
      *
      * @return bool
      */
     public function checkCategory($categoryId)
     {
-        return in_array($categoryId, $this->languageCategoryList);
+        return isset($this->languageCategoryList[$categoryId]);
     }
 
     /**
-     * checks if category is associated to the current shop
+     * Checks if category is associated to the current shop.
+     * Note that these are built on export calls only
      *
-     * @param $categoryId
+     * @param string $categoryId
      *
      * @return bool
      */
     public function checkCompleteCategory($categoryId)
     {
-        return in_array($categoryId, $this->languageCompleteCategoryList);
+        return isset($this->languageCompleteCategoryList[$categoryId]);
     }
 
     /**
      * @return phpFastCache\Core\Pool\ExtendedCacheItemPoolInterface
+     * @throws PhpfastcacheDriverCheckException
+     * @throws PhpfastcacheDriverException
+     * @throws PhpfastcacheDriverNotFoundException
+     * @throws PhpfastcacheInvalidArgumentException
+     * @throws PhpfastcacheInvalidConfigurationException
      */
     protected function getCacheInstance()
     {
@@ -246,7 +222,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             if (!class_exists('phpFastCache\CacheManager')) {
                 $namespace = 'Phpfastcache';
             }
-
+            /** @var phpFastCache\CacheManager $cacheManagerClass */
             $cacheManagerClass = "{$namespace}\CacheManager";
 
             $this->cacheInstance = $cacheManagerClass::getInstance(
@@ -370,7 +346,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
             $groupRepository = Shopware()->Models()->getRepository('Shopware\Models\Customer\Group');
             $customerGroup   = $groupRepository->findOneBy(array('key' => $customerGroupKey));
 
-            if ($customerGroup instanceof \Shopware\Models\Customer\Group) {
+            if ($customerGroup instanceof Group) {
                 $cache = $customerGroup->getId();
             }
 
@@ -383,10 +359,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
     /**
      * returns price model for an article detail
      *
-     * @param int    $articleDetailsId
+     * @param int $articleDetailsId
      * @param string $groupKey
      *
-     * @return \Shopware\Models\Article\Price \ null
+     * @return Price | null
+     * @throws NonUniqueResultException
      */
     public function getPriceModel($articleDetailsId, $groupKey)
     {
@@ -512,6 +489,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Export
         $now                  = Shopware()->Db()->quote(date('Y-m-d'));
         $currentCustomerGroup = $this->system->sUSERGROUPDATA['id'];
 
+        /** @noinspection SqlResolve */
         $sql = "
             SELECT
                 STRAIGHT_JOIN

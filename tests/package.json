@@ -1,0 +1,16 @@
+{
+  "name": "apite-sgsw5-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "full": "node_modules/.bin/newman run ./Postman/collection.json -e ./Postman/environment.json -g ./Postman/globals.json --global-var 'system_port=:8000' --env-var 'sw_api_key=XXX' --color=on --bail",
+    "ci": "node_modules/.bin/newman run -r cli,htmlextra,junit ./Postman/collection.json -e ./Postman/environment.json -g ./Postman/globals.json --color=on --insecure --no-insecure-file-read"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "newman": "latest",
+    "newman-reporter-htmlextra": "latest"
+  }
+}

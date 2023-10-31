@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+### Added
+- ability to skip category export when calling `get_items`, config called `skip_category_assignment`
+- ability to skip advanced price export when calling `get_items`, config called `skip_advanced_price_export`
+### Changed
+- category querying and lookup to be more performant
 
 ## [2.9.113] - 2023-08-28
 ### Fixed

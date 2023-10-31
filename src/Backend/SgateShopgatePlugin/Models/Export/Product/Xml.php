@@ -19,6 +19,8 @@
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
+use Doctrine\ORM\NonUniqueResultException;
+
 /**
  * xml export for articles
  *
@@ -172,11 +174,13 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
         parent::setWeight($this->prepareWeight($this->detail));
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
     public function setPrice()
     {
-        $priceModel = new Shopgate_Model_Catalog_Price();
-
-        $price         = $this->getFormattedPrice($this->articleData['price']);
+        $priceModel    = new Shopgate_Model_Catalog_Price();
+        $basePrice     = $this->getFormattedPrice($this->articleData['price']);
         $pseudoPrice   = $this->getFormattedPrice($this->articleData['pseudoprice']);
         $articleDetail = $this->detail;
 
@@ -197,17 +201,19 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
             if (!empty($childPriceModel)) {
                 $articleDetail = $childPriceModel->getDetail();
                 $taxFactor     = 1 + $this->articleData['tax'] / 100;
-                $price         = $childPriceModel->getPrice() * $taxFactor;
+                $basePrice     = $childPriceModel->getPrice() * $taxFactor;
                 $pseudoPrice   = $this->getFormattedPrice(
                     $childPriceModel->getPseudoPrice() * $taxFactor
                 );
             } else {
-                $price = 0;
+                $basePrice = 0;
             }
         }
 
         $purchaseSteps = $this->getPurchaseSteps($articleDetail);
-        $price         = $this->getFormattedPrice($price);
+        $price         = $this->getFormattedPrice($basePrice);
+
+        $priceModel->setBasePrice($this->prepareBasePrice($price, $articleDetail));
 
         if (!empty($purchaseSteps)) {
             $price       *= $purchaseSteps;
@@ -222,6 +228,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
             $priceModel->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_GROSS);
         } else {
             $priceModel->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_NET);
+        }
+
+        if ($this->config->shouldSkipAdvancedPriceExport()) {
+            parent::setPrice($priceModel);
+
+            return;
         }
 
         if ($priceGroup = $this->article->getPriceGroup()) {
@@ -307,17 +319,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
                 $priceModel->addTierPriceGroup($tierPrice);
             }
         }
-
-        if (!empty($purchaseSteps)) {
-            $price /= $purchaseSteps;
-        }
-
-        $priceModel->setBasePrice(
-            $this->prepareBasePrice(
-                $this->getFormattedPrice($price),
-                $articleDetail
-            )
-        );
 
         parent::setPrice($priceModel);
     }
@@ -419,13 +420,16 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
 
     public function setCategoryPaths()
     {
-        $result           = array();
-        $linkedCategories = $this->getCategories($this->article);
+        $result = [];
+        if ($this->getConfig()->shouldSkipCategoryAssignment()) {
+            parent::setCategoryPaths($result);
 
+            return;
+        }
+
+        $linkedCategories = $this->getCategories($this->article);
         foreach ($linkedCategories as $category) {
-            $sortOrder = $category['sort_order']
-                ? $category['sort_order']
-                : '';
+            $sortOrder = $category['sort_order'] ?: '';
 
             $categoryItemObject = new Shopgate_Model_Catalog_CategoryPath();
             $categoryItemObject->setUid($category['id']);
