@@ -1,26 +1,22 @@
 <?php
-
 /**
- * Shopware 5
- * Copyright (c) shopware AG
+ * Copyright Shopgate Inc.
  *
- * According to our dual licensing model, this program can be used either
- * under the terms of the GNU Affero General Public License, version 3,
- * or under a proprietary license.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * The texts of the GNU Affero General Public License with an additional
- * permission and of our proprietary license can be found at and
- * in the LICENSE file you have received along with this program.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
- * "Shopware" is a registered trademark of shopware AG.
- * The licensing of the program under the AGPLv3 does not imply a
- * trademark license. Therefore any rights, title and interest in
- * our trademarks remain entirely with us.
+ * @author    Shopgate Inc, 804 Congress Ave, Austin, Texas 78701 <interfaces@shopgate.com>
+ * @copyright Shopgate Inc
+ * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
 namespace Shopgate\Components;
@@ -30,12 +26,17 @@ use Doctrine\ORM\ORMException;
 use Doctrine\ORM\TransactionRequiredException;
 use Enlight_Components_Session_Namespace;
 use Enlight_Controller_Request_Request;
+use Enlight_Controller_Request_RequestHttp;
 use Enlight_Controller_Response_Response;
+use Enlight_Event_Exception;
+use Enlight_Exception;
 use Exception;
 use sAdmin;
 use sBasket;
 use Shopgate\Helpers\WebCheckout;
 use Shopware\Components\DependencyInjection\Container;
+use Symfony\Component\Form\FormInterface;
+use Zend_Db_Adapter_Exception;
 
 class User
 {
@@ -84,6 +85,10 @@ class User
     /**
      * @param Enlight_Controller_Request_Request   $request
      * @param Enlight_Controller_Response_Response $httpResponse
+     *
+     * @throws Enlight_Event_Exception
+     * @throws Enlight_Exception
+     * @throws Zend_Db_Adapter_Exception
      */
     public function loginUser($request, $httpResponse)
     {
@@ -175,7 +180,7 @@ class User
     /**
      * Custom get user action
      *
-     * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_Controller_Request_RequestHttp $request
      */
     public function getUser($request)
     {
@@ -330,9 +335,10 @@ class User
      * @param Enlight_Controller_Request_Request   $request
      * @param Enlight_Controller_Response_Response $httpResponse
      *
-     * @throws ORMException
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
+     * @throws Exception
+     * @throws ORMException
      *
      * @return array
      */
@@ -389,7 +395,7 @@ class User
      *
      * @throws Exception
      *
-     * @return Form
+     * @return FormInterface
      */
     protected function createForm($type, $data = null, array $options = [])
     {
@@ -414,7 +420,7 @@ class User
         $scopedRegistration = $mainShop->getCustomerScope();
 
         $addScopeSql = '';
-        if ($scopedRegistration == true) {
+        if ($scopedRegistration) {
             $addScopeSql = Shopware()->Db()->quoteInto(' AND subshopID = ? ', $mainShop->getId());
         }
 
@@ -454,10 +460,8 @@ class User
             AND UNIX_TIMESTAMP(lastlogin) >= (UNIX_TIMESTAMP(now())-?)
         ';
 
-        $user = Shopware()->Db()->fetchRow(
+        return Shopware()->Db()->fetchRow(
             $sql, [$hash, $email, $userId, 7200]
         );
-
-        return $user;
     }
 }
