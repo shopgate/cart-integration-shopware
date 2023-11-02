@@ -43,6 +43,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     const SHIPPING_SERVICE_PLUGIN_API = 'PLUGINAPI';
     /** configuration form id for hidden fields */
     const HIDDEN_CONFIGURATION_FORM_ID = 0;
+    const HIDDEN_CONFIG_SKIP_CAT_ASSIGNMENT = 'skip_category_assignment';
+    const HIDDEN_CONFIG_SKIP_ADV_PRICE_EXPORT = 'skip_advanced_price_export';
 
     protected $is_active;
 
@@ -126,6 +128,10 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
 
         $shopwareDir = rtrim(Shopware()->DocPath(), DS) . DS;
 
+        $this->additionalSettings    = [
+            self::HIDDEN_CONFIG_SKIP_CAT_ASSIGNMENT => '0',
+            self::HIDDEN_CONFIG_SKIP_ADV_PRICE_EXPORT => '0'
+        ];
         $shopgateHiddenConfiguration = $this->loadHiddenConfigurationValues();
         $shopgateConfiguration       = array_merge($shopgateHiddenConfiguration, $this->loadFormConfigurationValues());
 
@@ -257,7 +263,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     {
         $shopgateConfiguration = array();
         foreach ($this->loadHiddenConfigurationValuesFromDatabase() as $key => $value) {
-            if (!isset($this->{$key})) {
+            if (!isset($this->{$key}) && !isset($this->additionalSettings[$key])) {
                 continue;
             }
 
@@ -272,7 +278,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
      */
     protected function loadHiddenConfigurationValuesFromDatabase()
     {
-        if (!$this->isResourceLoaded('Shop')) {
+        if (!$this->isShopLoaded()) {
             return array();
         }
 
@@ -504,7 +510,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
         // return a mapping to real shopgate config keys that can be transmitted via set_settings
         // all hidden configs are saved as serialized and encoded string in a shopware form element with
         // a key that is determined by self::HIDDEN_CONFIG_IDENTIFIER
-        return array(
+        return [
             'shop_is_active'                 => 'SGATE_SHOP_IS_ACTIVE',
             'enable_ping'                    => 'SGATE_ENABLE_PING',
             'enable_add_order'               => 'SGATE_ENABLE_ADD_ORDER',
@@ -527,8 +533,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
             'enable_redirect_keyword_update' => 'SGATE_ENABLE_REDIRECT_KEYWORD_UPDATE',
             'enable_mobile_website'          => 'SGATE_ENABLE_MOBILE_WEBSITE',
             'enable_get_orders'              => 'SGATE_ENABLE_GET_ORDERS',
-            'enable_default_redirect'        => 'SGATE_DEFAULT_REDIRECT',
-        );
+            'enable_default_redirect'        => 'SGATE_DEFAULT_REDIRECT'
+        ];
     }
 
     /**
@@ -697,7 +703,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
     }
 
     /**
-     *
      * @param string $value
      */
     public function setExportProductDownloads($value)
@@ -758,6 +763,26 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
         $this->root_category = $value;
     }
 
+    public function shouldSkipCategoryAssignment()
+    {
+        return $this->isAdditionalSettingEnabled(self::HIDDEN_CONFIG_SKIP_CAT_ASSIGNMENT);
+    }
+
+    public function shouldSkipAdvancedPriceExport()
+    {
+        return $this->isAdditionalSettingEnabled(self::HIDDEN_CONFIG_SKIP_ADV_PRICE_EXPORT);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    private function isAdditionalSettingEnabled($key)
+    {
+        return $this->additionalSettings[$key] === '1';
+    }
+
     /**
      * @param string $moduleName
      *
@@ -788,11 +813,21 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Config extends Sho
      */
     public function isResourceLoaded($resourceName)
     {
-        $resourceLoaded = $this->assertMinimumVersion('5.2.0')
+        return $this->assertMinimumVersion('5.2.0')
             ? Shopware()->Container()->initialized($resourceName)
             : Shopware()->Bootstrap()->issetResource($resourceName);
+    }
 
-        return $resourceLoaded;
+    /**
+     * Checks if the Shop object is loaded in the DI
+     *
+     * @return bool
+     */
+    public function isShopLoaded()
+    {
+        $tag = $this->assertMinimumVersion('5.6.0') ? 'shop' : 'Shop';
+
+        return $this->isResourceLoaded($tag);
     }
 
     /**

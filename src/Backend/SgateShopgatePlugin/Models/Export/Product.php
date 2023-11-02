@@ -94,6 +94,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             $connection        = Shopware()->Container()->get('dbal_connection');
             $this->translation = new Shopware_Components_Translation($connection, $container);
         } else {
+            /** @noinspection PhpParamsInspection */
             $this->translation = new Shopware_Components_Translation();
         }
         $this->snippets = Shopware()->Snippets();
@@ -557,7 +558,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
      *
      * @param array $downloads
      *
-     * @return array
+     * @return string
      */
     public function createDescriptionDownloadLinks($downloads)
     {

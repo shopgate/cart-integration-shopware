@@ -12,3 +12,5 @@ composer.lock
 /.php-cs.cache
 /.phpunit.result.cache
 .DS_Store
+tests/package-lock.json
+tests/node_modules
