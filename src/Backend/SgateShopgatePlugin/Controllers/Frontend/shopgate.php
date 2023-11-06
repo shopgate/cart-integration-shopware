@@ -642,8 +642,6 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         }
 
         $this->loginHelper();
-        // forward 'libshopgate' user-agent if it exists
-        $this->Response()->setHeader('User-Agent', $this->Request()->getHeader('User-Agent'));
         $redirect && $this->redirect(str_replace('.', '/', $redirect));
     }
 
