@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ### Added
 - ability to skip category export when calling `get_items`, config called `skip_category_assignment`
 - ability to skip advanced price export when calling `get_items`, config called `skip_advanced_price_export`
+- webCheckout login route for guests
+- webCheckout will close browser when an item is added to cart on desktop site (inApp)
 ### Changed
 - category querying and lookup to be more performant
 

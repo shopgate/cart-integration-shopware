@@ -3,16 +3,22 @@
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.3/engine/Shopware/Components/Plugin/schema/plugin.xsd">
     <label lang="de">Swag Plugin System</label>
     <label lang="en">Swag plugin system</label>
-    <version>2.9.113</version>
+    <version>2.9.114-alpha.1</version>
     <copyright>(c) by Shopgate GmbH</copyright>
     <license>Apache</license>
     <link>https://store.shopware.com/sgate00633f/shopgate-mobile-commerce-fuer-shopware.html</link>
     <author>Shopgate GmbH</author>
     <compatibility minVersion="5.3.0"/>
-    <changelog version="2.9.113">
+    <changelog version="2.9.114-alpha.1">
         <changes lang="en">
-            ### Fixed
-            - removed unused reference to a PHPUnit class or function in production code
+            ### Added
+            - ability to skip category export when calling `get_items`, config called `skip_category_assignment`
+            - ability to skip advanced price export when calling `get_items`, config called `skip_advanced_price_export`
+            - webCheckout login route for guests
+            - webCheckout will close browser when an item is added to cart on desktop site (inApp)
+
+            ### Changed
+            - category querying and lookup to be more performant
         </changes>
     </changelog>
     <description>

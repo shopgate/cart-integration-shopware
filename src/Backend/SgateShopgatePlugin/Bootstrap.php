@@ -155,7 +155,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      */
     public function getVersion()
     {
-        return '2.9.113';
+        return '2.9.114-alpha.1';
     }
 
     /**
@@ -466,6 +466,12 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             $this->subscribeEvent(
               'Enlight_Controller_Action_PostDispatchSecure_Frontend_Bewertungen',
               'onFrontendCustom'
+            );
+
+            // WebCheckout for product view
+            $this->subscribeEvent(
+                'Enlight_Controller_Action_PostDispatchSecure_Frontend_Detail',
+                'onFrontendCustom'
             );
 
             $this->subscribeEvent(
@@ -1543,7 +1549,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
      */
     private function getAttributesStore()
     {
-        if (version_compare(Shopware()->Config()->version, '5.2', '>=')) {
+        if ($this->assertMinimumVersion('5.2')) {
             $attributeHelper = new AttributeHelper();
             $attributesStore = $attributeHelper->getConfiguredAttributes(false);
         } else {

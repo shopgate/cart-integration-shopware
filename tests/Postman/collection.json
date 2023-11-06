@@ -1617,6 +1617,357 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "WebCheckout",
+      "item": [
+        {
+          "name": "SW: Get customer 1",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// allowCookie=1\r",
+                  "const jar = pm.cookies.jar();\r",
+                  "jar.set(pm.environment.get(\"host\"), 'allowCookie', '1');"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"get customer data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.not.be.undefined;",
+                  "    pm.expect(jsonData.data.number).to.not.be.undefined;",
+                  "    pm.environment.set('gen_customer_1_num', jsonData.data.number);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{sw_endpoint_api}}/customers/1",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "customers",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: login customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Load the HTML response to $",
+                  "const $ = cheerio.load(pm.response.text());",
+                  "pm.test(\"Check that customer got logged in\", function () {",
+                  "    const greeting = $('.account--display-greeting');",
+                  "    pm.expect(greeting).to.be.not.undefined;",
+                  "    pm.expect(greeting.text()).to.contain('Max');",
+                  "});",
+                  "",
+                  "// Allow cookie deletion by going to cookies -> Domain Allowlist",
+                  "const jar = pm.cookies.jar();",
+                  "jar.unset(pm.environment.get(\"host\"), 'session-1', (error) => error && console.log(error.message));",
+                  "jar.unset(pm.environment.get(\"host\"), 'slt', (error) => error && console.log(error.message));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "jwt",
+              "jwt": [
+                {
+                  "key": "payload",
+                  "value": "{\"customer_id\": \"{{gen_customer_1_num}}\"}",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "queryParam",
+                  "type": "string"
+                },
+                {
+                  "key": "secret",
+                  "value": "{{sg_api_key}}",
+                  "type": "string"
+                },
+                {
+                  "key": "isSecretBase64Encoded",
+                  "value": false,
+                  "type": "boolean"
+                },
+                {
+                  "key": "algorithm",
+                  "value": "HS256",
+                  "type": "string"
+                },
+                {
+                  "key": "headerPrefix",
+                  "value": "Bearer",
+                  "type": "string"
+                },
+                {
+                  "key": "queryParamKey",
+                  "value": "token",
+                  "type": "string"
+                },
+                {
+                  "key": "header",
+                  "value": "{}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime libshopgate",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sg_endpoint_api}}/login",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: create guest cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Get session\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.sessionId).to.not.be.undefined;",
+                  "    pm.environment.set('gen_sessionId_guest', jsonData.sessionId);",
+                  "});",
+                  "",
+                  "",
+                  "// Allow cookie deletion by going to cookies -> Domain Allowlist",
+                  "const jar = pm.cookies.jar();",
+                  "jar.unset(pm.environment.get(\"host\"), 'session-1', (error) => error && console.log(error.message));",
+                  "jar.unset(pm.environment.get(\"host\"), 'slt', (error) => error && console.log(error.message));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "Shopgate PWA",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"articles\": [\n        {\n            \"product_id\": \"{{gen_product_main_id}}\",\n            \"variant_id\": \"\",\n            \"quantity\": 1,\n            \"options\": []\n        }\n    ],\n    \"customerId\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sg_endpoint_api}}/addToCart",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "addToCart"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: login guest",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Load the HTML response to $",
+                  "const $ = cheerio.load(pm.response.text());",
+                  "pm.test(\"Check that guest got logged in\", function () {",
+                  "    const productInCart = $('.content--sku.content');",
+                  "    pm.expect(productInCart).to.be.not.undefined;",
+                  "    pm.expect(productInCart.text()).to.contain('SW10001');",
+                  "});",
+                  "",
+                  "// Allow cookie deletion by going to cookies -> Domain Allowlist",
+                  "const jar = pm.cookies.jar();",
+                  "jar.unset(pm.environment.get(\"host\"), 'session-1', (error) => error && console.log(error.message));",
+                  "jar.unset(pm.environment.get(\"host\"), 'slt', (error) => error && console.log(error.message));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{sg_endpoint_api}}/login?sessionId={{gen_sessionId_guest}}&guest=1&redirectTo=checkout.cart",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "login"
+              ],
+              "query": [
+                {
+                  "key": "sessionId",
+                  "value": "{{gen_sessionId_guest}}"
+                },
+                {
+                  "key": "guest",
+                  "value": "1"
+                },
+                {
+                  "key": "redirectTo",
+                  "value": "checkout.cart"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: login & prod page",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Load the HTML response to $",
+                  "const $ = cheerio.load(pm.response.text());",
+                  "pm.test(\"Check that we have a sessionId being sent to App\", function () {",
+                  "    const session = $('script:contains(\"sessionId\")');",
+                  "    pm.expect(session).to.be.not.undefined;",
+                  "    pm.expect(session.text()).to.contain(\"{'sessionId': '\");",
+                  "});",
+                  "",
+                  "// Allow cookie deletion by going to cookies -> Domain Allowlist",
+                  "const jar = pm.cookies.jar();",
+                  "jar.unset(pm.environment.get(\"host\"), 'session-1', (error) => error && console.log(error.message));",
+                  "jar.unset(pm.environment.get(\"host\"), 'slt', (error) => error && console.log(error.message));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "jwt",
+              "jwt": [
+                {
+                  "key": "payload",
+                  "value": "{\"customer_id\": \"{{gen_customer_1_num}}\"}",
+                  "type": "string"
+                },
+                {
+                  "key": "addTokenTo",
+                  "value": "queryParam",
+                  "type": "string"
+                },
+                {
+                  "key": "secret",
+                  "value": "{{sg_api_key}}",
+                  "type": "string"
+                },
+                {
+                  "key": "isSecretBase64Encoded",
+                  "value": false,
+                  "type": "boolean"
+                },
+                {
+                  "key": "algorithm",
+                  "value": "HS256",
+                  "type": "string"
+                },
+                {
+                  "key": "headerPrefix",
+                  "value": "Bearer",
+                  "type": "string"
+                },
+                {
+                  "key": "queryParamKey",
+                  "value": "token",
+                  "type": "string"
+                },
+                {
+                  "key": "header",
+                  "value": "{}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime libshopgate",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sg_endpoint_api}}/login?redirectTo=detail.index.sArticle.3",
+              "host": [
+                "{{sg_endpoint_api}}"
+              ],
+              "path": [
+                "login"
+              ],
+              "query": [
+                {
+                  "key": "redirectTo",
+                  "value": "detail.index.sArticle.3"
+                }
+              ]
+            },
+            "description": "Logs in, redirects to product page & checks that the session is being sent to the App."
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "auth": {
