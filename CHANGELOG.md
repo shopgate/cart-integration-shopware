@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - ability to skip advanced price export when calling `get_items`, config called `skip_advanced_price_export`
 - webCheckout login route for guests
 - webCheckout will close browser when an item is added to cart on desktop site (inApp)
+- CSS body tag that differentiates between R.Native (`.is-sg-codebase-v2`) & old Swift/Java based App (`.is-sg-codebase-v1`)
 ### Changed
 - category querying and lookup to be more performant
 
