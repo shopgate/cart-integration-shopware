@@ -340,9 +340,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 $this->log("> Run job {$jobname}", ShopgateLogger::LOGTYPE_DEBUG);
                 $this->cronCancelOrder($message, $errorcount);
                 break;
-            // 			case "clean_orders":
-            // 				Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Cron::cleanupOrders( $message, $errorcount );
-            // 				break;
+                // 			case "clean_orders":
+                // 				Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Cron::cleanupOrders( $message, $errorcount );
+                // 				break;
             default:
                 throw new ShopgateLibraryException(ShopgateLibraryException::PLUGIN_CRON_UNSUPPORTED_JOB);
         }
@@ -3532,8 +3532,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $country = $this->customerImport->getCountryByIso($oOrderAddress->getCountry());
         if (empty($country)) {
             throw new ShopgateLibraryException(
-                ShopgateLibraryException::PLUGIN_UNKNOWN_COUNTRY_CODE, "insertOrderAddress: Country ISO-CODE '{$oOrderAddress->getCountry(
-            )}' does not exist (address type '{$type}')", true
+                ShopgateLibraryException::PLUGIN_UNKNOWN_COUNTRY_CODE,
+                "insertOrderAddress: Country ISO-CODE '{$oOrderAddress->getCountry()}' does not exist (address type '{$type}')",
+                true
             );
         }
         $state = $this->customerImport->getStateByIso($oOrderAddress->getState());
