@@ -270,10 +270,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Order
                 ShopgateLogger::LOGTYPE_DEBUG
             );
             if (
-                (in_array(
-                        $orderDetail->getStatus()->getId(),
-                        self::$orderDetailsCanceledIds
-                    ) || $qtyDiff == $itemQty) && $itemQty > 0
+                (in_array($orderDetail->getStatus()->getId(), self::$orderDetailsCanceledIds) ||
+                $qtyDiff == $itemQty) && $itemQty > 0
             ) {
                 // complete cancellation
                 $cancelledItem[$cancellationItemIdentifierKey] = $cancellationItemIdentifier;

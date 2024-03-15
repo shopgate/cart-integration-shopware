@@ -1,7 +1,6 @@
 /.buildpath
 /.project
 /release/*.zip
-/.php_cs.cache
 /nbproject
 /.settings
 /.idea
@@ -10,6 +9,8 @@
 composer.lock
 /vendor/
 /.php-cs.cache
+/.php_cs.cache
+/.php-cs-fixer.cache
 /.phpunit.result.cache
 .DS_Store
 tests/package-lock.json

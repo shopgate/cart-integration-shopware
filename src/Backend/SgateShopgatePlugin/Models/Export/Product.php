@@ -628,7 +628,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product extends
             empty($customFields)
                 ? ''
                 : '<br />' . implode('<br /><br />', $customFields) . '<br /><br />'
-            );
+        );
     }
 
     /**

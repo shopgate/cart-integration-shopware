@@ -449,23 +449,23 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
             );
 
             $this->subscribeEvent(
-              'Enlight_Controller_Action_Frontend_BonusSystem_Points',
-              'onFrontendCustom'
+                'Enlight_Controller_Action_Frontend_BonusSystem_Points',
+                'onFrontendCustom'
             );
 
             $this->subscribeEvent(
-              'Enlight_Controller_Action_Frontend_Account_Documents',
-              'onFrontendCustom'
+                'Enlight_Controller_Action_Frontend_Account_Documents',
+                'onFrontendCustom'
             );
 
             $this->subscribeEvent(
-              'Enlight_Controller_Action_Frontend_Account_Ruecksendungen',
-              'onFrontendCustom'
+                'Enlight_Controller_Action_Frontend_Account_Ruecksendungen',
+                'onFrontendCustom'
             );
 
             $this->subscribeEvent(
-              'Enlight_Controller_Action_PostDispatchSecure_Frontend_Bewertungen',
-              'onFrontendCustom'
+                'Enlight_Controller_Action_PostDispatchSecure_Frontend_Bewertungen',
+                'onFrontendCustom'
             );
 
             // WebCheckout for product view

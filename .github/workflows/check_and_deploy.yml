@@ -6,11 +6,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.2
+          php-version: 7.4
       - name: Install dependencies (for CS fixer)
         run: composer install
       - name: Audit
@@ -27,7 +27,7 @@ jobs:
         php-versions: [ '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1' ]
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -47,7 +47,7 @@ jobs:
         id: set-tag
         run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -58,7 +58,7 @@ jobs:
           TAG_NAME: ${{ steps.set-tag.outputs.TAG_NAME }}
           PHP_VERSION: 'php-5.6'
       - name: Store to cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-5.6.zip
           key: ${{ steps.set-tag.outputs.TAG_NAME }}-${{ github.sha }}-php-5
@@ -73,7 +73,7 @@ jobs:
         id: set-tag
         run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -84,7 +84,7 @@ jobs:
           TAG_NAME: ${{ steps.set-tag.outputs.TAG_NAME }}
           PHP_VERSION: 'php-7'
       - name: Store to cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-7.zip
           key: ${{ steps.set-tag.outputs.TAG_NAME }}-${{ github.sha }}-php-7
@@ -99,12 +99,12 @@ jobs:
         id: set-tag
         run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
       - name: Load from cache (PHP 5)
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-5.6.zip
           key: ${{ steps.set-tag.outputs.TAG_NAME }}-${{ github.sha }}-php-5
       - name: Load from cache (PHP 7 & 8)
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./release/shopgate-shopware-integration-${{ steps.set-tag.outputs.TAG_NAME }}-php-7.zip
           key: ${{ steps.set-tag.outputs.TAG_NAME }}-${{ github.sha }}-php-7
