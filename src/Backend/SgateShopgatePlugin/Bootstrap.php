@@ -1288,10 +1288,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendAccount', false);
         $view->assign('sgActionName', false);
-        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
-
-        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
-        $view->assign('sgCustomCss', $customCss);
+        $this->assignCommonData($view, $args);
     }
 
     /**
@@ -1305,7 +1302,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->addTemplateDir(__DIR__ . '/Views/');
         $view->assign('sgWebCheckout', $this->isInWebView($args));
         $view->assign('sgActionName', $args->getRequest()->getActionName());
-        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
         $view->assign('sgPromotionVouchers', json_encode(Shopware()->Session()->offsetGet('promotionVouchers')));
         $view->assign('sgAccountView', false);
         $view->assign('sgIsNewCustomer', false);
@@ -1313,9 +1309,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgFrontendRegister', false);
         $view->assign('sgHash', false);
         $view->assign('sgEmail', false);
-
-        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
-        $view->assign('sgCustomCss', $customCss);
+        $this->assignCommonData($view, $args);
 
         if ($this->isInWebView($args)) {
             $referer = array(
@@ -1397,10 +1391,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendAccount', false);
         $view->assign('sgActionName', false);
-        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
-
-        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
-        $view->assign('sgCustomCss', $customCss);
+        $this->assignCommonData($view, $args);
     }
 
     /**
@@ -1416,10 +1407,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgForgotPassword', false);
         $view->assign('sgFrontendAccount', false);
         $view->assign('sgActionName', false);
-        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
-
-        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
-        $view->assign('sgCustomCss', $customCss);
+        $this->assignCommonData($view, $args);
     }
 
     /**
@@ -1432,9 +1420,6 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgWebCheckout', $this->isInWebView($args));
         $view->addTemplateDir($this->Path() . 'Views/');
         $view->assign('sgActionName', false);
-
-        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
-        $view->assign('sgCustomCss', $customCss);
 
         $nonSgPaths = array('/account/documents', '/account/ruecksendungen', '/bewertungen');
         if (in_array($request->getPathInfo(), $nonSgPaths)) {
@@ -1466,16 +1451,14 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgCloudCallbackData', $sgCloudCallbackData);
         $view->assign('sgHash', $hash);
         $view->assign('sgEmail', $email);
-        $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+        $this->assignCommonData($view, $args);
     }
 
     public function onFrontendPassword(Enlight_Event_EventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->assign('sgForgotPassword', true);
-
-        $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
-        $view->assign('sgCustomCss', $customCss);
+        $this->assignCommonData($view, $args);
     }
 
     public function onFrontendCustom(Enlight_Event_EventArgs $args)
@@ -1488,10 +1471,38 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgFrontendRegister', false);
         $view->assign('sgFrontendAccount', false);
         $view->assign('sgActionName', false);
+        $this->assignCommonData($view, $args);
+    }
+
+    /**
+     * Assigns data common to all frontend controllers
+     *
+     * @return void
+     */
+    private function assignCommonData(Enlight_View_Default $view, Enlight_Event_EventArgs $args)
+    {
         $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
+
+        $userAgent = $args->getSubject()->Request()->getHeader('user-agent');
+        $isReactNative = $this->isReactNativeBase($userAgent);
+        $view->assign('sgIsReactNativeBase', $isReactNative);
 
         $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
         $view->assign('sgCustomCss', $customCss);
+    }
+
+    /**
+     * React Native base SG app should have a "Codebase" variable with version >= 11.0.0 in its user agent.
+     *
+     * @param string $userAgent
+     * @return bool
+     */
+    private function isReactNativeBase($userAgent)
+    {
+        $regex = '/libshopgate.*?Codebase:(\d+\.\d+(\.\d+)?)/';
+        preg_match($regex, $userAgent, $matches);
+
+        return version_compare(isset($matches[1]) ? $matches[1] : '0.0.0', '11.0.0', '>=');
     }
 
     /**
