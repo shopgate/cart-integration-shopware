@@ -7,7 +7,7 @@
         <html class="no-js" lang="{s name='IndexXmlLang'}{/s}" itemscope="itemscope" itemtype="http://schema.org/WebPage" data-disallow-pull-to-refresh="1">
     {/if}
 {/block}
-{block name="frontend_index_body_classes"}{$smarty.block.parent}{if $sgWebCheckout} {strip}is-sg-codebase-{if $sgIsNativeBase}v2{else}v1{/if}{/strip}{/if}{/block}
+{block name="frontend_index_body_classes"}{$smarty.block.parent}{if $sgWebCheckout} {strip}is-sg-codebase-{if $sgIsReactNativeBase}v2{else}v1{/if}{/strip}{/if}{/block}
 {block name='frontend_index_navigation'}
     {if !$sgWebCheckout}
         {$smarty.block.parent}

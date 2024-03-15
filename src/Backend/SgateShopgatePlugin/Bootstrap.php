@@ -1484,21 +1484,20 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
         $view->assign('sgSessionId', Shopware()->Session()->offsetGet('sessionId'));
 
         $userAgent = $args->getSubject()->Request()->getHeader('user-agent');
-        $isNative = $this->isNativeBase($userAgent);
-        $view->assign('sgIsNativeBase', $isNative);
+        $isReactNative = $this->isReactNativeBase($userAgent);
+        $view->assign('sgIsReactNativeBase', $isReactNative);
 
         $customCss = Shopware()->Config()->getByNamespace('SgateShopgatePlugin', 'SGATE_CUSTOM_CSS');
         $view->assign('sgCustomCss', $customCss);
     }
 
     /**
-     * Native SG App should have a Codebase variable with
-     * a version higher than 11
+     * React Native base SG app should have a "Codebase" variable with version >= 11.0.0 in its user agent.
      *
      * @param string $userAgent
      * @return bool
      */
-    private function isNativeBase($userAgent)
+    private function isReactNativeBase($userAgent)
     {
         $regex = '/libshopgate.*?Codebase:(\d+\.\d+(\.\d+)?)/';
         preg_match($regex, $userAgent, $matches);
