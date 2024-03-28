@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+## [2.9.114]
 ### Added
 - ability to skip category export when calling `get_items`, config called `skip_category_assignment`
 - ability to skip advanced price export when calling `get_items`, config called `skip_advanced_price_export`
@@ -982,7 +983,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - migrate plugin from Shopware 3.5.x to 4.0.x
 - use doctrine models
 
-[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.113...HEAD
+[Unreleased]: https://github.com/shopgate/interface-shopware/compare/2.9.114...HEAD
+[2.9.114]: https://github.com/shopgate/interface-shopware/compare/2.9.113...2.9.114
 [2.9.113]: https://github.com/shopgate/interface-shopware/compare/2.9.112...2.9.113
 [2.9.112]: https://github.com/shopgate/interface-shopware/compare/2.9.111...2.9.112
 [2.9.111]: https://github.com/shopgate/interface-shopware/compare/2.9.110...2.9.111
