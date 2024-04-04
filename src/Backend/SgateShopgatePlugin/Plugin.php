@@ -5331,16 +5331,20 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         $list = $this->getExportArticles($limit, $offset, $uids);
         $logMessage = 'Articles from DB: ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode(array_map(function ($article) {
-            if ($article['id'] == 5568) $this->log('Found it! ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode($article), ShopgateLogger::LOGTYPE_ACCESS);
-                return ['id' => $article['id'], 'mainDetailId' => $article['mainDetailId']];
-            }, $list));
+            if ($article['id'] == 5568) {
+                $this->log('Found it! ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode($article), ShopgateLogger::LOGTYPE_ACCESS);
+            }
+            return ['id' => $article['id'], 'mainDetailId' => $article['mainDetailId']];
+        }, $list));
         $this->log($logMessage, ShopgateLogger::LOGTYPE_ACCESS);
 
         $articles = $this->eventManager->filter('sgate.export.items.createItems.article_load_after', $list, ['data' => $list]);
         $logMessage = 'Articles after filter: ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode(array_map(function ($article) {
-           if ($article['id'] == 5568) $this->log('Found it (filtered)! ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode($article), ShopgateLogger::LOGTYPE_ACCESS);
-                return ['id' => $article['id'], 'mainDetailId' => $article['mainDetailId']];
-            }, $articles));
+           if ($article['id'] == 5568) {
+               $this->log('Found it (filtered)! ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode($article), ShopgateLogger::LOGTYPE_ACCESS);
+           }
+            return ['id' => $article['id'], 'mainDetailId' => $article['mainDetailId']];
+        }, $articles));
         $this->log($logMessage, ShopgateLogger::LOGTYPE_ACCESS);
 
         $this->log(
