@@ -5340,9 +5340,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
 
         $articles = $this->eventManager->filter('sgate.export.items.createItems.article_load_after', $list, ['data' => $list]);
         $logMessage = 'Articles after filter: ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode(array_map(function ($article) {
-           if ($article['id'] == 5568) {
-               $this->log('Found it (filtered)! ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode($article), ShopgateLogger::LOGTYPE_ACCESS);
-           }
+            if ($article['id'] == 5568) {
+                $this->log('Found it (filtered)! ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode($article), ShopgateLogger::LOGTYPE_ACCESS);
+            }
             return ['id' => $article['id'], 'mainDetailId' => $article['mainDetailId']];
         }, $articles));
         $this->log($logMessage, ShopgateLogger::LOGTYPE_ACCESS);
