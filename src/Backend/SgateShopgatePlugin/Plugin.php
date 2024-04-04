@@ -5330,7 +5330,18 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $this->log("ShopgatePluginShopware::createItems() loading article export ids", ShopgateLogger::LOGTYPE_DEBUG);
 
         $list = $this->getExportArticles($limit, $offset, $uids);
+        $logMessage = 'Articles from DB: ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode(array_map(function ($article) {
+                if ($article['id'] == 5568) $this->log('Found it! ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode($article), ShopgateLogger::LOGTYPE_ACCESS);
+                return ['id' => $article['id'], 'mainDetailId' => $article['mainDetailId']];
+            }, $list));
+        $this->log($logMessage, ShopgateLogger::LOGTYPE_ACCESS);
+
         $articles = $this->eventManager->filter('sgate.export.items.createItems.article_load_after', $list, ['data' => $list]);
+        $logMessage = 'Articles after filter: ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode(array_map(function ($article) {
+                if ($article['id'] == 5568) $this->log('Found it (filtered)! ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode($article), ShopgateLogger::LOGTYPE_ACCESS);
+                return ['id' => $article['id'], 'mainDetailId' => $article['mainDetailId']];
+            }, $articles));
+        $this->log($logMessage, ShopgateLogger::LOGTYPE_ACCESS);
 
         $this->log(
             'ShopgatePluginShopware::createItems() found ' . count($articles) . 'articles',
@@ -5345,11 +5356,13 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 $msg .= "Exception: " . get_class($e) . "\n";
                 $msg .= "Message: " . $e->getMessage() . "\n";
                 $msg .= "Trace:\n" . $e->getTraceAsString();
-                $this->log($msg);
+                $this->log($msg, ShopgateLogger::LOGTYPE_ACCESS);
                 $exportModel = 0;
             }
             if (!empty($exportModel)) {
                 $this->addItem($exportModel->generateData());
+            } else {
+                $this->log("Product with id #{$data['id']} resulted in an empty 'exportModel'.", ShopgateLogger::LOGTYPE_ACCESS);
             }
         }
 
@@ -5401,6 +5414,9 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 ->setParameter('uids', $uids);
         } else {
             $storeCategories = $this->exportComponent->getLanguageCompleteCategoryList();
+
+            $this->log('Store categories: ' . $this->getHelper(self::HELPER_DATASTRUCTURE)->jsonEncode($storeCategories), ShopgateLogger::LOGTYPE_ACCESS);
+
             if ($storeCategories) {
                 $builder->andWhere($builder->expr()->in('categories.id', $storeCategories));
             }
