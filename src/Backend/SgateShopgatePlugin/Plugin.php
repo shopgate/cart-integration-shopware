@@ -5433,6 +5433,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
                 );
             }
         }
+        $builder->addOrderBy('article.id', 'ASC');
         $builder->addGroupBy('article.id');
 
         return $builder->getQuery()->getArrayResult();
