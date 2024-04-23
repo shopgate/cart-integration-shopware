@@ -11,14 +11,9 @@
     <compatibility minVersion="5.3.0"/>
     <changelog version="2.9.115">
         <changes lang="en">
-            ### Added
-            - ability to skip category export when calling `get_items`, config called `skip_category_assignment`
-            - ability to skip advanced price export when calling `get_items`, config called `skip_advanced_price_export`
-            - webCheckout login route for guests
-            - webCheckout will close browser when an item is added to cart on desktop site (inApp)
-
-            ### Changed
-            - category querying and lookup to be more performant
+            ### Fixed
+            - missing products in product export when using MySQL 8 or higher
+            - compatibility with MySQL 8
         </changes>
     </changelog>
     <description>
