@@ -367,8 +367,12 @@ class Shopware_Controllers_Frontend_Shopgate extends Enlight_Controller_Action i
         $recreateMissingSGData = $this->Request()->getPost('recreate_missing_sg_data');
         if (!empty($recreateMissingSGData) && $recreateMissingSGData) {
             $orderNumbers = array();
-            $sql =
-                "SELECT `o`.`ordernumber`, `o`.`transactionId` FROM `s_order` AS `o` LEFT JOIN `s_shopgate_orders` AS `so` ON(`o`.`id` = `so`.`orderID`) WHERE `o`.`remote_addr` LIKE 'shopgate.com.' AND `o`.`transactionId` LIKE '101%' AND `so`.`id` IS NULL";
+            $sql = "
+                SELECT `o`.`ordernumber`, `o`.`transactionId`
+                FROM `s_order` AS `o`
+                LEFT JOIN `s_shopgate_orders` AS `so` ON(`o`.`id` = `so`.`orderID`)
+                WHERE `o`.`remote_addr` LIKE 'shopgate.com.' AND `o`.`transactionId` LIKE '101%' AND `so`.`id` IS NULL
+                ORDER BY `o`.`id`";
             $query = Shopware()->Db()->query($sql);
             while ($row = $query->fetch()) {
                 // create a mapping from shopgate order number to shopware order number (link via shopgate order number as transactionId)

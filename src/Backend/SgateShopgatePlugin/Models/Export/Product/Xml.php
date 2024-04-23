@@ -568,6 +568,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
                 JOIN `s_articles_details` as sad ON sad.id = sacor.article_id AND sad.active = 1
                 WHERE s_articles.id = ? AND sad.articleId = ?
                 GROUP BY sad.id
+                ORDER BY s_articles.id ASC, sad.articleId ASC
             ',
                 array($this->article->getId(), $this->article->getId())
             );
@@ -590,7 +591,9 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Export_Product_Xml ext
                 $builder->select(array('details'))
                     ->from('Shopware\Models\Article\Detail', 'details')
                     ->where('details.id IN (:detailsIds)')
-                    ->setParameter('detailsIds', $detailIds[$maximumOptionsPerArticleDetail]);
+                    ->setParameter('detailsIds', $detailIds[$maximumOptionsPerArticleDetail])
+                    ->addOrderBy('details.id', 'ASC');
+                ;
                 $this->childCache = $builder->getQuery()->getResult();
             }
         }

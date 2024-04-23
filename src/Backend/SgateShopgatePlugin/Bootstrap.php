@@ -350,7 +350,11 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
 
         // filter all paymentmeans that are already installed
         $installedPayments = Shopware()->Db()->fetchAll(
-            "SELECT DISTINCT name FROM `s_core_paymentmeans` WHERE name='shopgate' OR name ='mobile_payment'"
+            "
+                SELECT DISTINCT name
+                FROM `s_core_paymentmeans`
+                WHERE name='shopgate' OR name ='mobile_payment'
+                ORDER BY position ASC"
         );
         if (!empty($installedPayments) && is_array($installedPayments)) {
             foreach ($installedPayments as $payment) {
@@ -672,8 +676,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Bootstrap extends Shopware_Co
     protected function getShopCategories()
     {
         /** @var Category[] $category */
-        $dql      = "SELECT c FROM \\Shopware\\Models\\Category\\Category c WHERE c.parent IS NULL";
-        $category = Shopware()->Models()->createQuery($dql)->getResult();
+        $sql      = "SELECT c FROM \\Shopware\\Models\\Category\\Category c WHERE c.parent IS NULL ORDER BY c.position";
+        $category = Shopware()->Models()->createQuery($sql)->getResult();
 
         /** @var Category[] $allCategories */
         $allCategories = $this->getSubCategories($category[0], 0, 2);

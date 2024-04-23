@@ -107,7 +107,8 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Models_Sort_ArticleLegacy imp
                       AND priceGroup.customergroupID = '{$customerGroupIds}'
                       AND product.pricegroupActive = 1
                   WHERE avoidCustomerGroup.articleID IS NULL
-                GROUP BY product.id";
+                GROUP BY product.id
+                ORDER BY product.id ASC, variant.id ASC";
 
         $sql    .= ' ' . $this->getArticleOrderBySQLSnippetFor($categoryId);
         $query  = Shopware()->Db()->query($sql);

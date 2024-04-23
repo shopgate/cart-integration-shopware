@@ -99,6 +99,7 @@ class Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Category
             WHERE parent = $parentID
             AND id != parent
 			AND active = 1
+			ORDER BY id
         ";
         foreach (Shopware()->Db()->fetchAll($sql) as $row) {
             if ($row['stream_id'] > 0) {

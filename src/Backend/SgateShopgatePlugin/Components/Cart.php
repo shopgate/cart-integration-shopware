@@ -494,7 +494,7 @@ class Cart
 
                     // Get that voucher from the db
                     $voucherDetails = Shopware()->Db()->fetchRow(
-                        'SELECT minimumcharge FROM s_emarketing_vouchers WHERE vouchercode = ? LIMIT 1',
+                        'SELECT minimumcharge FROM s_emarketing_vouchers WHERE vouchercode = ? ORDER BY id LIMIT 1',
                         strtolower(trim(stripslashes($code)))
                     );
 

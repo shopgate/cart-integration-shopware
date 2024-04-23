@@ -358,7 +358,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
 				FROM s_shopgate_orders so
 				JOIN s_order o ON (so.orderID = o.id)
 				WHERE so.is_sent_to_shopgate = 0
-				  AND o.status IN ({$shippingCompletedIds})";
+				  AND o.status IN ({$shippingCompletedIds})
+				  ORDER BY o.id";
 
         $query = Shopware()->Db()->query($sql);
         while ($row = $query->fetch()) {
@@ -389,7 +390,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
 				FROM s_shopgate_orders so
 				JOIN s_order o ON (so.orderID = o.id)
 				WHERE so.is_cancellation_sent_to_shopgate = 0
-				  AND DATE(o.ordertime) > ADDDATE(NOW(), INTERVAL -4 WEEK)";
+				  AND DATE(o.ordertime) > ADDDATE(NOW(), INTERVAL -4 WEEK)
+				  ORDER BY o.id";
 
         $query = Shopware()->Db()->query($sql);
         $oh    = new Shopware_Plugins_Backend_SgateShopgatePlugin_Components_Order();
@@ -529,7 +531,7 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $userData->setMail($oCustomer->getEmail());
         $userData->setPhone($oBilling->getPhone());
 
-        $sql       = "SELECT id, description FROM `s_core_customergroups` WHERE `groupkey` = ?";
+        $sql       = "SELECT id, description FROM `s_core_customergroups` WHERE `groupkey` = ? ORDER BY id ASC";
         $groupData = Shopware()->Db()->fetchRow($sql, array($customerGroupKey));
 
         $customerGroup = new ShopgateCustomerGroup();
@@ -1012,7 +1014,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
 				JOIN d.article a
 			WHERE a.mode = 0
 				AND a.active = 1
-				AND d.active = 1";
+				AND d.active = 1
+            ORDER BY d.id";
 
             $count = Shopware()->Models()->createQuery($dql)->getSingleScalarResult();
             $this->log("Active Products in Database: {$count}", ShopgateLogger::LOGTYPE_ACCESS);
@@ -5665,7 +5668,8 @@ class ShopgatePluginShopware extends ShopgatePlugin
         $pluginQry = "
 			SELECT `name`, version, active
 			FROM s_core_plugins
-			WHERE source != 'Default' AND name != 'SgateShopgatePlugin'
+			WHERE source != 'Default' AND name != 'SgateShopgatePlugin
+			ORBER BY id'
 		";
 
         $plugins = array();
@@ -5722,20 +5726,18 @@ class ShopgatePluginShopware extends ShopgatePlugin
             $response   = array();
 
             switch ($sortOrder) {
+                default: case 'created_desc':
+                    $orderBy = array(
+                        'property'  => 'o.orderTime',
+                        'direction' => 'DESC',
+                    );
+                    break;
                 case 'created_asc':
                     $orderBy = array(
                         'property'  => 'o.orderTime',
                         'direction' => 'ASC',
                     );
                     break;
-                case 'created_desc':
-                    $orderBy = array(
-                        'property'  => 'o.orderTime',
-                        'direction' => 'DESC',
-                    );
-                    break;
-                default:
-                    $orderBy = null;
             }
 
             $builder = Shopware()->Models()->createQueryBuilder();
